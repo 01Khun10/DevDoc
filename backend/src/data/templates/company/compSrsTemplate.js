@@ -1,0 +1,51 @@
+const section = (sectionNumber, title, isRequired, validationTag, displayOrder) => ({
+  sectionNumber,
+  title,
+  description: `This section defines the ${title.toLowerCase()} for the company requirements specification.`,
+  guidanceText: `Write clear product and delivery details for the ${title.toLowerCase()}.`,
+  exampleText: null,
+  placeholderText: `Write the ${title} here.`,
+  isRequired,
+  validationTag,
+  displayOrder,
+  parentSectionId: null
+});
+
+module.exports = {
+  name: "Company Requirements Specification",
+  code: "COMP_SRS",
+  profileCode: "COMPANY_SOFTWARE",
+  documentType: "SRS",
+  description: "Defines business context, product goals, users, needs, features, requirements, business rules, use cases, acceptance criteria, priorities, and traceability.",
+  recommendedFor: "Company products and client projects that need practical, testable requirements.",
+  displayOrder: 2,
+  sections: [
+    section("1", "Document Overview", true, "DOCUMENT_OVERVIEW", 1),
+    section("2", "Business Context", true, "BUSINESS_CONTEXT", 2),
+    section("3", "Product Goals", true, "PRODUCT_GOALS", 3),
+    section("4", "Users and Roles", true, "USERS_AND_ROLES", 4),
+    section("5", "User Needs", true, "USER_NEEDS", 5),
+    section("6", "Product Features", true, "PRODUCT_FEATURES", 6),
+    section("7", "Functional Requirements", true, "FUNCTIONAL_REQUIREMENTS", 7),
+    section("7.1", "Authentication Requirements", false, "AUTHENTICATION_REQUIREMENTS", 8),
+    section("7.2", "Project Workspace Requirements", false, "PROJECT_WORKSPACE_REQUIREMENTS", 9),
+    section("7.3", "Template and Document Requirements", false, "TEMPLATE_DOCUMENT_REQUIREMENTS", 10),
+    section("7.4", "Requirement Management Requirements", false, "REQUIREMENT_MANAGEMENT_REQUIREMENTS", 11),
+    section("7.5", "Traceability Requirements", false, "TRACEABILITY_REQUIREMENTS", 12),
+    section("7.6", "Validation Requirements", false, "VALIDATION_REQUIREMENTS", 13),
+    section("8", "Non-Functional Requirements", true, "NON_FUNCTIONAL_REQUIREMENTS", 14),
+    section("8.1", "Performance Requirements", true, "PERFORMANCE_REQUIREMENTS", 15),
+    section("8.2", "Security Requirements", true, "SECURITY_REQUIREMENTS", 16),
+    section("8.3", "Usability Requirements", true, "USABILITY_REQUIREMENTS", 17),
+    section("8.4", "Reliability Requirements", false, "RELIABILITY_REQUIREMENTS", 18),
+    section("8.5", "Maintainability Requirements", false, "MAINTAINABILITY_REQUIREMENTS", 19),
+    section("8.6", "Compatibility Requirements", false, "COMPATIBILITY_REQUIREMENTS", 20),
+    section("9", "Business Rules", true, "BUSINESS_RULES", 21),
+    section("10", "Use Cases", true, "USE_CASES", 22),
+    section("11", "Acceptance Criteria", true, "ACCEPTANCE_CRITERIA", 23),
+    section("12", "Data Requirements", true, "DATA_REQUIREMENTS", 24),
+    section("13", "Assumptions and Constraints", true, "ASSUMPTIONS_CONSTRAINTS", 25),
+    section("14", "Requirements Priority", true, "REQUIREMENTS_PRIORITY", 26),
+    section("15", "Requirements Traceability Matrix", true, "REQUIREMENTS_TRACEABILITY_MATRIX", 27)
+  ]
+};
