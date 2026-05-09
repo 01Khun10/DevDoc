@@ -6,6 +6,7 @@ import DocumentEditor from "./pages/DocumentEditor";
 import Login from "./pages/Login";
 import ProjectWorkspace from "./pages/ProjectWorkspace";
 import Register from "./pages/Register";
+import RequirementRegistry from "./pages/RequirementRegistry";
 import TemplateLibrary from "./pages/TemplateLibrary";
 
 function HomeRedirect() {
@@ -49,6 +50,14 @@ function App() {
         element={
           <ProtectedRoute>
             <TemplateLibrary />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/projects/:id/requirements"
+        element={
+          <ProtectedRoute>
+            <RequirementRegistry />
           </ProtectedRoute>
         }
       />

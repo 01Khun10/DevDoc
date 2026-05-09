@@ -146,7 +146,7 @@ function ProjectWorkspace() {
         </div>
 
         <section className="mt-6 rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
-          <h2 className="text-lg font-semibold">Coming soon</h2>
+          <h2 className="text-lg font-semibold">Project tools</h2>
           <div className="mt-4 grid gap-3 sm:grid-cols-3">
             <div className="rounded-md border border-teal-200 bg-teal-50 p-4 text-sm text-slate-700">
               <h3 className="font-semibold text-slate-950">Documentation Templates</h3>
@@ -157,14 +157,23 @@ function ProjectWorkspace() {
                 className="mt-4 inline-flex text-sm font-semibold text-teal-700 hover:text-teal-800"
                 to={`/projects/${project.id}/templates`}
               >
-                Browse Templates →
+                Browse Templates -&gt;
+              </Link>
+            </div>
+            <div className="rounded-md border border-teal-200 bg-teal-50 p-4 text-sm text-slate-700">
+              <h3 className="font-semibold text-slate-950">Requirements Registry</h3>
+              <p className="mt-2 leading-6">
+                Create and manage FR/NFR requirements for this project.
+              </p>
+              <Link
+                className="mt-4 inline-flex text-sm font-semibold text-teal-700 hover:text-teal-800"
+                to={`/projects/${project.id}/requirements`}
+              >
+                Open Requirements -&gt;
               </Link>
             </div>
             <div className="rounded-md border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700">
-              <span className="font-semibold text-slate-950">Requirements</span> — coming in a future phase
-            </div>
-            <div className="rounded-md border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700">
-              <span className="font-semibold text-slate-950">Validation</span> — coming in a future phase
+              <span className="font-semibold text-slate-950">Validation</span> - coming in a future phase
             </div>
           </div>
         </section>

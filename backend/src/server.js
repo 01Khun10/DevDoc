@@ -4,6 +4,7 @@ const dotenv = require("dotenv");
 const authRoutes = require("./routes/authRoutes");
 const documentRoutes = require("./routes/documentRoutes");
 const projectRoutes = require("./routes/projectRoutes");
+const requirementRoutes = require("./routes/requirementRoutes");
 const templateRoutes = require("./routes/templateRoutes");
 
 dotenv.config();
@@ -23,6 +24,7 @@ app.use(express.json());
 app.use("/api/auth", authRoutes);
 app.use("/api/projects", projectRoutes);
 app.use("/api/projects/:projectId/documents", documentRoutes);
+app.use("/api/projects/:projectId/requirements", requirementRoutes);
 app.use("/api/templates", templateRoutes);
 
 app.get("/", (req, res) => {
