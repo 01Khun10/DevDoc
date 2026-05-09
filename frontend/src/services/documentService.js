@@ -18,4 +18,24 @@ async function createDocumentFromTemplate(projectId, { templateCode, title }) {
   return response.document;
 }
 
-export { createDocumentFromTemplate };
+async function getDocument(projectId, documentId) {
+  const response = await apiRequest(
+    `/api/projects/${encodeURIComponent(projectId)}/documents/${encodeURIComponent(documentId)}`
+  );
+
+  return response.document;
+}
+
+async function updateDocumentSection(projectId, documentId, sectionId, content) {
+  return apiRequest(
+    `/api/projects/${encodeURIComponent(projectId)}/documents/${encodeURIComponent(
+      documentId
+    )}/sections/${encodeURIComponent(sectionId)}`,
+    {
+      method: "PUT",
+      body: { content }
+    }
+  );
+}
+
+export { createDocumentFromTemplate, getDocument, updateDocumentSection };

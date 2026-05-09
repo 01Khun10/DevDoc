@@ -2,7 +2,7 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import ProtectedRoute from "./components/ProtectedRoute";
 import useAuth from "./hooks/useAuth";
 import Dashboard from "./pages/Dashboard";
-import DocumentPlaceholder from "./pages/DocumentPlaceholder";
+import DocumentEditor from "./pages/DocumentEditor";
 import Login from "./pages/Login";
 import ProjectWorkspace from "./pages/ProjectWorkspace";
 import Register from "./pages/Register";
@@ -56,7 +56,7 @@ function App() {
         path="/projects/:projectId/documents/:documentId"
         element={
           <ProtectedRoute>
-            <DocumentPlaceholder />
+            <DocumentEditor />
           </ProtectedRoute>
         }
       />
