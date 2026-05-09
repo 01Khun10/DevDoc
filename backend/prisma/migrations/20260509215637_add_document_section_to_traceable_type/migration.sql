@@ -1,0 +1,2 @@
+-- AlterEnum
+ALTER TYPE "TraceableType" ADD VALUE 'DOCUMENT_SECTION';

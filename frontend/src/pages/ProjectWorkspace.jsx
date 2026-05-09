@@ -147,7 +147,7 @@ function ProjectWorkspace() {
 
         <section className="mt-6 rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
           <h2 className="text-lg font-semibold">Project tools</h2>
-          <div className="mt-4 grid gap-3 sm:grid-cols-3">
+          <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
             <div className="rounded-md border border-teal-200 bg-teal-50 p-4 text-sm text-slate-700">
               <h3 className="font-semibold text-slate-950">Documentation Templates</h3>
               <p className="mt-2 leading-6">
@@ -170,6 +170,18 @@ function ProjectWorkspace() {
                 to={`/projects/${project.id}/requirements`}
               >
                 Open Requirements -&gt;
+              </Link>
+            </div>
+            <div className="rounded-md border border-teal-200 bg-teal-50 p-4 text-sm text-slate-700">
+              <h3 className="font-semibold text-slate-950">Traceability Matrix</h3>
+              <p className="mt-2 leading-6">
+                Link requirements to the document sections that describe them.
+              </p>
+              <Link
+                className="mt-4 inline-flex text-sm font-semibold text-teal-700 hover:text-teal-800"
+                to={`/projects/${project.id}/traceability`}
+              >
+                Open Traceability -&gt;
               </Link>
             </div>
             <div className="rounded-md border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700">

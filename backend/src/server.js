@@ -6,6 +6,7 @@ const documentRoutes = require("./routes/documentRoutes");
 const projectRoutes = require("./routes/projectRoutes");
 const requirementRoutes = require("./routes/requirementRoutes");
 const templateRoutes = require("./routes/templateRoutes");
+const traceabilityRoutes = require("./routes/traceabilityRoutes");
 
 dotenv.config();
 
@@ -25,6 +26,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/projects", projectRoutes);
 app.use("/api/projects/:projectId/documents", documentRoutes);
 app.use("/api/projects/:projectId/requirements", requirementRoutes);
+app.use("/api/projects/:projectId/traceability", traceabilityRoutes);
 app.use("/api/templates", templateRoutes);
 
 app.get("/", (req, res) => {

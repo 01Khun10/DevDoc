@@ -8,6 +8,7 @@ import ProjectWorkspace from "./pages/ProjectWorkspace";
 import Register from "./pages/Register";
 import RequirementRegistry from "./pages/RequirementRegistry";
 import TemplateLibrary from "./pages/TemplateLibrary";
+import TraceabilityMatrix from "./pages/TraceabilityMatrix";
 
 function HomeRedirect() {
   const { user, isLoading } = useAuth();
@@ -58,6 +59,14 @@ function App() {
         element={
           <ProtectedRoute>
             <RequirementRegistry />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/projects/:id/traceability"
+        element={
+          <ProtectedRoute>
+            <TraceabilityMatrix />
           </ProtectedRoute>
         }
       />
