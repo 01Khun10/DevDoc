@@ -7,5 +7,7 @@ const router = express.Router({ mergeParams: true });
 router.use(authMiddleware);
 
 router.post("/from-template", documentController.createFromTemplate);
+router.get("/:documentId", documentController.getDocument);
+router.put("/:documentId/sections/:sectionId", documentController.updateSection);
 
 module.exports = router;

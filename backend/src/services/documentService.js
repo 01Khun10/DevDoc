@@ -3,6 +3,8 @@ const prisma = require("../utils/prisma");
 const PROJECT_NOT_FOUND = "PROJECT_NOT_FOUND";
 const TEMPLATE_NOT_FOUND = "TEMPLATE_NOT_FOUND";
 const PROFILE_MISMATCH = "PROFILE_MISMATCH";
+const DOCUMENT_NOT_FOUND = "DOCUMENT_NOT_FOUND";
+const SECTION_NOT_FOUND = "SECTION_NOT_FOUND";
 
 function createDocumentError(code, message) {
   const error = new Error(message);
@@ -22,6 +24,40 @@ function mapTemplateSectionsToDocumentSections(sections) {
     validationTag: section.validationTag,
     displayOrder: section.displayOrder
   }));
+}
+
+function calculateSectionStatus(content) {
+  if (content === null || content.trim() === "") {
+    return "EMPTY";
+  }
+
+  return "COMPLETE";
+}
+
+function calculateCompletionPercent(sections) {
+  if (sections.length === 0) {
+    return 0;
+  }
+
+  const requiredSections = sections.filter((section) => section.isRequired);
+  const sectionsForCompletion = requiredSections.length > 0 ? requiredSections : sections;
+  const completedSections = sectionsForCompletion.filter(
+    (section) => section.status === "COMPLETE"
+  );
+
+  return Math.round((completedSections.length / sectionsForCompletion.length) * 100);
+}
+
+function calculateDocumentStatus(completionPercent) {
+  if (completionPercent === 0) {
+    return "DRAFT";
+  }
+
+  if (completionPercent === 100) {
+    return "COMPLETE";
+  }
+
+  return "IN_PROGRESS";
 }
 
 async function createDocumentFromTemplate(ownerId, projectId, values) {
@@ -141,9 +177,152 @@ async function createDocumentFromTemplate(ownerId, projectId, values) {
   });
 }
 
+async function getDocumentById(ownerId, projectId, documentId) {
+  const document = await prisma.document.findFirst({
+    where: {
+      id: documentId,
+      projectId,
+      project: {
+        ownerId
+      }
+    },
+    select: {
+      id: true,
+      projectId: true,
+      templateId: true,
+      title: true,
+      documentType: true,
+      status: true,
+      completionPercent: true,
+      createdAt: true,
+      updatedAt: true,
+      template: {
+        select: {
+          id: true,
+          name: true,
+          code: true,
+          documentType: true
+        }
+      },
+      sections: {
+        orderBy: { displayOrder: "asc" },
+        select: {
+          id: true,
+          documentId: true,
+          sectionNumber: true,
+          title: true,
+          description: true,
+          guidanceText: true,
+          exampleText: true,
+          placeholderText: true,
+          content: true,
+          isRequired: true,
+          validationTag: true,
+          status: true,
+          displayOrder: true,
+          createdAt: true,
+          updatedAt: true
+        }
+      }
+    }
+  });
+
+  if (!document) {
+    throw createDocumentError(DOCUMENT_NOT_FOUND, "Document not found");
+  }
+
+  return document;
+}
+
+async function updateDocumentSection(ownerId, projectId, documentId, sectionId, values) {
+  return prisma.$transaction(async (tx) => {
+    const document = await tx.document.findFirst({
+      where: {
+        id: documentId,
+        projectId,
+        project: {
+          ownerId
+        }
+      },
+      select: {
+        id: true
+      }
+    });
+
+    if (!document) {
+      throw createDocumentError(DOCUMENT_NOT_FOUND, "Document not found");
+    }
+
+    const existingSection = await tx.documentSection.findFirst({
+      where: {
+        id: sectionId,
+        documentId: document.id
+      },
+      select: {
+        id: true
+      }
+    });
+
+    if (!existingSection) {
+      throw createDocumentError(SECTION_NOT_FOUND, "Section not found");
+    }
+
+    const sectionStatus = calculateSectionStatus(values.content);
+    const updatedSection = await tx.documentSection.update({
+      where: { id: existingSection.id },
+      data: {
+        content: values.content,
+        status: sectionStatus
+      },
+      select: {
+        id: true,
+        documentId: true,
+        sectionNumber: true,
+        title: true,
+        content: true,
+        status: true,
+        updatedAt: true
+      }
+    });
+
+    const sections = await tx.documentSection.findMany({
+      where: { documentId: document.id },
+      select: {
+        isRequired: true,
+        status: true
+      }
+    });
+
+    const completionPercent = calculateCompletionPercent(sections);
+    const documentStatus = calculateDocumentStatus(completionPercent);
+    const updatedDocument = await tx.document.update({
+      where: { id: document.id },
+      data: {
+        completionPercent,
+        status: documentStatus
+      },
+      select: {
+        id: true,
+        status: true,
+        completionPercent: true,
+        updatedAt: true
+      }
+    });
+
+    return {
+      section: updatedSection,
+      document: updatedDocument
+    };
+  });
+}
+
 module.exports = {
   PROJECT_NOT_FOUND,
   TEMPLATE_NOT_FOUND,
   PROFILE_MISMATCH,
-  createDocumentFromTemplate
+  DOCUMENT_NOT_FOUND,
+  SECTION_NOT_FOUND,
+  createDocumentFromTemplate,
+  getDocumentById,
+  updateDocumentSection
 };

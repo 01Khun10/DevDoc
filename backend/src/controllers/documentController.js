@@ -1,9 +1,16 @@
-const { validateCreateDocumentFromTemplateInput } = require("../validators/documentValidator");
+const {
+  validateCreateDocumentFromTemplateInput,
+  validateUpdateDocumentSectionInput
+} = require("../validators/documentValidator");
 const {
   PROJECT_NOT_FOUND,
   TEMPLATE_NOT_FOUND,
   PROFILE_MISMATCH,
-  createDocumentFromTemplate
+  DOCUMENT_NOT_FOUND,
+  SECTION_NOT_FOUND,
+  createDocumentFromTemplate,
+  getDocumentById,
+  updateDocumentSection
 } = require("../services/documentService");
 
 function sendError(res, statusCode, message, fields) {
@@ -50,6 +57,56 @@ async function createFromTemplate(req, res) {
   }
 }
 
+async function getDocument(req, res) {
+  try {
+    const document = await getDocumentById(
+      req.user.id,
+      req.params.projectId,
+      req.params.documentId
+    );
+
+    return res.status(200).json({ document });
+  } catch (error) {
+    if (error.code === DOCUMENT_NOT_FOUND) {
+      return sendError(res, 404, "Document not found");
+    }
+
+    return sendError(res, 500, "Unexpected server error");
+  }
+}
+
+async function updateSection(req, res) {
+  const validation = validateUpdateDocumentSectionInput(req.body);
+
+  if (!validation.isValid) {
+    return sendError(res, 400, "Validation failed", validation.fields);
+  }
+
+  try {
+    const result = await updateDocumentSection(
+      req.user.id,
+      req.params.projectId,
+      req.params.documentId,
+      req.params.sectionId,
+      validation.values
+    );
+
+    return res.status(200).json(result);
+  } catch (error) {
+    if (error.code === DOCUMENT_NOT_FOUND) {
+      return sendError(res, 404, "Document not found");
+    }
+
+    if (error.code === SECTION_NOT_FOUND) {
+      return sendError(res, 404, "Section not found");
+    }
+
+    return sendError(res, 500, "Unexpected server error");
+  }
+}
+
 module.exports = {
-  createFromTemplate
+  createFromTemplate,
+  getDocument,
+  updateSection
 };

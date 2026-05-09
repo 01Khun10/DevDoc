@@ -43,6 +43,40 @@ function validateCreateDocumentFromTemplateInput(body) {
   };
 }
 
+function validateUpdateDocumentSectionInput(body) {
+  const fields = {};
+  const values = {};
+
+  if (!body || typeof body !== "object") {
+    return {
+      isValid: false,
+      fields: { general: "Invalid request body" },
+      values
+    };
+  }
+
+  if (!Object.prototype.hasOwnProperty.call(body, "content")) {
+    fields.content = "Content is required";
+  } else if (body.content === null) {
+    values.content = null;
+  } else if (typeof body.content === "string") {
+    if (body.content.length > 20000) {
+      fields.content = "Content must be 20000 characters or less";
+    } else {
+      values.content = body.content;
+    }
+  } else {
+    fields.content = "Content must be a string or null";
+  }
+
+  return {
+    isValid: Object.keys(fields).length === 0,
+    fields,
+    values
+  };
+}
+
 module.exports = {
-  validateCreateDocumentFromTemplateInput
+  validateCreateDocumentFromTemplateInput,
+  validateUpdateDocumentSectionInput
 };
