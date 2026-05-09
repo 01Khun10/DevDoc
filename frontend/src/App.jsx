@@ -9,6 +9,7 @@ import Register from "./pages/Register";
 import RequirementRegistry from "./pages/RequirementRegistry";
 import TemplateLibrary from "./pages/TemplateLibrary";
 import TraceabilityMatrix from "./pages/TraceabilityMatrix";
+import ValidationEngine from "./pages/ValidationEngine";
 
 function HomeRedirect() {
   const { user, isLoading } = useAuth();
@@ -67,6 +68,14 @@ function App() {
         element={
           <ProtectedRoute>
             <TraceabilityMatrix />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/projects/:id/validation"
+        element={
+          <ProtectedRoute>
+            <ValidationEngine />
           </ProtectedRoute>
         }
       />

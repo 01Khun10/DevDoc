@@ -184,8 +184,18 @@ function ProjectWorkspace() {
                 Open Traceability -&gt;
               </Link>
             </div>
-            <div className="rounded-md border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700">
-              <span className="font-semibold text-slate-950">Validation</span> - coming in a future phase
+            <div className="rounded-md border border-teal-200 bg-teal-50 p-4 text-sm text-slate-700">
+              <h3 className="font-semibold text-slate-950">Doc-Linter Validation</h3>
+              <p className="mt-2 leading-6">
+                Run checks for document completeness, required sections, requirements, and
+                traceability.
+              </p>
+              <Link
+                className="mt-4 inline-flex text-sm font-semibold text-teal-700 hover:text-teal-800"
+                to={`/projects/${project.id}/validation`}
+              >
+                Open Validation -&gt;
+              </Link>
             </div>
           </div>
         </section>
