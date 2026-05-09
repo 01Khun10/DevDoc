@@ -3,6 +3,7 @@ const cors = require("cors");
 const dotenv = require("dotenv");
 const authRoutes = require("./routes/authRoutes");
 const projectRoutes = require("./routes/projectRoutes");
+const templateRoutes = require("./routes/templateRoutes");
 
 dotenv.config();
 
@@ -20,6 +21,7 @@ app.use(express.json());
 
 app.use("/api/auth", authRoutes);
 app.use("/api/projects", projectRoutes);
+app.use("/api/templates", templateRoutes);
 
 app.get("/", (req, res) => {
   res.json({ message: "DevDoc API running" });
