@@ -292,7 +292,8 @@ function RequirementRegistry() {
         </section>
 
         <p className="mt-8 rounded-lg border border-slate-200 bg-white px-5 py-4 text-sm text-slate-600 shadow-sm">
-          Traceability links and validation checks will be added in later phases.
+          Use the project workspace to open Traceability Matrix and Doc-Linter Validation after
+          creating requirements.
         </p>
       </section>
     </main>

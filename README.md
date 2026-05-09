@@ -1,75 +1,74 @@
 # DevDoc
 
-DevDoc is a web-based software documentation and project knowledge management platform. It will help users create, manage, validate, and connect software project documentation as structured project knowledge.
+DevDoc is a documentation consistency assistant for software projects. It helps users create structured documents from templates, write sections, manage requirements, link requirements to document sections, and run basic validation checks.
 
-## Current Phase
+## Tech Stack
 
-This repository is currently at **Phase 0: Project Foundation** only.
-
-Phase 0 provides:
-
-- A runnable React + Vite + Tailwind CSS frontend foundation
-- A runnable Node.js + Express backend foundation
-- Basic backend health check endpoints
-- Environment example files
-- Clear local setup instructions
-
-PostgreSQL and Prisma start in **Phase 1**, not Phase 0.
+- Frontend: React + Vite + Tailwind CSS
+- Backend: Node.js + Express
+- Database: PostgreSQL
+- ORM: Prisma
 
 ## Prerequisites
 
-- Node.js >= 20
+- Node.js 20+
+- PostgreSQL
 - npm
 
-## Frontend
+## Environment Setup
 
-Install dependencies:
+Create a local `backend/.env` file using this shape:
+
+```env
+PORT=5000
+FRONTEND_URL=http://localhost:5173
+DATABASE_URL="postgresql://postgres:YOUR_PASSWORD@localhost:5432/devdoc_db?schema=public"
+JWT_SECRET=replace-this-with-a-real-32-character-random-secret
+```
+
+Create a local `frontend/.env` file using this shape:
+
+```env
+VITE_API_URL=http://localhost:5000
+```
+
+Real `.env` files should stay local and should not be committed.
+
+## Installation
+
+Backend:
+
+```powershell
+cd backend
+npm install
+npx prisma migrate dev
+npx prisma db seed
+npm run dev
+```
+
+Frontend:
 
 ```powershell
 cd frontend
 npm install
-```
-
-Run the frontend:
-
-```powershell
 npm run dev
 ```
 
-Frontend URL:
+## URLs
+
+Frontend:
 
 ```text
 http://localhost:5173
 ```
 
-## Backend
-
-Install dependencies:
-
-```powershell
-cd backend
-npm install
-```
-
-Run the backend in development mode:
-
-```powershell
-npm run dev
-```
-
-Run the backend in production-style mode:
-
-```powershell
-npm start
-```
-
-Backend URL:
+Backend:
 
 ```text
 http://localhost:5000
 ```
 
-Health check URL:
+Health check:
 
 ```text
 http://localhost:5000/health
@@ -84,11 +83,47 @@ Expected health response:
 }
 ```
 
-## Environment Files
+## 30% Milestone Completed Features
 
-Only example environment files are included in Phase 0:
+- Authentication
+- Project workspace
+- Template package seeded into database
+- Template library
+- Create document from template
+- Structured document editor
+- Requirements registry
+- Traceability links between requirements and document sections
+- Basic Doc-Linter validation engine
+- Readiness score and validation results
 
-- `frontend/.env.example`
-- `backend/.env.example`
+## Demo Workflow
 
-Create local `.env` files from these examples when needed. Real `.env` files should not be committed.
+Use this exact demo script:
+
+Step 1: Register or log in.
+Step 2: Create a project named "Flight Booking API".
+Step 3: Open the project workspace.
+Step 4: Browse templates.
+Step 5: Select a profile and create an SRS document from a template.
+Step 6: Open the document editor.
+Step 7: Write content in at least one required section and save it.
+Step 8: Open Requirements Registry.
+Step 9: Create one FR, for example "User Authentication".
+Step 10: Open Traceability Matrix.
+Step 11: Link FR-001 to a document section.
+Step 12: Open Doc-Linter Validation.
+Step 13: Run validation.
+Step 14: Review readiness score and validation issues.
+
+## Important Current Limitations
+
+- No AI assistant yet.
+- No export yet.
+- No advanced validation rule builder yet.
+- No full rich text editor yet.
+- No design/test-case modules yet.
+- No real-time collaboration yet.
+
+## Git And Phase Note
+
+DevDoc was implemented phase by phase up to the 30% milestone. This milestone proves the core workflow: a user can create structured documentation, edit document sections, manage requirements, link requirements to document sections, and run basic validation to see readiness results.
