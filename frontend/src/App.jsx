@@ -3,6 +3,7 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import useAuth from "./hooks/useAuth";
 import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
+import ProjectWorkspace from "./pages/ProjectWorkspace";
 import Register from "./pages/Register";
 
 function HomeRedirect() {
@@ -30,6 +31,14 @@ function App() {
         element={
           <ProtectedRoute>
             <Dashboard />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/projects/:id"
+        element={
+          <ProtectedRoute>
+            <ProjectWorkspace />
           </ProtectedRoute>
         }
       />
