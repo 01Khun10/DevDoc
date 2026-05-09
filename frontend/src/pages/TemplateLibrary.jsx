@@ -4,6 +4,7 @@ import ProfileSelector from "../components/ProfileSelector";
 import TemplateCard from "../components/TemplateCard";
 import TemplatePreview from "../components/TemplatePreview";
 import useAuth from "../hooks/useAuth";
+import { createDocumentFromTemplate } from "../services/documentService";
 import { getProject } from "../services/projectService";
 import {
   getTemplateSections,
@@ -29,6 +30,8 @@ function TemplateLibrary() {
   const [previewSections, setPreviewSections] = useState([]);
   const [previewLoading, setPreviewLoading] = useState(false);
   const [previewError, setPreviewError] = useState("");
+  const [isCreatingDocument, setIsCreatingDocument] = useState(false);
+  const [createDocumentError, setCreateDocumentError] = useState("");
 
   const handleRequestError = useCallback(
     (error) => {
@@ -226,11 +229,39 @@ function TemplateLibrary() {
 
   function handleTemplateSelect(template) {
     setSelectedTemplate(template);
+    setCreateDocumentError("");
   }
 
   function handleLogout() {
     logout();
     navigate("/login", { replace: true });
+  }
+
+  async function handleCreateDocument() {
+    if (!selectedTemplate) {
+      return;
+    }
+
+    setIsCreatingDocument(true);
+    setCreateDocumentError("");
+
+    try {
+      const document = await createDocumentFromTemplate(id, {
+        templateCode: selectedTemplate.code
+      });
+
+      navigate(`/projects/${id}/documents/${document.id}`, {
+        state: { document }
+      });
+    } catch (error) {
+      if (handleRequestError(error)) {
+        return;
+      }
+
+      setCreateDocumentError(error.message || "Could not create document.");
+    } finally {
+      setIsCreatingDocument(false);
+    }
   }
 
   if (projectStatus === "loading") {
@@ -358,6 +389,9 @@ function TemplateLibrary() {
                 sections={previewSections}
                 isLoading={previewLoading}
                 error={previewError}
+                onCreateDocument={handleCreateDocument}
+                isCreating={isCreatingDocument}
+                createError={createDocumentError}
               />
             </div>
           </section>

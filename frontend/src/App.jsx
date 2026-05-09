@@ -2,6 +2,7 @@ import { Navigate, Route, Routes } from "react-router-dom";
 import ProtectedRoute from "./components/ProtectedRoute";
 import useAuth from "./hooks/useAuth";
 import Dashboard from "./pages/Dashboard";
+import DocumentPlaceholder from "./pages/DocumentPlaceholder";
 import Login from "./pages/Login";
 import ProjectWorkspace from "./pages/ProjectWorkspace";
 import Register from "./pages/Register";
@@ -48,6 +49,14 @@ function App() {
         element={
           <ProtectedRoute>
             <TemplateLibrary />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/projects/:projectId/documents/:documentId"
+        element={
+          <ProtectedRoute>
+            <DocumentPlaceholder />
           </ProtectedRoute>
         }
       />

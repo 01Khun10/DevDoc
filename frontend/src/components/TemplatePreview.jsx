@@ -11,7 +11,15 @@ function Badge({ children, tone = "slate" }) {
   );
 }
 
-function TemplatePreview({ template, sections, isLoading, error }) {
+function TemplatePreview({
+  template,
+  sections,
+  isLoading,
+  error,
+  onCreateDocument,
+  isCreating,
+  createError
+}) {
   if (isLoading) {
     return (
       <section className="rounded-lg border border-slate-200 bg-white p-6 text-sm text-slate-600 shadow-sm">
@@ -96,9 +104,19 @@ function TemplatePreview({ template, sections, isLoading, error }) {
         ))}
       </div>
 
-      <p className="mt-6 rounded-md bg-teal-50 p-4 text-sm font-medium text-teal-800">
-        Document creation will be available in the next phase.
-      </p>
+      <div className="mt-6 rounded-md border border-teal-200 bg-teal-50 p-4">
+        <button
+          className="rounded-md bg-teal-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-teal-800 disabled:cursor-not-allowed disabled:bg-teal-400"
+          type="button"
+          disabled={isCreating}
+          onClick={onCreateDocument}
+        >
+          {isCreating ? "Creating document..." : "Create Document"}
+        </button>
+        {createError ? (
+          <p className="mt-3 text-sm font-medium text-red-700">{createError}</p>
+        ) : null}
+      </div>
     </section>
   );
 }
