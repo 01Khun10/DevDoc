@@ -148,8 +148,17 @@ function ProjectWorkspace() {
         <section className="mt-6 rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
           <h2 className="text-lg font-semibold">Coming soon</h2>
           <div className="mt-4 grid gap-3 sm:grid-cols-3">
-            <div className="rounded-md border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700">
-              <span className="font-semibold text-slate-950">Documents</span> — coming in a future phase
+            <div className="rounded-md border border-teal-200 bg-teal-50 p-4 text-sm text-slate-700">
+              <h3 className="font-semibold text-slate-950">Documentation Templates</h3>
+              <p className="mt-2 leading-6">
+                Browse available documentation profiles and templates for this project.
+              </p>
+              <Link
+                className="mt-4 inline-flex text-sm font-semibold text-teal-700 hover:text-teal-800"
+                to={`/projects/${project.id}/templates`}
+              >
+                Browse Templates →
+              </Link>
             </div>
             <div className="rounded-md border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700">
               <span className="font-semibold text-slate-950">Requirements</span> — coming in a future phase

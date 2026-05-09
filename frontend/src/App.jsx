@@ -5,6 +5,7 @@ import Dashboard from "./pages/Dashboard";
 import Login from "./pages/Login";
 import ProjectWorkspace from "./pages/ProjectWorkspace";
 import Register from "./pages/Register";
+import TemplateLibrary from "./pages/TemplateLibrary";
 
 function HomeRedirect() {
   const { user, isLoading } = useAuth();
@@ -39,6 +40,14 @@ function App() {
         element={
           <ProtectedRoute>
             <ProjectWorkspace />
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/projects/:id/templates"
+        element={
+          <ProtectedRoute>
+            <TemplateLibrary />
           </ProtectedRoute>
         }
       />
