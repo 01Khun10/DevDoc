@@ -1,12 +1,17 @@
 import { Navigate, Route, Routes } from "react-router-dom";
-import ProtectedRoute from "./components/ProtectedRoute";
 import useAuth from "./hooks/useAuth";
+import AppShell from "./layouts/AppShell";
+import AboutPlaceholder from "./pages/AboutPlaceholder";
 import Dashboard from "./pages/Dashboard";
 import DocumentEditor from "./pages/DocumentEditor";
+import DocsPlaceholder from "./pages/DocsPlaceholder";
+import HelpPlaceholder from "./pages/HelpPlaceholder";
 import Login from "./pages/Login";
+import ProfilePlaceholder from "./pages/ProfilePlaceholder";
 import ProjectWorkspace from "./pages/ProjectWorkspace";
 import Register from "./pages/Register";
 import RequirementRegistry from "./pages/RequirementRegistry";
+import SettingsPlaceholder from "./pages/SettingsPlaceholder";
 import TemplateLibrary from "./pages/TemplateLibrary";
 import TraceabilityMatrix from "./pages/TraceabilityMatrix";
 import ValidationEngine from "./pages/ValidationEngine";
@@ -31,62 +36,20 @@ function App() {
       <Route path="/" element={<HomeRedirect />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
-      <Route
-        path="/dashboard"
-        element={
-          <ProtectedRoute>
-            <Dashboard />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/projects/:id"
-        element={
-          <ProtectedRoute>
-            <ProjectWorkspace />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/projects/:id/templates"
-        element={
-          <ProtectedRoute>
-            <TemplateLibrary />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/projects/:id/requirements"
-        element={
-          <ProtectedRoute>
-            <RequirementRegistry />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/projects/:id/traceability"
-        element={
-          <ProtectedRoute>
-            <TraceabilityMatrix />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/projects/:id/validation"
-        element={
-          <ProtectedRoute>
-            <ValidationEngine />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/projects/:projectId/documents/:documentId"
-        element={
-          <ProtectedRoute>
-            <DocumentEditor />
-          </ProtectedRoute>
-        }
-      />
+      <Route element={<AppShell />}>
+        <Route path="/dashboard" element={<Dashboard />} />
+        <Route path="/projects/:id" element={<ProjectWorkspace />} />
+        <Route path="/projects/:id/templates" element={<TemplateLibrary />} />
+        <Route path="/projects/:id/requirements" element={<RequirementRegistry />} />
+        <Route path="/projects/:id/traceability" element={<TraceabilityMatrix />} />
+        <Route path="/projects/:id/validation" element={<ValidationEngine />} />
+        <Route path="/projects/:projectId/documents/:documentId" element={<DocumentEditor />} />
+        <Route path="/profile" element={<ProfilePlaceholder />} />
+        <Route path="/settings" element={<SettingsPlaceholder />} />
+        <Route path="/help" element={<HelpPlaceholder />} />
+        <Route path="/docs" element={<DocsPlaceholder />} />
+        <Route path="/about" element={<AboutPlaceholder />} />
+      </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );
