@@ -25,51 +25,62 @@ function TraceabilityLinkList({
   requirements,
   documentSections,
   onDelete,
-  isDeletingId
+  isDeletingId,
 }) {
   const requirementMap = buildRequirementMap(requirements);
   const sectionMap = buildSectionMap(documentSections);
 
   if (links.length === 0) {
     return (
-      <div className="rounded-lg border border-dashed border-slate-300 bg-white p-8 text-sm text-slate-600 shadow-sm">
+      <div className="rounded-xl border border-dashed border-slate-300 bg-white p-8 text-sm text-slate-600 shadow-sm">
         No traceability links yet.
       </div>
     );
   }
 
   return (
-    <div className="grid gap-4">
+    <div className="grid gap-3">
       {links.map((link) => {
         const requirement = requirementMap[link.sourceId];
         const section = sectionMap[link.targetId];
 
         return (
           <article
-            className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm"
+            className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm"
             key={link.id}
           >
-            <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)_auto] lg:items-center">
+            <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_9rem_minmax(0,1fr)_auto] xl:items-center">
               <div>
-                <p className="text-xs font-semibold uppercase text-slate-500">Requirement</p>
-                <p className="mt-2 text-sm font-bold text-teal-700">
-                  {requirement?.code || "Unknown requirement"}
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                  Requirement
                 </p>
-                <p className="mt-1 text-sm text-slate-700">
+                <div className="mt-2 flex flex-wrap items-center gap-2">
+                  <span className="text-sm font-bold text-teal-700">
+                    {requirement?.code || "Unknown requirement"}
+                  </span>
+                  {requirement?.type ? (
+                    <span className="rounded-full bg-slate-100 px-2 py-1 text-xs font-semibold text-slate-700">
+                      {requirement.type}
+                    </span>
+                  ) : null}
+                </div>
+                <p className="mt-2 text-sm leading-6 text-slate-700">
                   {requirement?.title || "Requirement is no longer available"}
                 </p>
               </div>
 
-              <div className="rounded-full bg-slate-100 px-3 py-1 text-center text-xs font-semibold text-slate-700">
+              <div className="rounded-full bg-teal-50 px-3 py-2 text-center text-xs font-bold text-teal-700 ring-1 ring-teal-100">
                 described by
               </div>
 
               <div>
-                <p className="text-xs font-semibold uppercase text-slate-500">Document section</p>
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
+                  Document section
+                </p>
                 <p className="mt-2 text-sm font-bold text-slate-950">
                   {section?.document?.title || "Unknown document"}
                 </p>
-                <p className="mt-1 text-sm text-slate-700">
+                <p className="mt-2 text-sm leading-6 text-slate-700">
                   {section
                     ? `Section ${section.sectionNumber} - ${section.title}`
                     : "Section is no longer available"}

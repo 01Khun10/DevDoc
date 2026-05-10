@@ -48,14 +48,17 @@ function Dashboard() {
   }
 
   return (
-    <main className="min-h-screen bg-slate-50 px-6 py-10 text-slate-950">
-      <section className="mx-auto max-w-6xl">
-        <div className="flex flex-col gap-4 border-b border-slate-200 pb-6 lg:flex-row lg:items-center lg:justify-between">
+    <main className="min-h-screen bg-[#f8f9fa] px-6 py-10 text-slate-950">
+      <section className="mx-auto max-w-7xl">
+        <div className="devdoc-card p-8">
+          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div>
-            <p className="text-sm font-semibold uppercase tracking-wide text-teal-700">
-              DevDoc
+            <p className="text-xs font-extrabold uppercase tracking-[0.2em] text-indigo-700">
+              Executive Overview
             </p>
-            <h1 className="mt-2 text-3xl font-bold">Your Projects</h1>
+            <h1 className="font-headline mt-2 text-4xl font-extrabold tracking-tight">
+              Your Projects
+            </h1>
             <div className="mt-3 text-sm leading-6 text-slate-600">
               <span className="font-medium text-slate-700">Signed in as</span>{" "}
               {user?.name ? `${user.name} ` : ""}
@@ -65,19 +68,20 @@ function Dashboard() {
 
           <div className="flex flex-wrap gap-3">
             <button
-              className="rounded-md bg-teal-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-teal-800"
+              className="devdoc-gradient-button"
               type="button"
               onClick={() => setIsCreateFormOpen((isOpen) => !isOpen)}
             >
               + New Project
             </button>
             <button
-              className="rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-slate-400 hover:bg-slate-100"
+              className="rounded-full bg-slate-100 px-4 py-2 text-sm font-bold text-slate-700 transition hover:bg-slate-200"
               type="button"
               onClick={handleLogout}
             >
               Logout
             </button>
+          </div>
           </div>
         </div>
 
@@ -85,13 +89,13 @@ function Dashboard() {
 
         <section className="mt-8">
           {isLoadingProjects ? (
-            <div className="rounded-lg border border-slate-200 bg-white p-6 text-sm text-slate-600 shadow-sm">
+            <div className="devdoc-card-border p-6 text-sm text-slate-600">
               Loading projects...
             </div>
           ) : null}
 
           {!isLoadingProjects && loadError ? (
-            <div className="rounded-lg border border-red-200 bg-red-50 p-6 text-sm text-red-700">
+            <div className="rounded-2xl bg-red-50 p-6 text-sm text-red-700 ring-1 ring-red-100">
               <p>{loadError}</p>
               <button
                 className="mt-4 rounded-md bg-white px-4 py-2 text-sm font-semibold text-red-700 ring-1 ring-red-200 transition hover:bg-red-100"
@@ -104,7 +108,7 @@ function Dashboard() {
           ) : null}
 
           {!isLoadingProjects && !loadError && projects.length === 0 ? (
-            <div className="rounded-lg border border-slate-200 bg-white p-6 text-sm text-slate-600 shadow-sm">
+            <div className="devdoc-card-border p-8 text-sm text-slate-600">
               You don't have any projects yet. Click + New Project above to get started.
             </div>
           ) : null}

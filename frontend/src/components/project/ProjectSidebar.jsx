@@ -18,10 +18,10 @@ function ProjectSidebar() {
   const { projectId, project } = useProject();
 
   return (
-    <aside className="border-b border-slate-200 bg-white px-4 py-4 shadow-sm lg:sticky lg:top-[73px] lg:h-[calc(100vh-73px)] lg:w-72 lg:shrink-0 lg:overflow-y-auto lg:border-b-0 lg:border-r">
+    <aside className="bg-[#f3f4f5] px-4 py-4 lg:sticky lg:top-[73px] lg:h-[calc(100vh-73px)] lg:w-72 lg:shrink-0 lg:overflow-y-auto">
       <div className="hidden px-2 pb-4 lg:block">
-        <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Project</p>
-        <p className="mt-1 truncate text-sm font-bold text-slate-950">
+        <p className="text-xs font-bold uppercase tracking-[0.18em] text-slate-500">Project</p>
+        <p className="font-headline mt-1 truncate text-base font-extrabold text-slate-950">
           {project?.name || "Project"}
         </p>
       </div>
@@ -34,16 +34,16 @@ function ProjectSidebar() {
             <NavLink
               key={label}
               className={({ isActive }) =>
-                `flex min-w-max items-center gap-3 rounded-md px-3 py-2 text-sm font-semibold transition lg:min-w-0 ${
+                `flex min-w-max items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition lg:min-w-0 ${
                   isActive
-                    ? "bg-teal-50 text-teal-800 ring-1 ring-teal-100"
-                    : "text-slate-600 hover:bg-slate-50 hover:text-slate-950"
+                    ? "bg-white text-indigo-700 shadow-sm"
+                    : "text-slate-600 hover:bg-white/70 hover:text-slate-950"
                 }`
               }
               end={!path}
               to={to}
             >
-              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded bg-slate-100 text-[11px] font-bold text-slate-600">
+              <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-slate-100 text-[11px] font-bold text-slate-600">
                 {initials}
               </span>
               <span>{label}</span>

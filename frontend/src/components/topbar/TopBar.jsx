@@ -19,8 +19,8 @@ function TopBar() {
   }
 
   return (
-    <header className="sticky top-0 z-30 border-b border-slate-200 bg-white/95 shadow-sm backdrop-blur">
-      <div className="mx-auto flex max-w-[1600px] flex-col gap-3 px-4 py-3 sm:px-6 lg:flex-row lg:items-center">
+    <header className="sticky top-0 z-30 bg-white/85 shadow-[0_20px_40px_rgba(53,37,205,0.06)] backdrop-blur-xl">
+      <div className="mx-auto flex max-w-[1700px] flex-col gap-3 px-4 py-3 sm:px-6 lg:flex-row lg:items-center">
         <div className="flex min-w-0 flex-1 items-center gap-4">
           <BackButton />
           <Link
@@ -28,21 +28,27 @@ function TopBar() {
             to="/dashboard"
             aria-label="Go to dashboard"
           >
-            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-teal-700 text-sm font-black text-white shadow-sm">
+            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-[#3525cd] to-[#4f46e5] text-sm font-black text-white shadow-lg shadow-indigo-500/20">
               D
             </span>
-            <span className="text-lg font-extrabold tracking-tight">DevDoc</span>
+            <span className="font-headline text-lg font-extrabold tracking-tight text-indigo-700">
+              DevDoc
+            </span>
           </Link>
-          <div className="hidden h-8 w-px bg-slate-200 sm:block" />
+          <div className="hidden h-8 w-px bg-slate-200/80 sm:block" />
           <Breadcrumb />
         </div>
 
         <div className="flex min-w-0 flex-1 items-center gap-3">
           <SearchPlaceholder />
           <div className="flex shrink-0 items-center gap-2">
+            <div className="hidden items-center gap-2 rounded-full bg-white/80 px-3 py-2 text-xs font-bold text-amber-700 shadow-sm ring-1 ring-amber-100 lg:flex">
+              <span className="h-2 w-2 rounded-full bg-amber-500" />
+              Review ready
+            </div>
             <div className="relative">
               <button
-                className="rounded-md border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-600 shadow-sm transition hover:bg-slate-50"
+                className="rounded-full bg-[#f3f4f5] px-3 py-2 text-xs font-semibold text-slate-600 transition hover:bg-white hover:shadow-sm"
                 type="button"
                 title="Notifications"
                 onClick={() => toggleMenu("alerts")}
@@ -61,7 +67,7 @@ function TopBar() {
             </div>
             <div className="relative">
               <button
-                className="rounded-md border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-600 shadow-sm transition hover:bg-slate-50"
+                className="rounded-full bg-[#f3f4f5] px-3 py-2 text-xs font-semibold text-slate-600 transition hover:bg-white hover:shadow-sm"
                 type="button"
                 title="Theme settings"
                 onClick={() => {
@@ -79,7 +85,7 @@ function TopBar() {
             </div>
             <div className="relative hidden sm:block">
               <button
-                className="rounded-md border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-600 shadow-sm transition hover:bg-slate-50"
+                className="rounded-full bg-[#f3f4f5] px-3 py-2 text-xs font-semibold text-slate-600 transition hover:bg-white hover:shadow-sm"
                 type="button"
                 title="Language"
                 onClick={() => {
@@ -96,7 +102,7 @@ function TopBar() {
               ) : null}
             </div>
             <Link
-              className="rounded-md border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-600 shadow-sm transition hover:bg-slate-50"
+              className="rounded-full bg-[#f3f4f5] px-3 py-2 text-xs font-semibold text-slate-600 transition hover:bg-white hover:shadow-sm"
               to="/help"
             >
               Help

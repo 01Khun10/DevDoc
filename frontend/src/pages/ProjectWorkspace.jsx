@@ -95,37 +95,41 @@ function ProjectWorkspace() {
   }
 
   return (
-    <main className="min-h-screen bg-slate-50 px-6 py-10 text-slate-950">
-      <section className="mx-auto max-w-5xl">
-        <div className="flex flex-col gap-4 border-b border-slate-200 pb-6 sm:flex-row sm:items-center sm:justify-between">
+    <main className="min-h-screen bg-[#f8f9fa] px-6 py-10 text-slate-950">
+      <section className="mx-auto max-w-6xl">
+        <div className="devdoc-card p-8">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <Link
-              className="text-sm font-semibold text-teal-700 hover:text-teal-800"
+              className="text-sm font-bold text-indigo-700 hover:text-indigo-800"
               to="/dashboard"
             >
               Back to dashboard
             </Link>
-            <h1 className="mt-3 text-3xl font-bold">{project.name}</h1>
+            <h1 className="font-headline mt-3 text-4xl font-extrabold tracking-tight">
+              {project.name}
+            </h1>
           </div>
           <button
-            className="rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-slate-400 hover:bg-slate-100"
+            className="rounded-full bg-slate-100 px-4 py-2 text-sm font-bold text-slate-700 transition hover:bg-slate-200"
             type="button"
             onClick={handleLogout}
           >
             Logout
           </button>
+          </div>
         </div>
 
         <div className="mt-8 grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(260px,1fr)]">
-          <section className="rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
-            <h2 className="text-lg font-semibold">Project summary</h2>
+          <section className="devdoc-card-border p-6">
+            <h2 className="font-headline text-xl font-extrabold">Project summary</h2>
             <p className="mt-4 text-sm leading-6 text-slate-600">
               {project.description || "No description"}
             </p>
           </section>
 
-          <aside className="rounded-lg border border-slate-200 bg-white p-6 text-sm shadow-sm">
-            <h2 className="text-lg font-semibold text-slate-950">Details</h2>
+          <aside className="devdoc-card-border p-6 text-sm">
+            <h2 className="font-headline text-xl font-extrabold text-slate-950">Details</h2>
             <dl className="mt-4 grid gap-4">
               <div>
                 <dt className="font-medium text-slate-700">Profile</dt>
@@ -145,10 +149,10 @@ function ProjectWorkspace() {
           </aside>
         </div>
 
-        <section className="mt-6 rounded-lg border border-slate-200 bg-white p-6 shadow-sm">
-          <h2 className="text-lg font-semibold">Project tools</h2>
+        <section className="devdoc-card-border mt-6 p-6">
+          <h2 className="font-headline text-xl font-extrabold">Project tools</h2>
           <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-            <div className="rounded-md border border-teal-200 bg-teal-50 p-4 text-sm text-slate-700">
+            <div className="rounded-2xl bg-indigo-50 p-5 text-sm text-slate-700">
               <h3 className="font-semibold text-slate-950">Documentation Templates</h3>
               <p className="mt-2 leading-6">
                 Browse available documentation profiles and templates for this project.
@@ -160,7 +164,7 @@ function ProjectWorkspace() {
                 Browse Templates -&gt;
               </Link>
             </div>
-            <div className="rounded-md border border-teal-200 bg-teal-50 p-4 text-sm text-slate-700">
+            <div className="rounded-2xl bg-emerald-50 p-5 text-sm text-slate-700">
               <h3 className="font-semibold text-slate-950">Requirements Registry</h3>
               <p className="mt-2 leading-6">
                 Create and manage FR/NFR requirements for this project.
@@ -172,7 +176,7 @@ function ProjectWorkspace() {
                 Open Requirements -&gt;
               </Link>
             </div>
-            <div className="rounded-md border border-teal-200 bg-teal-50 p-4 text-sm text-slate-700">
+            <div className="rounded-2xl bg-amber-50 p-5 text-sm text-slate-700">
               <h3 className="font-semibold text-slate-950">Traceability Matrix</h3>
               <p className="mt-2 leading-6">
                 Link requirements to the document sections that describe them.
@@ -184,7 +188,7 @@ function ProjectWorkspace() {
                 Open Traceability -&gt;
               </Link>
             </div>
-            <div className="rounded-md border border-teal-200 bg-teal-50 p-4 text-sm text-slate-700">
+            <div className="rounded-2xl bg-slate-100 p-5 text-sm text-slate-700">
               <h3 className="font-semibold text-slate-950">Doc-Linter Validation</h3>
               <p className="mt-2 leading-6">
                 Run checks for document completeness, required sections, requirements, and

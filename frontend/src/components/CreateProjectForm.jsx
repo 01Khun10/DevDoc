@@ -29,14 +29,14 @@ function CreateProjectForm({ onCreated }) {
 
   return (
     <form
-      className="mt-6 rounded-lg border border-slate-200 bg-white p-5 shadow-sm"
+      className="devdoc-card-border mt-6 p-6"
       onSubmit={handleSubmit}
     >
       <div className="grid gap-5">
         <label className="block">
-          <span className="text-sm font-medium text-slate-700">Project name</span>
+          <span className="devdoc-label">Project name</span>
           <input
-            className="mt-2 w-full rounded-md border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-100"
+            className="devdoc-soft-input mt-2 w-full"
             type="text"
             value={name}
             onChange={(event) => setName(event.target.value)}
@@ -48,9 +48,9 @@ function CreateProjectForm({ onCreated }) {
         </label>
 
         <label className="block">
-          <span className="text-sm font-medium text-slate-700">Description</span>
+          <span className="devdoc-label">Description</span>
           <textarea
-            className="mt-2 min-h-28 w-full rounded-md border border-slate-300 px-3 py-2 text-sm outline-none transition focus:border-teal-600 focus:ring-2 focus:ring-teal-100"
+            className="devdoc-soft-input mt-2 min-h-28 w-full"
             value={description}
             onChange={(event) => setDescription(event.target.value)}
             maxLength={5000}
@@ -71,7 +71,7 @@ function CreateProjectForm({ onCreated }) {
 
       <div className="mt-5 flex justify-end">
         <button
-          className="rounded-md bg-teal-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-teal-800 disabled:cursor-not-allowed disabled:bg-slate-400"
+          className="devdoc-gradient-button"
           type="submit"
           disabled={isSubmitting}
         >

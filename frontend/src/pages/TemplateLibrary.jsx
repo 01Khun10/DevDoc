@@ -307,29 +307,33 @@ function TemplateLibrary() {
   }
 
   return (
-    <main className="min-h-screen bg-slate-50 px-6 py-10 text-slate-950">
+    <main className="min-h-screen bg-[#f8f9fa] px-6 py-10 text-slate-950">
       <section className="mx-auto max-w-7xl">
-        <div className="flex flex-col gap-4 border-b border-slate-200 pb-6 lg:flex-row lg:items-center lg:justify-between">
+        <div className="devdoc-card p-8">
+        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div>
             <Link
-              className="text-sm font-semibold text-teal-700 hover:text-teal-800"
+              className="text-sm font-bold text-indigo-700 hover:text-indigo-800"
               to={`/projects/${id}`}
             >
               Back to project workspace
             </Link>
-            <h1 className="mt-3 text-3xl font-bold">Template Library</h1>
+            <h1 className="font-headline mt-3 text-4xl font-extrabold tracking-tight">
+              Template Library
+            </h1>
             <p className="mt-3 text-sm leading-6 text-slate-600">
               Browsing templates for:{" "}
               <span className="font-semibold text-slate-800">{project.name}</span>
             </p>
           </div>
           <button
-            className="rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-slate-400 hover:bg-slate-100"
+            className="rounded-full bg-slate-100 px-4 py-2 text-sm font-bold text-slate-700 transition hover:bg-slate-200"
             type="button"
             onClick={handleLogout}
           >
             Logout
           </button>
+        </div>
         </div>
 
         <section className="mt-8">
@@ -351,13 +355,13 @@ function TemplateLibrary() {
             <h2 className="text-lg font-semibold text-slate-950">Templates</h2>
             <div className="mt-4 grid gap-4">
               {!selectedProfile ? (
-                <div className="rounded-lg border border-slate-200 bg-white p-6 text-sm text-slate-600 shadow-sm">
-                  Select a profile above to see its templates.
-                </div>
+              <div className="devdoc-card-border p-6 text-sm text-slate-600">
+                Select a profile above to see its templates.
+              </div>
               ) : null}
 
               {selectedProfile && templatesLoading ? (
-                <div className="rounded-lg border border-slate-200 bg-white p-6 text-sm text-slate-600 shadow-sm">
+                <div className="devdoc-card-border p-6 text-sm text-slate-600">
                   Loading templates...
                 </div>
               ) : null}
