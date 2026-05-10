@@ -2,6 +2,8 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import DocumentEditorPanel from "../components/DocumentEditorPanel";
 import DocumentGuidancePanel from "../components/DocumentGuidancePanel";
+import DocumentSectionSidebar from "../components/DocumentSectionSidebar";
+import { useNotify } from "../context/NotificationContext";
 import useAuth from "../hooks/useAuth";
 import { getDocument, updateDocumentSection } from "../services/documentService";
 
@@ -51,6 +53,7 @@ function DocumentEditor() {
   const documentId = params.documentId;
   const navigate = useNavigate();
   const { logout } = useAuth();
+  const { notify } = useNotify();
   const [document, setDocument] = useState(null);
   const [sections, setSections] = useState([]);
   const [selectedSectionId, setSelectedSectionId] = useState("");
@@ -66,6 +69,35 @@ function DocumentEditor() {
     () => sections.find((section) => section.id === selectedSectionId) || null,
     [sections, selectedSectionId]
   );
+
+  const selectedSectionIndex = useMemo(
+    () => sections.findIndex((section) => section.id === selectedSectionId),
+    [sections, selectedSectionId]
+  );
+
+  const completedSectionCount = useMemo(
+    () => sections.filter((section) => section.status === "COMPLETE").length,
+    [sections]
+  );
+
+  function getPreviousSection() {
+    if (selectedSectionIndex <= 0) {
+      return null;
+    }
+
+    return sections[selectedSectionIndex - 1] || null;
+  }
+
+  function getNextSection() {
+    if (selectedSectionIndex < 0 || selectedSectionIndex >= sections.length - 1) {
+      return null;
+    }
+
+    return sections[selectedSectionIndex + 1] || null;
+  }
+
+  const canGoPrevious = selectedSectionIndex > 0;
+  const canGoNext = selectedSectionIndex >= 0 && selectedSectionIndex < sections.length - 1;
 
   const handleRequestError = useCallback(
     (error) => {
@@ -123,13 +155,17 @@ function DocumentEditor() {
     };
   }, [documentId, handleRequestError, projectId]);
 
-  function handleSelectSection(section) {
-    if (section.id === selectedSectionId) {
-      return;
+  function switchToSection(section, options = {}) {
+    if (!section || section.id === selectedSectionId) {
+      return false;
     }
 
-    if (hasUnsavedChanges && !window.confirm("You have unsaved changes. Discard them?")) {
-      return;
+    if (
+      !options.skipConfirm &&
+      hasUnsavedChanges &&
+      !window.confirm("You have unsaved changes. Discard them?")
+    ) {
+      return false;
     }
 
     setSelectedSectionId(section.id);
@@ -137,6 +173,19 @@ function DocumentEditor() {
     setHasUnsavedChanges(false);
     setSaveError("");
     setSaveSuccess("");
+    return true;
+  }
+
+  function handleSelectSection(section) {
+    switchToSection(section);
+  }
+
+  function handlePreviousSection() {
+    switchToSection(getPreviousSection());
+  }
+
+  function handleNextSection() {
+    switchToSection(getNextSection());
   }
 
   function handleChangeContent(value) {
@@ -146,9 +195,9 @@ function DocumentEditor() {
     setSaveSuccess("");
   }
 
-  async function handleSaveSection() {
+  async function saveCurrentSection(successMessage = "Section saved.") {
     if (!selectedSection) {
-      return;
+      return false;
     }
 
     setIsSaving(true);
@@ -173,23 +222,39 @@ function DocumentEditor() {
       );
       setEditorContent(result.section.content || "");
       setHasUnsavedChanges(false);
-      setSaveSuccess("Section saved.");
+      setSaveSuccess(successMessage);
+      notify("Section saved.", { tone: "success" });
+      return true;
     } catch (error) {
       if (handleRequestError(error)) {
-        return;
+        return false;
       }
 
       setSaveError(
         error.status === 404 ? "Document or section not found." : getSaveErrorMessage(error)
       );
+      return false;
     } finally {
       setIsSaving(false);
     }
   }
 
-  function handleLogout() {
-    logout();
-    navigate("/login", { replace: true });
+  async function handleSaveSection() {
+    await saveCurrentSection();
+  }
+
+  async function handleSaveAndNext() {
+    const nextSection = getNextSection();
+    const didSave = await saveCurrentSection(
+      nextSection ? "Section saved. Moved to next section." : "Section saved."
+    );
+
+    if (didSave && nextSection) {
+      setSelectedSectionId(nextSection.id);
+      setEditorContent(nextSection.content || "");
+      setHasUnsavedChanges(false);
+      setSaveError("");
+    }
   }
 
   if (isLoading) {
@@ -237,20 +302,17 @@ function DocumentEditor() {
   return (
     <main className="min-h-screen bg-slate-200 text-slate-950">
       <header className="border-b border-slate-300 bg-white shadow-sm">
-        <div className="mx-auto flex max-w-[1600px] flex-col gap-4 px-4 py-3 sm:px-6 xl:flex-row xl:items-center xl:justify-between">
+        <div className="mx-auto flex max-w-[1800px] flex-col gap-4 px-4 py-3 sm:px-6 xl:flex-row xl:items-center xl:justify-between">
           <div className="min-w-0">
-            <Link
-              className="inline-flex items-center gap-2 text-sm font-semibold text-teal-700 hover:text-teal-800"
-              to={`/projects/${projectId}`}
-            >
-              <span aria-hidden="true">&lt;-</span>
-              Back to project
-            </Link>
-            <div className="mt-3 flex flex-col gap-2 lg:flex-row lg:items-center">
-              <p className="text-base font-extrabold tracking-wide text-slate-900">DevDoc</p>
-              <span className="hidden h-4 w-px bg-slate-300 lg:block" />
-              <h1 className="truncate text-2xl font-bold text-slate-950">{document.title}</h1>
-            </div>
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-teal-700">
+              DevDoc document workspace
+            </p>
+            <h1 className="mt-1 truncate text-2xl font-bold text-slate-950">{document.title}</h1>
+            {document.template?.name ? (
+              <p className="mt-1 text-sm text-slate-600">
+                Template: <span className="font-semibold text-slate-800">{document.template.name}</span>
+              </p>
+            ) : null}
           </div>
 
           <div className="flex flex-col gap-3 sm:flex-row sm:items-center xl:justify-end">
@@ -278,18 +340,11 @@ function DocumentEditor() {
             >
               Save status: {hasUnsavedChanges ? "Unsaved changes" : "Saved"}
             </span>
-            <button
-              className="rounded-md border border-slate-300 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-slate-400 hover:bg-slate-50"
-              type="button"
-              onClick={handleLogout}
-            >
-              Logout
-            </button>
           </div>
         </div>
 
         <div className="border-t border-slate-200 bg-slate-50">
-          <div className="mx-auto flex max-w-[1600px] flex-wrap items-center gap-1 px-4 py-2 sm:px-6">
+          <div className="mx-auto flex max-w-[1800px] flex-wrap items-center gap-1 px-4 py-2 sm:px-6">
             {["File", "Home", "Insert", "Review", "View"].map((tab) => (
               <button
                 key={tab}
@@ -307,7 +362,7 @@ function DocumentEditor() {
         </div>
 
         <div className="border-t border-slate-200 bg-white">
-          <div className="mx-auto flex max-w-[1600px] flex-wrap items-center gap-3 px-4 py-3 sm:px-6">
+          <div className="mx-auto flex max-w-[1800px] flex-wrap items-center gap-3 px-4 py-3 sm:px-6">
             <div className="flex items-center gap-2 rounded-md border border-slate-200 bg-white px-3 py-2 shadow-sm">
               <span className="text-xs font-semibold uppercase text-slate-500">Font</span>
               <RibbonButton wide>Aptos</RibbonButton>
@@ -328,23 +383,18 @@ function DocumentEditor() {
               <RibbonButton wide>Review</RibbonButton>
               <span className="text-xs text-slate-500">Visual tools only</span>
             </div>
-            {document.template?.name ? (
-              <p className="text-sm text-slate-600">
-                Template: <span className="font-semibold text-slate-800">{document.template.name}</span>
-              </p>
-            ) : null}
           </div>
         </div>
       </header>
 
-      <section className="mx-auto max-w-[1600px] px-4 py-6 sm:px-6">
-        <div className="grid gap-6 xl:grid-cols-[380px_minmax(0,1fr)]">
-          <DocumentGuidancePanel
-            document={document}
-            section={selectedSection}
+      <section className="mx-auto max-w-[1800px] px-4 py-6 sm:px-6">
+        <div className="grid gap-6 xl:grid-cols-[320px_minmax(0,1fr)_340px]">
+          <DocumentSectionSidebar
             sections={sections}
             selectedSectionId={selectedSectionId}
             onSelectSection={handleSelectSection}
+            completionPercent={document.completionPercent}
+            completedCount={completedSectionCount}
           />
           <DocumentEditorPanel
             section={selectedSection}
@@ -353,9 +403,15 @@ function DocumentEditor() {
             isSaving={isSaving}
             saveError={saveError}
             saveSuccess={saveSuccess}
+            canGoPrevious={canGoPrevious}
+            canGoNext={canGoNext}
             onChangeContent={handleChangeContent}
             onSave={handleSaveSection}
+            onSaveAndNext={handleSaveAndNext}
+            onPrevious={handlePreviousSection}
+            onNext={handleNextSection}
           />
+          <DocumentGuidancePanel section={selectedSection} />
         </div>
       </section>
     </main>
