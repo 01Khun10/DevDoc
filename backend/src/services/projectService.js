@@ -103,11 +103,115 @@ async function updateProject(ownerId, projectId, values) {
   return updatedProject;
 }
 
+async function getProjectOverview(ownerId, projectId) {
+  const project = await prisma.project.findFirst({
+    where: { id: projectId, ownerId },
+    select: {
+      id: true,
+      name: true,
+      description: true,
+      status: true,
+      createdAt: true,
+      updatedAt: true
+    }
+  });
+
+  if (!project) {
+    throw createProjectError(PROJECT_NOT_FOUND, "Project not found");
+  }
+
+  const [
+    documentsCount,
+    requirementsCount,
+    useCasesCount,
+    traceabilityLinksCount,
+    validationRunsCount,
+    latestValidationRun
+  ] = await Promise.all([
+    prisma.document.count({ where: { projectId } }),
+    prisma.requirement.count({ where: { projectId } }),
+    prisma.useCase.count({ where: { projectId } }),
+    prisma.traceabilityLink.count({ where: { projectId } }),
+    prisma.validationRun.count({ where: { projectId } }),
+    prisma.validationRun.findFirst({
+      where: { projectId },
+      orderBy: { startedAt: "desc" },
+      select: {
+        id: true,
+        status: true,
+        readinessScore: true,
+        completedAt: true
+      }
+    })
+  ]);
+
+  // Find linked requirements by counting unique requirement IDs in traceability links
+  // A requirement can be sourceType or targetType (typically targetType is DOCUMENT_SECTION, but just in case)
+  const reqLinks = await prisma.traceabilityLink.findMany({
+    where: {
+      projectId,
+      OR: [
+        { sourceType: "REQUIREMENT" },
+        { targetType: "REQUIREMENT" }
+      ]
+    },
+    select: { sourceId: true, targetId: true, sourceType: true, targetType: true }
+  });
+
+  const linkedReqIds = new Set();
+  for (const link of reqLinks) {
+    if (link.sourceType === "REQUIREMENT") linkedReqIds.add(link.sourceId);
+    if (link.targetType === "REQUIREMENT") linkedReqIds.add(link.targetId);
+  }
+
+  const ucLinks = await prisma.traceabilityLink.findMany({
+    where: {
+      projectId,
+      OR: [
+        { sourceType: "USE_CASE" },
+        { targetType: "USE_CASE" }
+      ]
+    },
+    select: { sourceId: true, targetId: true, sourceType: true, targetType: true }
+  });
+
+  const linkedUcIds = new Set();
+  for (const link of ucLinks) {
+    if (link.sourceType === "USE_CASE") linkedUcIds.add(link.sourceId);
+    if (link.targetType === "USE_CASE") linkedUcIds.add(link.targetId);
+  }
+
+  const linkedRequirements = linkedReqIds.size;
+  const unlinkedRequirements = Math.max(0, requirementsCount - linkedRequirements);
+
+  const linkedUseCases = linkedUcIds.size;
+  const unlinkedUseCases = Math.max(0, useCasesCount - linkedUseCases);
+
+  return {
+    project,
+    counts: {
+      documents: documentsCount,
+      requirements: requirementsCount,
+      useCases: useCasesCount,
+      traceabilityLinks: traceabilityLinksCount,
+      validationRuns: validationRunsCount
+    },
+    latestValidation: latestValidationRun || null,
+    coverage: {
+      linkedRequirements,
+      unlinkedRequirements,
+      linkedUseCases,
+      unlinkedUseCases
+    }
+  };
+}
+
 module.exports = {
   PROJECT_NOT_FOUND,
   PROFILE_NOT_FOUND,
   createProject,
   getProjects,
   getProjectById,
-  updateProject
+  updateProject,
+  getProjectOverview
 };

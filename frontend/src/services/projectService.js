@@ -31,4 +31,9 @@ async function updateProject(id, values) {
   return response.project;
 }
 
-export { listProjects, createProject, getProject, updateProject };
+async function getProjectOverview(id) {
+  const response = await apiRequest(`/api/projects/${id}/overview`);
+  return response.overview;
+}
+
+export { listProjects, createProject, getProject, updateProject, getProjectOverview };

@@ -108,16 +108,53 @@ function Dashboard() {
           ) : null}
 
           {!isLoadingProjects && !loadError && projects.length === 0 ? (
-            <div className="devdoc-card-border p-8 text-sm text-slate-600">
-              You don't have any projects yet. Click + New Project above to get started.
+            <div className="devdoc-card-border flex flex-col items-center justify-center p-12 text-center">
+              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-indigo-50 text-indigo-700">
+                <svg className="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+                </svg>
+              </div>
+              <h2 className="mt-4 font-headline text-xl font-extrabold text-slate-950">Welcome to DevDoc</h2>
+              <p className="mt-2 max-w-md text-sm text-slate-600">
+                You don't have any projects yet. Create your first project to start managing documentation, requirements, and traceability.
+              </p>
+              <button
+                className="devdoc-gradient-button mt-6"
+                type="button"
+                onClick={() => setIsCreateFormOpen(true)}
+              >
+                Create First Project
+              </button>
             </div>
           ) : null}
 
           {!isLoadingProjects && !loadError && projects.length > 0 ? (
-            <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-              {projects.map((project) => (
-                <ProjectCard key={project.id} project={project} />
-              ))}
+            <div className="grid gap-6">
+              <div className="grid gap-4 sm:grid-cols-3">
+                <div className="devdoc-card-border p-5">
+                  <span className="devdoc-label">Total Projects</span>
+                  <span className="mt-2 block font-headline text-3xl font-extrabold text-slate-950">{projects.length}</span>
+                </div>
+                <div className="devdoc-card-border p-5">
+                  <span className="devdoc-label">Recently Updated</span>
+                  <span className="mt-2 block truncate font-headline text-xl font-extrabold text-slate-950">
+                    {projects[0].name}
+                  </span>
+                </div>
+                <div className="devdoc-card-border p-5">
+                  <span className="devdoc-label">Getting Started</span>
+                  <span className="mt-2 block font-headline text-xl font-extrabold text-teal-700">In Progress</span>
+                </div>
+              </div>
+
+              <div>
+                <h2 className="mb-4 font-headline text-2xl font-extrabold text-slate-950">Continue Working</h2>
+                <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+                  {projects.map((project, index) => (
+                    <ProjectCard key={project.id} project={project} isRecent={index === 0} />
+                  ))}
+                </div>
+              </div>
             </div>
           ) : null}
         </section>

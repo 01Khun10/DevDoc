@@ -8,7 +8,8 @@ const {
   createProject,
   getProjects,
   getProjectById,
-  updateProject
+  updateProject,
+  getProjectOverview: getProjectOverviewService
 } = require("../services/projectService");
 
 function sendError(res, statusCode, message, fields) {
@@ -79,9 +80,22 @@ async function update(req, res) {
   }
 }
 
+async function getProjectOverview(req, res) {
+  try {
+    const overview = await getProjectOverviewService(req.user.id, req.params.id);
+    return res.status(200).json({ overview });
+  } catch (error) {
+    if (error.code === PROJECT_NOT_FOUND) {
+      return sendError(res, 404, "Project not found");
+    }
+    return sendError(res, 500, "Unexpected server error");
+  }
+}
+
 module.exports = {
   create,
   list,
   get,
-  update
+  update,
+  getProjectOverview
 };

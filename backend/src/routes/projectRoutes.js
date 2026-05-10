@@ -9,6 +9,7 @@ router.use(authMiddleware);
 router.post("/", projectController.create);
 router.get("/", projectController.list);
 router.get("/:id", projectController.get);
+router.get("/:id/overview", projectController.getProjectOverview);
 router.put("/:id", projectController.update);
 
 module.exports = router;
