@@ -5,6 +5,7 @@ const navigationItems = [
   ["OV", "Overview", ""],
   ["DO", "Documents", "documents"],
   ["TP", "Templates", "templates"],
+  ["UC", "Use Cases", "use-cases"],
   ["RQ", "Requirements", "requirements"],
   ["TR", "Traceability", "traceability"],
   ["VL", "Validation", "validation"],

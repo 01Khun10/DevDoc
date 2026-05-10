@@ -7,6 +7,7 @@ const projectRoutes = require("./routes/projectRoutes");
 const requirementRoutes = require("./routes/requirementRoutes");
 const templateRoutes = require("./routes/templateRoutes");
 const traceabilityRoutes = require("./routes/traceabilityRoutes");
+const useCaseRoutes = require("./routes/useCaseRoutes");
 const validationRoutes = require("./routes/validationRoutes");
 
 dotenv.config();
@@ -27,6 +28,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/projects", projectRoutes);
 app.use("/api/projects/:projectId/documents", documentRoutes);
 app.use("/api/projects/:projectId/requirements", requirementRoutes);
+app.use("/api/projects/:projectId/use-cases", useCaseRoutes);
 app.use("/api/projects/:projectId/traceability", traceabilityRoutes);
 app.use("/api/projects/:projectId/validation", validationRoutes);
 app.use("/api/templates", templateRoutes);

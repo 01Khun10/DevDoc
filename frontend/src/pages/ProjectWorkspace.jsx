@@ -151,7 +151,7 @@ function ProjectWorkspace() {
 
         <section className="devdoc-card-border mt-6 p-6">
           <h2 className="font-headline text-xl font-extrabold">Project tools</h2>
-          <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="mt-4 grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
             <div className="rounded-2xl bg-indigo-50 p-5 text-sm text-slate-700">
               <h3 className="font-semibold text-slate-950">Documentation Templates</h3>
               <p className="mt-2 leading-6">
@@ -162,6 +162,18 @@ function ProjectWorkspace() {
                 to={`/projects/${project.id}/templates`}
               >
                 Browse Templates -&gt;
+              </Link>
+            </div>
+            <div className="rounded-2xl bg-violet-50 p-5 text-sm text-slate-700">
+              <h3 className="font-semibold text-slate-950">Use Case Registry</h3>
+              <p className="mt-2 leading-6">
+                Capture user goals and scenarios before linking them to requirements.
+              </p>
+              <Link
+                className="mt-4 inline-flex text-sm font-semibold text-teal-700 hover:text-teal-800"
+                to={`/projects/${project.id}/use-cases`}
+              >
+                Open Use Cases -&gt;
               </Link>
             </div>
             <div className="rounded-2xl bg-emerald-50 p-5 text-sm text-slate-700">

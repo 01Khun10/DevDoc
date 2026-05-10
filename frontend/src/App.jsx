@@ -20,6 +20,7 @@ import RequirementRegistry from "./pages/RequirementRegistry";
 import SettingsPlaceholder from "./pages/SettingsPlaceholder";
 import TemplateLibrary from "./pages/TemplateLibrary";
 import TraceabilityMatrix from "./pages/TraceabilityMatrix";
+import UseCaseRegistry from "./pages/UseCaseRegistry";
 import ValidationEngine from "./pages/ValidationEngine";
 
 function HomeRedirect() {
@@ -49,6 +50,7 @@ function App() {
           <Route path="documents" element={<ProjectDocumentsPlaceholder />} />
           <Route path="documents/:documentId" element={<DocumentEditor />} />
           <Route path="templates" element={<TemplateLibrary />} />
+          <Route path="use-cases" element={<UseCaseRegistry />} />
           <Route path="requirements" element={<RequirementRegistry />} />
           <Route path="traceability" element={<TraceabilityMatrix />} />
           <Route path="validation" element={<ValidationEngine />} />
