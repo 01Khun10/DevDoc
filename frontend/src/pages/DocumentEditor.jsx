@@ -65,6 +65,22 @@ function DocumentEditor() {
   const [saveSuccess, setSaveSuccess] = useState("");
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
 
+  const [activeRibbonTab, setActiveRibbonTab] = useState("Home");
+  const [editorFontFamily, setEditorFontFamily] = useState("Inter");
+  const [editorFontSize, setEditorFontSize] = useState("16");
+  const [isFocusMode, setIsFocusMode] = useState(false);
+  const [showSectionRail, setShowSectionRail] = useState(true);
+  const [showGuidancePanel, setShowGuidancePanel] = useState(true);
+  const [writingIssues, setWritingIssues] = useState(null);
+
+  const getGridClasses = () => {
+    if (isFocusMode) return "xl:grid-cols-1 max-w-5xl mx-auto";
+    if (showSectionRail && showGuidancePanel) return "xl:grid-cols-[320px_minmax(0,1fr)_340px]";
+    if (showSectionRail) return "xl:grid-cols-[320px_minmax(0,1fr)]";
+    if (showGuidancePanel) return "xl:grid-cols-[minmax(0,1fr)_340px]";
+    return "xl:grid-cols-[minmax(0,1fr)]";
+  };
+
   const selectedSection = useMemo(
     () => sections.find((section) => section.id === selectedSectionId) || null,
     [sections, selectedSectionId]
@@ -343,59 +359,19 @@ function DocumentEditor() {
           </div>
         </div>
 
-        <div className="border-t border-slate-200 bg-slate-50">
-          <div className="mx-auto flex max-w-[1800px] flex-wrap items-center gap-1 px-4 py-2 sm:px-6">
-            {["File", "Home", "Insert", "Review", "View"].map((tab) => (
-              <button
-                key={tab}
-                className={`rounded px-3 py-1.5 text-sm font-semibold ${
-                  tab === "Home"
-                    ? "bg-white text-teal-700 shadow-sm ring-1 ring-slate-200"
-                    : "text-slate-600 hover:bg-white"
-                }`}
-                type="button"
-              >
-                {tab}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div className="border-t border-slate-200 bg-white">
-          <div className="mx-auto flex max-w-[1800px] flex-wrap items-center gap-3 px-4 py-3 sm:px-6">
-            <div className="flex items-center gap-2 rounded-md border border-slate-200 bg-white px-3 py-2 shadow-sm">
-              <span className="text-xs font-semibold uppercase text-slate-500">Font</span>
-              <RibbonButton wide>Aptos</RibbonButton>
-              <RibbonButton>11</RibbonButton>
-            </div>
-            <div className="flex items-center gap-1 rounded-md border border-slate-200 bg-white px-3 py-2 shadow-sm">
-              <RibbonButton>B</RibbonButton>
-              <RibbonButton>I</RibbonButton>
-              <RibbonButton>U</RibbonButton>
-            </div>
-            <div className="flex items-center gap-1 rounded-md border border-slate-200 bg-white px-3 py-2 shadow-sm">
-              <RibbonButton wide>Bullets</RibbonButton>
-              <RibbonButton wide>List</RibbonButton>
-              <RibbonButton wide>Left</RibbonButton>
-              <RibbonButton wide>Center</RibbonButton>
-            </div>
-            <div className="flex items-center gap-2 rounded-md border border-slate-200 bg-white px-3 py-2 shadow-sm">
-              <RibbonButton wide>Review</RibbonButton>
-              <span className="text-xs text-slate-500">Visual tools only</span>
-            </div>
-          </div>
-        </div>
       </header>
 
       <section className="mx-auto max-w-[1800px] px-4 py-6 sm:px-6">
-        <div className="grid gap-6 xl:grid-cols-[320px_minmax(0,1fr)_340px]">
-          <DocumentSectionSidebar
-            sections={sections}
-            selectedSectionId={selectedSectionId}
-            onSelectSection={handleSelectSection}
-            completionPercent={document.completionPercent}
-            completedCount={completedSectionCount}
-          />
+        <div className={`grid gap-6 ${getGridClasses()}`}>
+          {showSectionRail && !isFocusMode && (
+            <DocumentSectionSidebar
+              sections={sections}
+              selectedSectionId={selectedSectionId}
+              onSelectSection={handleSelectSection}
+              completionPercent={document.completionPercent}
+              completedCount={completedSectionCount}
+            />
+          )}
           <DocumentEditorPanel
             section={selectedSection}
             editorContent={editorContent}
@@ -405,13 +381,29 @@ function DocumentEditor() {
             saveSuccess={saveSuccess}
             canGoPrevious={canGoPrevious}
             canGoNext={canGoNext}
+            activeRibbonTab={activeRibbonTab}
+            setActiveRibbonTab={setActiveRibbonTab}
+            editorFontFamily={editorFontFamily}
+            setEditorFontFamily={setEditorFontFamily}
+            editorFontSize={editorFontSize}
+            setEditorFontSize={setEditorFontSize}
+            isFocusMode={isFocusMode}
+            setIsFocusMode={setIsFocusMode}
+            showSectionRail={showSectionRail}
+            setShowSectionRail={setShowSectionRail}
+            showGuidancePanel={showGuidancePanel}
+            setShowGuidancePanel={setShowGuidancePanel}
+            setWritingIssues={setWritingIssues}
+            projectId={projectId}
             onChangeContent={handleChangeContent}
             onSave={handleSaveSection}
             onSaveAndNext={handleSaveAndNext}
             onPrevious={handlePreviousSection}
             onNext={handleNextSection}
           />
-          <DocumentGuidancePanel section={selectedSection} />
+          {showGuidancePanel && !isFocusMode && (
+            <DocumentGuidancePanel section={selectedSection} writingIssues={writingIssues} />
+          )}
         </div>
       </section>
     </main>

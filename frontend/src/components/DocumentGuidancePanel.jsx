@@ -32,7 +32,7 @@ function TextBlock({ label, children }) {
   );
 }
 
-function DocumentGuidancePanel({ section }) {
+function DocumentGuidancePanel({ section, writingIssues }) {
   if (!section) {
     return (
       <aside className="rounded-xl border border-slate-200 bg-white p-6 text-sm text-slate-600 shadow-sm">
@@ -50,6 +50,22 @@ function DocumentGuidancePanel({ section }) {
         <TextBlock label="Placeholder">
           {section.placeholderText || "No placeholder provided."}
         </TextBlock>
+      </HelperBlock>
+
+      <HelperBlock title="Writing Helper">
+        {writingIssues ? (
+          <ul className="space-y-2 pl-4">
+            {writingIssues.map((issue, i) => (
+              <li key={i} className={`text-sm leading-6 ${issue.includes("No obvious") ? "text-emerald-700" : "text-amber-700 list-disc"}`}>
+                {issue}
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <p className="rounded-lg bg-slate-50 p-3 text-sm leading-6 text-slate-700">
+            Run Review → Writing Check to see suggestions.
+          </p>
+        )}
       </HelperBlock>
 
       <HelperBlock title="Validation">
