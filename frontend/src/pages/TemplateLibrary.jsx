@@ -266,19 +266,19 @@ function TemplateLibrary() {
 
   if (projectStatus === "loading") {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-slate-50 px-6 text-slate-900">
-        <p className="text-sm font-medium text-slate-600">Loading project...</p>
+      <main className="flex min-h-screen items-center justify-center bg-[var(--devdoc-bg)] px-6 text-[var(--devdoc-text)]">
+        <p className="text-sm font-semibold text-[var(--devdoc-muted)]">Loading project...</p>
       </main>
     );
   }
 
   if (projectStatus === "not-found") {
     return (
-      <main className="min-h-screen bg-slate-50 px-6 py-10 text-slate-950">
-        <section className="mx-auto max-w-3xl rounded-lg border border-slate-200 bg-white p-8 shadow-sm">
-          <p className="text-lg font-semibold text-slate-950">Project not found.</p>
+      <main className="min-h-screen bg-[var(--devdoc-bg)] px-6 py-10 text-[var(--devdoc-text)]">
+        <section className="devdoc-card-border mx-auto max-w-3xl p-8">
+          <p className="text-lg font-bold text-[var(--devdoc-text)]">Project not found.</p>
           <Link
-            className="mt-5 inline-flex text-sm font-semibold text-teal-700 hover:text-teal-800"
+            className="mt-5 inline-flex text-sm font-bold text-[var(--devdoc-primary)] hover:underline"
             to="/dashboard"
           >
             Back to dashboard
@@ -290,13 +290,13 @@ function TemplateLibrary() {
 
   if (projectStatus === "error") {
     return (
-      <main className="min-h-screen bg-slate-50 px-6 py-10 text-slate-950">
-        <section className="mx-auto max-w-3xl rounded-lg border border-slate-200 bg-white p-8 shadow-sm">
-          <p className="text-lg font-semibold text-slate-950">
+      <main className="min-h-screen bg-[var(--devdoc-bg)] px-6 py-10 text-[var(--devdoc-text)]">
+        <section className="devdoc-card-border mx-auto max-w-3xl p-8">
+          <p className="text-lg font-bold text-[var(--devdoc-text)]">
             Could not load project. Check your connection and try again.
           </p>
           <Link
-            className="mt-5 inline-flex text-sm font-semibold text-teal-700 hover:text-teal-800"
+            className="mt-5 inline-flex text-sm font-bold text-[var(--devdoc-primary)] hover:underline"
             to="/dashboard"
           >
             Back to dashboard
@@ -307,13 +307,13 @@ function TemplateLibrary() {
   }
 
   return (
-    <main className="min-h-screen bg-[#f8f9fa] px-6 py-10 text-slate-950">
+    <main className="min-h-screen bg-[var(--devdoc-bg)] px-6 py-8 text-[var(--devdoc-text)]">
       <section className="mx-auto max-w-7xl">
         <div className="devdoc-card p-8">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div>
             <Link
-              className="text-sm font-bold text-indigo-700 hover:text-indigo-800"
+              className="text-sm font-bold text-[var(--devdoc-primary)] hover:underline"
               to={`/projects/${id}`}
             >
               Back to project workspace
@@ -321,13 +321,13 @@ function TemplateLibrary() {
             <h1 className="font-headline mt-3 text-4xl font-extrabold tracking-tight">
               Template Library
             </h1>
-            <p className="mt-3 text-sm leading-6 text-slate-600">
+            <p className="mt-3 text-sm leading-6 text-[var(--devdoc-muted)]">
               Browsing templates for:{" "}
-              <span className="font-semibold text-slate-800">{project.name}</span>
+              <span className="font-semibold text-[var(--devdoc-text)]">{project.name}</span>
             </p>
           </div>
           <button
-            className="rounded-full bg-slate-100 px-4 py-2 text-sm font-bold text-slate-700 transition hover:bg-slate-200"
+            className="devdoc-button-secondary"
             type="button"
             onClick={handleLogout}
           >
@@ -337,7 +337,7 @@ function TemplateLibrary() {
         </div>
 
         <section className="mt-8">
-          <h2 className="text-lg font-semibold text-slate-950">Documentation profiles</h2>
+          <h2 className="font-headline text-lg font-extrabold text-[var(--devdoc-text)]">Documentation profiles</h2>
           <div className="mt-4">
             <ProfileSelector
               profiles={profiles}
@@ -352,16 +352,16 @@ function TemplateLibrary() {
 
         <div className="mt-8 grid gap-6 lg:grid-cols-[minmax(280px,420px)_minmax(0,1fr)]">
           <section>
-            <h2 className="text-lg font-semibold text-slate-950">Templates</h2>
+            <h2 className="font-headline text-lg font-extrabold text-[var(--devdoc-text)]">Templates</h2>
             <div className="mt-4 grid gap-4">
               {!selectedProfile ? (
-              <div className="devdoc-card-border p-6 text-sm text-slate-600">
+              <div className="devdoc-card-border p-6 text-sm text-[var(--devdoc-muted)]">
                 Select a profile above to see its templates.
               </div>
               ) : null}
 
               {selectedProfile && templatesLoading ? (
-                <div className="devdoc-card-border p-6 text-sm text-slate-600">
+                <div className="devdoc-card-border p-6 text-sm text-[var(--devdoc-muted)]">
                   Loading templates...
                 </div>
               ) : null}
@@ -386,7 +386,7 @@ function TemplateLibrary() {
           </section>
 
           <section>
-            <h2 className="text-lg font-semibold text-slate-950">Preview</h2>
+            <h2 className="font-headline text-lg font-extrabold text-[var(--devdoc-text)]">Preview</h2>
             <div className="mt-4">
               <TemplatePreview
                 template={previewTemplate}

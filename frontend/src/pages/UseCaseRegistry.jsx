@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import CreateUseCaseForm from "../components/CreateUseCaseForm";
+import LoadingSpinner from "../components/LoadingSpinner";
 import UseCaseCard from "../components/UseCaseCard";
 import useAuth from "../hooks/useAuth";
 import { getProject } from "../services/projectService";
@@ -73,125 +74,97 @@ function UseCaseRegistry() {
     return updatedUseCase;
   }
 
-  if (isLoading) {
-    return (
-      <main className="flex min-h-screen items-center justify-center bg-slate-50 px-6 text-slate-900">
-        <p className="text-sm font-medium text-slate-600">Loading use cases...</p>
-      </main>
-    );
-  }
+  if (isLoading) return <LoadingSpinner fullScreen label="Loading use cases..." />;
 
   if (errorType === "not-found") {
     return (
-      <main className="min-h-screen bg-slate-50 px-6 py-10 text-slate-950">
-        <section className="mx-auto max-w-3xl rounded-lg border border-slate-200 bg-white p-8 shadow-sm">
-          <p className="text-lg font-semibold text-slate-950">Project not found.</p>
-          <Link
-            className="mt-5 inline-flex text-sm font-semibold text-teal-700 hover:text-teal-800"
-            to="/dashboard"
-          >
-            Back to dashboard
-          </Link>
-        </section>
+      <main className="flex min-h-screen items-center justify-center bg-[var(--devdoc-bg)] px-6">
+        <div className="devdoc-card-border max-w-md p-8 text-center">
+          <p className="font-headline text-xl font-extrabold text-[var(--devdoc-text)]">Project not found</p>
+          <button className="devdoc-gradient-button mt-6" onClick={() => navigate("/dashboard")}>Back to dashboard</button>
+        </div>
       </main>
     );
   }
 
   if (errorType === "load-error") {
     return (
-      <main className="min-h-screen bg-slate-50 px-6 py-10 text-slate-950">
-        <section className="mx-auto max-w-3xl rounded-lg border border-slate-200 bg-white p-8 shadow-sm">
-          <p className="text-lg font-semibold text-slate-950">
-            Could not load use cases. Check your connection and try again.
-          </p>
-          <button
-            className="mt-5 rounded-md bg-teal-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-teal-800"
-            type="button"
-            onClick={loadPage}
-          >
-            Retry
-          </button>
-        </section>
+      <main className="flex min-h-screen items-center justify-center bg-[var(--devdoc-bg)] px-6">
+        <div className="devdoc-card-border max-w-md p-8 text-center">
+          <p className="font-headline text-xl font-extrabold text-[var(--devdoc-text)]">Could not load use cases</p>
+          <p className="mt-2 text-sm text-[var(--devdoc-muted)]">Check your connection and try again.</p>
+          <button className="devdoc-gradient-button mt-6" onClick={loadPage}>Retry</button>
+        </div>
       </main>
     );
   }
 
   return (
-    <main className="min-h-screen bg-[#f8f9fa] px-6 py-10 text-slate-950">
-      <section className="mx-auto max-w-6xl">
-        <div className="devdoc-card p-8">
-          <Link
-            className="text-sm font-bold text-indigo-700 hover:text-indigo-800"
-            to={`/projects/${id}`}
-          >
-            Back to project workspace
-          </Link>
-          <h1 className="font-headline mt-3 text-4xl font-extrabold tracking-tight">
-            Use Case Registry
-          </h1>
-          <p className="mt-3 text-sm leading-6 text-slate-600">
-            Capture user goals and scenarios for this project.
-          </p>
-          <p className="mt-2 text-sm leading-6 text-slate-600">
-            Project: <span className="font-semibold text-slate-800">{project.name}</span>
+    <main className="min-h-screen bg-[var(--devdoc-bg)] px-6 py-8" style={{ color: "var(--devdoc-text)" }}>
+      <section className="mx-auto max-w-5xl">
+        <div className="mb-8">
+          <p className="devdoc-label">{project.name}</p>
+          <h1 className="font-headline mt-2 text-4xl font-extrabold tracking-tight" style={{ color: "var(--devdoc-text)" }}>Use Case Registry</h1>
+          <p className="mt-2 text-sm leading-6" style={{ color: "var(--devdoc-muted)" }}>
+            Capture user goals and scenarios before linking them to requirements and document sections.
           </p>
         </div>
 
-        <section className="mt-8 grid gap-4 sm:grid-cols-3">
-          <div className="devdoc-card-border p-4">
+        <div className="mb-8 grid gap-4 sm:grid-cols-3">
+          <div className="devdoc-card-border p-5">
             <p className="devdoc-label">Total use cases</p>
-            <p className="mt-2 text-2xl font-bold text-slate-950">{useCases.length}</p>
+            <p className="font-headline mt-2 text-3xl font-extrabold" style={{ color: "var(--devdoc-text)" }}>{useCases.length}</p>
           </div>
-          <div className="devdoc-card-border p-4 sm:col-span-2">
+          <div className="devdoc-card-border p-5 sm:col-span-2">
             <p className="devdoc-label">Why this matters</p>
-            <p className="mt-2 text-sm leading-6 text-slate-600">
-              Use cases describe user intent before the system is mapped into requirements,
-              traceability, and diagrams.
+            <p className="mt-2 text-sm leading-6" style={{ color: "var(--devdoc-muted)" }}>
+              Use cases describe user intent before the system is mapped into requirements, traceability links, and diagrams.
             </p>
           </div>
+        </div>
+
+        <section className="mb-8">
+          <h2 className="mb-4 font-headline text-xl font-extrabold">Create use case</h2>
+          <CreateUseCaseForm onCreate={handleCreateUseCase} onCreated={handleUseCaseCreated} />
         </section>
 
-        <section className="mt-8">
-          <h2 className="text-lg font-semibold text-slate-950">Create use case</h2>
-          <div className="mt-4">
-            <CreateUseCaseForm onCreate={handleCreateUseCase} onCreated={handleUseCaseCreated} />
-          </div>
-        </section>
-
-        <section className="mt-8">
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+        <section>
+          <div className="mb-4 flex items-end justify-between">
             <div>
-              <h2 className="text-lg font-semibold text-slate-950">Use cases</h2>
-              <p className="mt-1 text-sm text-slate-600">{useCases.length} total</p>
+              <h2 className="font-headline text-xl font-extrabold">Use cases</h2>
+              <p className="mt-1 text-sm text-[var(--devdoc-muted)]">{useCases.length} total</p>
             </div>
           </div>
 
           {useCases.length === 0 ? (
-            <div className="devdoc-card-border mt-4 p-8 text-sm text-slate-600">
-              <p className="font-semibold text-slate-950">
-                No use cases yet. Start by describing the first user goal or scenario.
-              </p>
-              <div className="mt-4 rounded-2xl bg-slate-50 p-4">
-                <p className="font-semibold text-slate-800">Example</p>
-                <p className="mt-1">User logs in and reaches the dashboard.</p>
+            <div className="devdoc-card-border p-10 text-center">
+              <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl border border-[var(--devdoc-border)] bg-[var(--devdoc-primary-soft)] text-[var(--devdoc-primary)]">
+                <svg className="h-7 w-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+                </svg>
+              </div>
+              <p className="font-headline text-lg font-extrabold text-[var(--devdoc-text)]">No use cases yet</p>
+              <p className="mt-2 text-sm text-[var(--devdoc-muted)]">Start by describing the first user goal or scenario.</p>
+              <div
+                className="mx-auto mt-6 max-w-xs rounded-xl p-4 text-left"
+                style={{ backgroundColor: "var(--devdoc-surface-muted)", border: "1px solid var(--devdoc-border)" }}
+              >
+                <p className="font-bold" style={{ color: "var(--devdoc-text)" }}>Example</p>
+                <p className="mt-1 text-sm" style={{ color: "var(--devdoc-muted)" }}>User logs in and reaches the dashboard.</p>
               </div>
             </div>
           ) : (
-            <div className="mt-4 grid gap-4">
+            <div className="grid gap-4">
               {useCases.map((useCase) => (
-                <UseCaseCard
-                  key={useCase.id}
-                  useCase={useCase}
-                  onUpdate={handleUpdateUseCase}
-                />
+                <UseCaseCard key={useCase.id} useCase={useCase} onUpdate={handleUpdateUseCase} />
               ))}
             </div>
           )}
         </section>
 
-        <p className="mt-8 rounded-2xl bg-white px-5 py-4 text-sm text-slate-600 shadow-[0_20px_40px_rgba(53,37,205,0.06)]">
-          Expanded traceability and PlantUML diagrams will use these scenarios in later batches.
-        </p>
+        <div className="devdoc-card-border mt-8 px-5 py-4 text-sm" style={{ color: "var(--devdoc-muted)" }}>
+          Link these use cases to requirements and document sections in the Traceability Matrix.
+        </div>
       </section>
     </main>
   );

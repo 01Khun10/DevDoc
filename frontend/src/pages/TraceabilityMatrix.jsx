@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import LoadingSpinner from "../components/LoadingSpinner";
 import TraceabilityLinkForm from "../components/TraceabilityLinkForm";
 import TraceabilityLinkList from "../components/TraceabilityLinkList";
 import { useNotify } from "../context/NotificationContext";
@@ -58,13 +59,15 @@ const MODE_ORDER = [
 ];
 
 function SummaryCard({ label, value, tone = "slate" }) {
-  const valueClasses =
-    tone === "amber" ? "text-amber-700" : tone === "emerald" ? "text-emerald-700" : "text-slate-950";
+  const valueColor =
+    tone === "amber" ? "var(--devdoc-warning)" :
+    tone === "emerald" ? "var(--devdoc-success)" :
+    "var(--devdoc-text)";
 
   return (
-    <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-      <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">{label}</p>
-      <p className={`mt-2 text-2xl font-bold ${valueClasses}`}>{value}</p>
+    <div className="devdoc-card-border p-4">
+      <p className="devdoc-label">{label}</p>
+      <p className="mt-2 text-2xl font-bold" style={{ color: valueColor }}>{value}</p>
     </div>
   );
 }
@@ -269,45 +272,27 @@ function TraceabilityMatrix() {
     }
   }
 
-  if (isLoading) {
-    return (
-      <main className="flex min-h-screen items-center justify-center bg-slate-50 px-6 text-slate-900">
-        <p className="text-sm font-medium text-slate-600">Loading traceability...</p>
-      </main>
-    );
-  }
+  if (isLoading) return <LoadingSpinner fullScreen label="Loading traceability..." />;
 
   if (errorType === "not-found") {
     return (
-      <main className="min-h-screen bg-slate-50 px-6 py-10 text-slate-950">
-        <section className="mx-auto max-w-3xl rounded-lg border border-slate-200 bg-white p-8 shadow-sm">
-          <p className="text-lg font-semibold text-slate-950">Project not found.</p>
-          <Link
-            className="mt-5 inline-flex text-sm font-semibold text-teal-700 hover:text-teal-800"
-            to="/dashboard"
-          >
-            Back to dashboard
-          </Link>
-        </section>
+      <main className="flex min-h-screen items-center justify-center bg-[var(--devdoc-bg)] px-6">
+        <div className="devdoc-card-border max-w-md p-8 text-center">
+          <p className="font-headline text-xl font-extrabold text-[var(--devdoc-text)]">Project not found</p>
+          <button className="devdoc-gradient-button mt-6" onClick={() => navigate("/dashboard")}>Back to dashboard</button>
+        </div>
       </main>
     );
   }
 
   if (errorType === "load-error") {
     return (
-      <main className="min-h-screen bg-slate-50 px-6 py-10 text-slate-950">
-        <section className="mx-auto max-w-3xl rounded-lg border border-slate-200 bg-white p-8 shadow-sm">
-          <p className="text-lg font-semibold text-slate-950">
-            Could not load traceability. Check your connection and try again.
-          </p>
-          <button
-            className="mt-5 rounded-md bg-teal-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-teal-800"
-            type="button"
-            onClick={loadPage}
-          >
-            Retry
-          </button>
-        </section>
+      <main className="flex min-h-screen items-center justify-center bg-[var(--devdoc-bg)] px-6">
+        <div className="devdoc-card-border max-w-md p-8 text-center">
+          <p className="font-headline text-xl font-extrabold text-[var(--devdoc-text)]">Could not load traceability</p>
+          <p className="mt-2 text-sm text-[var(--devdoc-muted)]">Check your connection and try again.</p>
+          <button className="devdoc-gradient-button mt-6" onClick={loadPage}>Retry</button>
+        </div>
       </main>
     );
   }
@@ -317,35 +302,21 @@ function TraceabilityMatrix() {
   const canBuildLinks = sourceItems.length > 0 && targetItems.length > 0;
 
   return (
-    <main className="min-h-screen bg-[#f8f9fa] px-6 py-10 text-slate-950">
+    <main className="min-h-screen bg-[var(--devdoc-bg)] px-6 py-8 text-[var(--devdoc-text)]">
       <section className="mx-auto max-w-7xl">
-        <div className="devdoc-card p-8">
-          <Link
-            className="text-sm font-bold text-indigo-700 hover:text-indigo-800"
-            to={`/projects/${id}`}
-          >
-            Back to project workspace
-          </Link>
-          <h1 className="font-headline mt-3 text-4xl font-extrabold tracking-tight">
-            Traceability Matrix
-          </h1>
-          <p className="mt-3 text-sm leading-6 text-slate-600">
-            Project: <span className="font-semibold text-slate-800">{project.name}</span>
-          </p>
-          <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">
-            Traceability links help DevDoc verify that requirements are described in your
-            documents and supported by use case scenarios.
-          </p>
-          <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">
-            Choose a relationship, select an item on the left, then click an item on the right to
-            link or unlink it.
+        <div className="mb-8">
+          <p className="devdoc-label text-[var(--devdoc-primary)]">{project.name}</p>
+          <h1 className="font-headline mt-2 text-4xl font-extrabold tracking-tight">Traceability Matrix</h1>
+          <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--devdoc-muted)]">
+            Choose a relationship, select an item on the left, then click an item on the right to link or unlink it. Traceability links help verify coverage across use cases, requirements, and documentation.
           </p>
         </div>
 
-        <section className="mt-8 rounded-xl border border-slate-200 bg-white p-4 shadow-sm">
-          <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-            Relationship view
-          </p>
+        <section
+          className="devdoc-card-border mt-8 p-5"
+          style={{ backgroundColor: "var(--devdoc-surface)", borderColor: "var(--devdoc-border)" }}
+        >
+          <p className="devdoc-label">Relationship view</p>
           <div className="mt-3 flex flex-wrap gap-2">
             {MODE_ORDER.map((key) => {
               const mode = TRACEABILITY_MODES[key];
@@ -354,11 +325,12 @@ function TraceabilityMatrix() {
               return (
                 <button
                   key={mode.key}
-                  className={`rounded-full px-4 py-2 text-sm font-semibold ring-1 transition ${
-                    isActive
-                      ? "bg-teal-700 text-white ring-teal-700"
-                      : "bg-white text-slate-700 ring-slate-200 hover:bg-slate-50"
-                  }`}
+                  className="rounded-full px-4 py-2 text-sm font-bold transition"
+                  style={{
+                    backgroundColor: isActive ? "var(--devdoc-primary)" : "var(--devdoc-surface-muted)",
+                    color: isActive ? "#ffffff" : "var(--devdoc-text)",
+                    border: `1px solid ${isActive ? "var(--devdoc-primary)" : "var(--devdoc-border)"}`,
+                  }}
                   type="button"
                   onClick={() => handleModeChange(mode.key)}
                 >
@@ -367,7 +339,7 @@ function TraceabilityMatrix() {
               );
             })}
           </div>
-          <p className="mt-3 text-sm text-slate-600">{activeMode.explanation}</p>
+          <p className="mt-3 text-sm" style={{ color: "var(--devdoc-muted)" }}>{activeMode.explanation}</p>
         </section>
 
         <section className="mt-8 grid gap-4 sm:grid-cols-3">
@@ -377,7 +349,14 @@ function TraceabilityMatrix() {
         </section>
 
         {unlinkedSourceCount > 0 ? (
-          <div className="mt-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+          <div
+            className="mt-4 rounded-xl border px-4 py-3 text-sm font-semibold"
+            style={{
+              backgroundColor: "rgba(245,158,11,0.1)",
+              borderColor: "rgba(245,158,11,0.35)",
+              color: "var(--devdoc-warning)"
+            }}
+          >
             Some sources are not linked yet. Linking them improves traceability clarity and future
             validation readiness.
           </div>
@@ -385,13 +364,19 @@ function TraceabilityMatrix() {
 
         <section className="mt-8">
           {missingSourceMessage ? (
-            <div className="rounded-xl border border-dashed border-slate-300 bg-white p-6 text-sm text-slate-600 shadow-sm">
+            <div
+              className="rounded-xl border border-dashed p-6 text-sm"
+              style={{ borderColor: "var(--devdoc-border)", backgroundColor: "var(--devdoc-surface)", color: "var(--devdoc-muted)" }}
+            >
               {missingSourceMessage}
             </div>
           ) : null}
 
           {missingTargetMessage ? (
-            <div className="mt-4 rounded-xl border border-dashed border-slate-300 bg-white p-6 text-sm text-slate-600 shadow-sm">
+            <div
+              className="mt-4 rounded-xl border border-dashed p-6 text-sm"
+              style={{ borderColor: "var(--devdoc-border)", backgroundColor: "var(--devdoc-surface)", color: "var(--devdoc-muted)" }}
+            >
               {missingTargetMessage}
             </div>
           ) : null}
@@ -414,12 +399,12 @@ function TraceabilityMatrix() {
         <section className="mt-8">
           <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
             <div>
-              <h2 className="text-lg font-semibold text-slate-950">Traceability audit log</h2>
-              <p className="mt-1 text-sm text-slate-600">
+              <h2 className="text-lg font-semibold" style={{ color: "var(--devdoc-text)" }}>Traceability audit log</h2>
+              <p className="mt-1 text-sm" style={{ color: "var(--devdoc-muted)" }}>
                 Established links across use cases, requirements, and document sections.
               </p>
             </div>
-            <p className="text-sm text-slate-600">{links.length} total</p>
+            <p className="text-sm" style={{ color: "var(--devdoc-muted)" }}>{links.length} total</p>
           </div>
           <div className="mt-4">
             <TraceabilityLinkList

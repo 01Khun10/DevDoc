@@ -1,8 +1,5 @@
 function formatDate(value) {
-  if (!value) {
-    return "Unknown";
-  }
-
+  if (!value) return "Unknown";
   return new Date(value).toLocaleDateString();
 }
 
@@ -26,55 +23,37 @@ function getSourceLabel(link, maps) {
       badge: useCase?.code || "UC"
     };
   }
-
   if (link.sourceType === "REQUIREMENT") {
     const requirement = maps.requirements[link.sourceId];
     return {
-      label: requirement
-        ? `${requirement.code} - ${requirement.title}`
-        : "Requirement is no longer available",
+      label: requirement ? `${requirement.code} - ${requirement.title}` : "Requirement is no longer available",
       type: "Requirement",
       badge: requirement?.type || "REQ"
     };
   }
-
-  return {
-    label: "Source artefact is no longer available",
-    type: "Source",
-    badge: "SRC"
-  };
+  return { label: "Source artefact is no longer available", type: "Source", badge: "SRC" };
 }
 
 function getTargetLabel(link, maps) {
   if (link.targetType === "REQUIREMENT") {
     const requirement = maps.requirements[link.targetId];
     return {
-      label: requirement
-        ? `${requirement.code} - ${requirement.title}`
-        : "Requirement is no longer available",
+      label: requirement ? `${requirement.code} - ${requirement.title}` : "Requirement is no longer available",
       type: "Requirement",
       badge: requirement?.type || "REQ"
     };
   }
-
   if (link.targetType === "DOCUMENT_SECTION") {
     const section = maps.documentSections[link.targetId];
     return {
       label: section
-        ? `${section.document?.documentType || "DOC"} - Section ${section.sectionNumber} - ${
-            section.title
-          }`
+        ? `${section.document?.documentType || "DOC"} - Section ${section.sectionNumber} - ${section.title}`
         : "Document section is no longer available",
       type: section?.document?.title || "Document section",
       badge: section?.document?.documentType || "DOC"
     };
   }
-
-  return {
-    label: "Target artefact is no longer available",
-    type: "Target",
-    badge: "TGT"
-  };
+  return { label: "Target artefact is no longer available", type: "Target", badge: "TGT" };
 }
 
 function TraceabilityLinkList({
@@ -93,7 +72,10 @@ function TraceabilityLinkList({
 
   if (links.length === 0) {
     return (
-      <div className="rounded-xl border border-dashed border-slate-300 bg-white p-8 text-sm text-slate-600 shadow-sm">
+      <div
+        className="rounded-2xl border border-dashed p-8 text-sm"
+        style={{ borderColor: "var(--devdoc-border)", backgroundColor: "var(--devdoc-surface)", color: "var(--devdoc-muted)" }}
+      >
         No traceability links yet.
       </div>
     );
@@ -107,41 +89,56 @@ function TraceabilityLinkList({
 
         return (
           <article
-            className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm"
+            className="rounded-2xl p-5 shadow-[var(--devdoc-shadow-soft)]"
             key={link.id}
+            style={{ border: "1px solid var(--devdoc-border)", backgroundColor: "var(--devdoc-surface)" }}
           >
             <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_9rem_minmax(0,1fr)_auto] xl:items-center">
               <div>
-                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-                  {source.type}
-                </p>
+                <p className="devdoc-label">{source.type}</p>
                 <div className="mt-2 flex flex-wrap items-center gap-2">
-                  <span className="rounded-full bg-teal-50 px-2 py-1 text-xs font-semibold text-teal-700">
+                  <span
+                    className="rounded-full px-2.5 py-1 text-xs font-bold"
+                    style={{ backgroundColor: "var(--devdoc-primary-soft)", color: "var(--devdoc-primary)" }}
+                  >
                     {source.badge}
                   </span>
                 </div>
-                <p className="mt-2 text-sm leading-6 text-slate-700">{source.label}</p>
+                <p className="mt-2 text-sm leading-6" style={{ color: "var(--devdoc-text)" }}>{source.label}</p>
               </div>
 
-              <div className="rounded-full bg-teal-50 px-3 py-2 text-center text-xs font-bold text-teal-700 ring-1 ring-teal-100">
+              <div
+                className="rounded-full px-3 py-2 text-center text-xs font-bold"
+                style={{
+                  backgroundColor: "var(--devdoc-surface-inset)",
+                  border: "1px solid var(--devdoc-border)",
+                  color: "var(--devdoc-primary)",
+                }}
+              >
                 {formatLinkLabel(link.linkType)}
               </div>
 
               <div>
-                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-                  {target.type}
-                </p>
+                <p className="devdoc-label">{target.type}</p>
                 <div className="mt-2 flex flex-wrap items-center gap-2">
-                  <span className="rounded-full bg-slate-100 px-2 py-1 text-xs font-semibold text-slate-700">
+                  <span
+                    className="rounded-full px-2.5 py-1 text-xs font-bold"
+                    style={{ backgroundColor: "var(--devdoc-surface-muted)", border: "1px solid var(--devdoc-border)", color: "var(--devdoc-muted)" }}
+                  >
                     {target.badge}
                   </span>
                 </div>
-                <p className="mt-2 text-sm leading-6 text-slate-700">{target.label}</p>
-                <p className="mt-2 text-xs text-slate-500">Created {formatDate(link.createdAt)}</p>
+                <p className="mt-2 text-sm leading-6" style={{ color: "var(--devdoc-text)" }}>{target.label}</p>
+                <p className="mt-2 text-xs" style={{ color: "var(--devdoc-muted)" }}>Created {formatDate(link.createdAt)}</p>
               </div>
 
               <button
-                className="rounded-md border border-red-200 bg-red-50 px-4 py-2 text-sm font-semibold text-red-700 transition hover:bg-red-100 disabled:cursor-not-allowed disabled:bg-slate-100 disabled:text-slate-400"
+                className="rounded-full px-4 py-2 text-sm font-bold transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:translate-y-0"
+                style={{
+                  border: "1px solid rgba(207,34,46,0.35)",
+                  backgroundColor: "rgba(207,34,46,0.08)",
+                  color: "var(--devdoc-error)",
+                }}
                 disabled={isDeletingId === link.id}
                 type="button"
                 onClick={() => onDelete(link.id)}

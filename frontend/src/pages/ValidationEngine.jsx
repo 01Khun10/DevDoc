@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
+import LoadingSpinner from "../components/LoadingSpinner";
 import ValidationResultCard from "../components/ValidationResultCard";
 import useAuth from "../hooks/useAuth";
 import { getProject } from "../services/projectService";
@@ -12,23 +13,14 @@ import {
 const severityOrder = ["ERROR", "WARNING", "INFO"];
 
 function formatDateTime(value) {
-  if (!value) {
-    return "Not completed";
-  }
-
+  if (!value) return "Not completed";
   return new Date(value).toLocaleString();
 }
 
-function getScoreStyle(score) {
-  if (score >= 80) {
-    return "text-emerald-700";
-  }
-
-  if (score >= 50) {
-    return "text-amber-700";
-  }
-
-  return "text-red-700";
+function getScoreColor(score) {
+  if (score >= 80) return "text-[var(--devdoc-success)]";
+  if (score >= 50) return "text-[var(--devdoc-warning)]";
+  return "text-[var(--devdoc-error)]";
 }
 
 function ValidationEngine() {
@@ -51,7 +43,6 @@ function ValidationEngine() {
         navigate("/login", { replace: true });
         return true;
       }
-
       return false;
     },
     [logout, navigate]
@@ -67,16 +58,12 @@ function ValidationEngine() {
     setIsLoading(true);
     setErrorType("");
     setRunError("");
-
     try {
       const [loadedProject, runs] = await Promise.all([getProject(id), listValidationRuns(id)]);
       setProject(loadedProject);
       setValidationRuns(runs);
     } catch (error) {
-      if (handleRequestError(error)) {
-        return;
-      }
-
+      if (handleRequestError(error)) return;
       setErrorType(error.status === 404 ? "not-found" : "load-error");
     } finally {
       setIsLoading(false);
@@ -87,24 +74,15 @@ function ValidationEngine() {
     loadPage();
   }, [loadPage]);
 
-  function handleLogout() {
-    logout();
-    navigate("/login", { replace: true });
-  }
-
   async function handleRunValidation() {
     setIsRunning(true);
     setRunError("");
-
     try {
       const validationRun = await runValidation(id);
       setActiveRun(validationRun);
       await loadHistory();
     } catch (error) {
-      if (handleRequestError(error)) {
-        return;
-      }
-
+      if (handleRequestError(error)) return;
       setRunError(error.message || "Could not run validation.");
     } finally {
       setIsRunning(false);
@@ -114,15 +92,11 @@ function ValidationEngine() {
   async function handleSelectRun(runId) {
     setIsLoadingRunId(runId);
     setRunError("");
-
     try {
       const validationRun = await getValidationRun(id, runId);
       setActiveRun(validationRun);
     } catch (error) {
-      if (handleRequestError(error)) {
-        return;
-      }
-
+      if (handleRequestError(error)) return;
       setRunError(error.message || "Could not load validation run.");
     } finally {
       setIsLoadingRunId("");
@@ -131,52 +105,33 @@ function ValidationEngine() {
 
   const groupedResults = useMemo(() => {
     const results = activeRun?.results || [];
-
     return severityOrder.map((severity) => ({
       severity,
-      results: results.filter((result) => result.severity === severity)
+      results: results.filter((r) => r.severity === severity)
     }));
   }, [activeRun]);
 
-  if (isLoading) {
-    return (
-      <main className="flex min-h-screen items-center justify-center bg-slate-50 px-6 text-slate-900">
-        <p className="text-sm font-medium text-slate-600">Loading validation...</p>
-      </main>
-    );
-  }
+  if (isLoading) return <LoadingSpinner fullScreen label="Loading validation..." />;
 
   if (errorType === "not-found") {
     return (
-      <main className="min-h-screen bg-slate-50 px-6 py-10 text-slate-950">
-        <section className="mx-auto max-w-3xl rounded-lg border border-slate-200 bg-white p-8 shadow-sm">
-          <p className="text-lg font-semibold text-slate-950">Project not found.</p>
-          <Link
-            className="mt-5 inline-flex text-sm font-semibold text-teal-700 hover:text-teal-800"
-            to="/dashboard"
-          >
-            Back to dashboard
-          </Link>
-        </section>
+      <main className="flex min-h-screen items-center justify-center bg-[var(--devdoc-bg)] px-6">
+        <div className="devdoc-card-border max-w-md p-8 text-center">
+          <p className="font-headline text-xl font-extrabold text-[var(--devdoc-text)]">Project not found</p>
+          <button className="devdoc-gradient-button mt-6" onClick={() => navigate("/dashboard")}>Back to dashboard</button>
+        </div>
       </main>
     );
   }
 
   if (errorType === "load-error") {
     return (
-      <main className="min-h-screen bg-slate-50 px-6 py-10 text-slate-950">
-        <section className="mx-auto max-w-3xl rounded-lg border border-slate-200 bg-white p-8 shadow-sm">
-          <p className="text-lg font-semibold text-slate-950">
-            Could not load validation. Check your connection and try again.
-          </p>
-          <button
-            className="mt-5 rounded-md bg-teal-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-teal-800"
-            type="button"
-            onClick={loadPage}
-          >
-            Retry
-          </button>
-        </section>
+      <main className="flex min-h-screen items-center justify-center bg-[var(--devdoc-bg)] px-6">
+        <div className="devdoc-card-border max-w-md p-8 text-center">
+          <p className="font-headline text-xl font-extrabold text-[var(--devdoc-text)]">Could not load validation</p>
+          <p className="mt-2 text-sm text-[var(--devdoc-muted)]">Check your connection and try again.</p>
+          <button className="devdoc-gradient-button mt-6" onClick={loadPage}>Retry</button>
+        </div>
       </main>
     );
   }
@@ -185,117 +140,110 @@ function ValidationEngine() {
   const resultCount = activeRun?.results?.length || 0;
 
   return (
-    <main className="min-h-screen bg-[#f8f9fa] px-6 py-10 text-slate-950">
-      <section className="mx-auto max-w-6xl">
-        <div className="devdoc-card p-8">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <Link
-              className="text-sm font-bold text-indigo-700 hover:text-indigo-800"
-              to={`/projects/${id}`}
-            >
-              Back to project workspace
-            </Link>
-            <h1 className="font-headline mt-3 text-4xl font-extrabold tracking-tight">
-              Doc-Linter Validation
-            </h1>
-            <p className="mt-3 text-sm leading-6 text-slate-600">
-              Project: <span className="font-semibold text-slate-800">{project.name}</span>
-            </p>
-            <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">
-              Run checks for missing documents, empty required sections, use case coverage,
-              requirement traceability, and incomplete documents.
-            </p>
-            <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">
-              Doc-Linter now checks use cases, requirements, document sections, and traceability
-              coverage.
-            </p>
-          </div>
-          <button
-            className="rounded-full bg-slate-100 px-4 py-2 text-sm font-bold text-slate-700 transition hover:bg-slate-200"
-            type="button"
-            onClick={handleLogout}
-          >
-            Logout
-          </button>
-        </div>
+    <main className="min-h-screen bg-[var(--devdoc-bg)] px-6 py-8 text-[var(--devdoc-text)]">
+      <section className="mx-auto max-w-5xl">
+
+        {/* Header */}
+        <div className="mb-8">
+          <p className="devdoc-label text-[var(--devdoc-primary)]">{project.name}</p>
+          <h1 className="font-headline mt-2 text-4xl font-extrabold tracking-tight">Doc-Linter Validation</h1>
+          <p className="mt-2 text-sm leading-6 text-[var(--devdoc-muted)]">
+            Run checks for missing documents, empty required sections, unlinked requirements, and incomplete documentation.
+          </p>
         </div>
 
-        <section className="mt-8 grid gap-4 lg:grid-cols-[minmax(0,1fr)_280px]">
+        {/* Run + Score */}
+        <div className="mb-8 grid gap-4 lg:grid-cols-[1fr_200px]">
           <div className="devdoc-card-border p-6">
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-              <div>
-                <h2 className="text-lg font-semibold">Run project checks</h2>
-                <p className="mt-2 text-sm leading-6 text-slate-600">
-                  This creates a saved validation run and stores each issue as a validation result.
-                </p>
-              </div>
-              <button
-                className="devdoc-gradient-button"
-                type="button"
-                disabled={isRunning}
-                onClick={handleRunValidation}
-              >
-                {isRunning ? "Running..." : "Run Validation"}
-              </button>
-            </div>
+            <h2 className="font-headline text-xl font-extrabold">Run project checks</h2>
+            <p className="mt-2 text-sm text-[var(--devdoc-muted)]">
+              Creates a saved run and records each issue as a validation result.
+            </p>
             {runError ? (
-              <p className="mt-4 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700">
+              <p className="mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm font-medium text-red-700 dark:border-red-800 dark:bg-red-950/30 dark:text-red-300">
                 {runError}
               </p>
             ) : null}
+            <button
+              className="devdoc-gradient-button mt-5"
+              type="button"
+              disabled={isRunning}
+              onClick={handleRunValidation}
+            >
+              {isRunning ? "Running..." : "Run Validation"}
+            </button>
           </div>
 
-          <aside className="devdoc-card-border p-6">
-            <p className="text-xs font-semibold uppercase text-slate-500">Readiness score</p>
+          <div className="devdoc-card-border flex flex-col items-center justify-center gap-2 p-6 text-center">
+            <p className="devdoc-label">Readiness score</p>
             {readinessScore === null ? (
-              <p className="mt-3 text-sm leading-6 text-slate-600">
-                Run validation to calculate this project&apos;s readiness.
-              </p>
+              <p className="text-sm text-[var(--devdoc-muted)]">Run validation first.</p>
             ) : (
               <>
-                <p className={`mt-3 text-4xl font-bold ${getScoreStyle(readinessScore)}`}>
+                <p className={`font-headline text-5xl font-extrabold ${getScoreColor(readinessScore)}`}>
                   {readinessScore}
-                  <span className="text-xl text-slate-500">/100</span>
+                <span className="text-2xl text-[var(--devdoc-muted)]">/100</span>
                 </p>
-                <p className="mt-2 text-sm text-slate-600">{resultCount} issue(s) found</p>
+                <div className="mt-1 h-2 w-full overflow-hidden rounded-full bg-[var(--devdoc-surface-muted)]">
+                  <div
+                    className={`h-full rounded-full transition-all ${readinessScore >= 80 ? "bg-emerald-500" : readinessScore >= 50 ? "bg-amber-500" : "bg-red-500"}`}
+                    style={{ width: `${readinessScore}%` }}
+                  />
+                </div>
+                <p className="text-xs text-[var(--devdoc-muted)]">{resultCount} issue(s)</p>
               </>
             )}
-          </aside>
-        </section>
+          </div>
+        </div>
 
-        <section className="mt-8 grid gap-6 lg:grid-cols-[minmax(0,2fr)_minmax(280px,1fr)]">
+        {/* Results + History */}
+        <div className="grid gap-6 lg:grid-cols-[1fr_260px]">
           <div>
-            <div className="flex items-center justify-between">
-              <h2 className="text-lg font-semibold text-slate-950">Validation results</h2>
+            <div className="mb-4 flex items-center justify-between">
+              <h2 className="font-headline text-xl font-extrabold">Validation results</h2>
               {activeRun ? (
-                <span className="text-sm text-slate-600">
-                  Completed: {formatDateTime(activeRun.completedAt)}
+                <span className="text-xs text-[var(--devdoc-muted)]">
+                  {formatDateTime(activeRun.completedAt)}
                 </span>
               ) : null}
             </div>
 
             {!activeRun ? (
-              <div className="mt-4 rounded-lg border border-dashed border-slate-300 bg-white p-8 text-sm leading-6 text-slate-600 shadow-sm">
-                Run validation or open a previous run to see Doc-Linter results.
+              <div className="devdoc-card-border p-10 text-center">
+                <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl border border-[var(--devdoc-border)] bg-[var(--devdoc-primary-soft)] text-[var(--devdoc-primary)]">
+                  <svg className="h-7 w-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                </div>
+                <p className="font-headline text-lg font-extrabold text-[var(--devdoc-text)]">No run selected</p>
+                <p className="mt-2 text-sm text-[var(--devdoc-muted)]">
+                  Run validation or select a previous run from the history panel.
+                </p>
               </div>
             ) : null}
 
             {activeRun && resultCount === 0 ? (
-              <div className="mt-4 rounded-lg border border-emerald-200 bg-emerald-50 p-8 text-sm font-medium text-emerald-800 shadow-sm">
-                No issues found. This project currently passes the basic checks.
+              <div className="rounded-2xl border border-emerald-200 bg-emerald-50 p-8 text-center dark:border-emerald-800 dark:bg-emerald-950/20">
+                <p className="font-headline text-lg font-extrabold text-emerald-800 dark:text-emerald-300">All checks passed</p>
+                <p className="mt-2 text-sm text-emerald-700 dark:text-emerald-400">
+                  No issues found. This project passes all basic checks.
+                </p>
               </div>
             ) : null}
 
             {activeRun && resultCount > 0 ? (
-              <div className="mt-4 grid gap-6">
+              <div className="grid gap-6">
                 {groupedResults.map((group) =>
                   group.results.length > 0 ? (
                     <section key={group.severity}>
-                      <h3 className="text-sm font-bold uppercase tracking-wide text-slate-600">
-                        {group.severity}
+                      <h3 className={`mb-3 text-xs font-extrabold uppercase tracking-widest ${
+                        group.severity === "ERROR" ? "text-red-600 dark:text-red-400" :
+                        group.severity === "WARNING" ? "text-amber-600 dark:text-amber-400" :
+                        "text-sky-600 dark:text-sky-400"
+                      }`}>
+                        {group.severity} - {group.results.length}
                       </h3>
-                      <div className="mt-3 grid gap-3">
+                      <div className="grid gap-3">
                         {group.results.map((result) => (
                           <ValidationResultCard key={result.id} result={result} />
                         ))}
@@ -307,51 +255,52 @@ function ValidationEngine() {
             ) : null}
           </div>
 
-          <aside className="devdoc-card-border p-6">
-            <div className="flex items-center justify-between gap-4">
-              <h2 className="text-lg font-semibold text-slate-950">Run history</h2>
-              <span className="text-sm text-slate-500">{validationRuns.length} saved</span>
+          <aside className="devdoc-card-border h-fit p-5">
+            <div className="mb-4 flex items-center justify-between">
+              <h2 className="font-headline text-base font-extrabold">Run history</h2>
+              <span className="rounded-full bg-[var(--devdoc-surface-muted)] px-2 py-0.5 text-xs font-bold text-[var(--devdoc-muted)]">
+                {validationRuns.length}
+              </span>
             </div>
 
             {validationRuns.length === 0 ? (
-              <p className="mt-4 text-sm leading-6 text-slate-600">
-                No validation runs yet. Run validation to create the first saved result.
+              <p className="text-sm text-[var(--devdoc-muted)]">
+                No runs yet. Click "Run Validation" to create the first result.
               </p>
             ) : (
-              <div className="mt-4 grid gap-3">
-                {validationRuns.map((validationRun) => (
+              <div className="grid gap-2">
+                {validationRuns.map((run) => (
                   <button
-                    key={validationRun.id}
-                    className="rounded-md border border-slate-200 bg-slate-50 p-4 text-left transition hover:border-teal-300 hover:bg-teal-50"
+                    key={run.id}
+                    className={`w-full rounded-xl border p-3 text-left text-xs transition ${
+                      activeRun?.id === run.id
+                        ? "border-[var(--devdoc-primary)] bg-[var(--devdoc-primary-soft)]"
+                        : "border-[var(--devdoc-border)] hover:border-[var(--devdoc-primary)] hover:bg-[var(--devdoc-surface-muted)]"
+                    }`}
                     type="button"
-                    onClick={() => handleSelectRun(validationRun.id)}
+                    onClick={() => handleSelectRun(run.id)}
                   >
-                    <div className="flex items-center justify-between gap-3">
-                      <span className="text-sm font-semibold text-slate-950">
-                        {formatDateTime(validationRun.startedAt)}
+                    <div className="flex items-center justify-between gap-2">
+                      <span className="truncate font-semibold text-[var(--devdoc-text)]">
+                        {formatDateTime(run.startedAt)}
                       </span>
-                      <span className="rounded-full bg-slate-200 px-2 py-1 text-xs font-bold text-slate-700">
-                        {validationRun.status}
+                      <span className="shrink-0 rounded-full bg-[var(--devdoc-surface-muted)] px-1.5 py-0.5 font-bold text-[var(--devdoc-muted)]">
+                        {run.status}
                       </span>
                     </div>
-                    <div className="mt-3 flex items-center justify-between text-sm text-slate-600">
-                      <span>
-                        Score:{" "}
-                        <strong className="text-slate-900">
-                          {validationRun.readinessScore ?? "Pending"}
-                        </strong>
-                      </span>
-                      <span>{validationRun.resultCount} issue(s)</span>
+                    <div className="mt-2 flex items-center justify-between text-[var(--devdoc-muted)]">
+                      <span>Score: <strong className={getScoreColor(run.readinessScore)}>{run.readinessScore ?? "-"}</strong></span>
+                      <span>{run.resultCount} issue(s)</span>
                     </div>
-                    {isLoadingRunId === validationRun.id ? (
-                      <p className="mt-2 text-xs font-semibold text-teal-700">Loading...</p>
+                    {isLoadingRunId === run.id ? (
+                      <p className="mt-1 font-semibold text-[var(--devdoc-primary)]">Loading...</p>
                     ) : null}
                   </button>
                 ))}
               </div>
             )}
           </aside>
-        </section>
+        </div>
       </section>
     </main>
   );

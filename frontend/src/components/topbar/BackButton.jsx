@@ -32,7 +32,7 @@ function BackButton() {
 
   return (
     <button
-      className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-md text-slate-400 transition-colors hover:bg-slate-100 hover:text-slate-700"
+      className="devdoc-icon-button shrink-0"
       type="button"
       title="Go back"
       aria-label="Go back"

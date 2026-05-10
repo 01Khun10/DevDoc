@@ -8,17 +8,18 @@ import useAuth from "../hooks/useAuth";
 import { getDocument, updateDocumentSection, getSectionLinkedArtefacts } from "../services/documentService";
 
 function Badge({ children, tone = "slate" }) {
-  const classes =
-    tone === "teal"
-      ? "bg-teal-50 text-teal-700 ring-teal-100"
-      : tone === "emerald"
-        ? "bg-emerald-50 text-emerald-700 ring-emerald-100"
-        : tone === "amber"
-          ? "bg-amber-50 text-amber-700 ring-amber-100"
-          : "bg-slate-100 text-slate-700 ring-slate-200";
-
+  const colorMap = {
+    teal:    { bg: "rgba(20,184,166,0.12)",  border: "rgba(20,184,166,0.35)",  color: "#0d9488" },
+    emerald: { bg: "rgba(16,185,129,0.12)",  border: "rgba(16,185,129,0.35)",  color: "#059669" },
+    amber:   { bg: "rgba(245,158,11,0.12)",  border: "rgba(245,158,11,0.35)",  color: "#b45309" },
+    slate:   { bg: "var(--devdoc-surface-muted)", border: "var(--devdoc-border)", color: "var(--devdoc-muted)" },
+  };
+  const s = colorMap[tone] || colorMap.slate;
   return (
-    <span className={`rounded-full px-3 py-1 text-xs font-semibold ring-1 ${classes}`}>
+    <span
+      className="rounded-full px-2.5 py-0.5 text-xs font-bold"
+      style={{ backgroundColor: s.bg, border: `1px solid ${s.border}`, color: s.color }}
+    >
       {children}
     </span>
   );
@@ -35,9 +36,12 @@ function getSaveErrorMessage(error) {
 function RibbonButton({ children, wide = false }) {
   return (
     <button
-      className={`rounded border border-slate-200 bg-slate-50 px-2 py-1 text-xs font-semibold text-slate-400 ${
-        wide ? "min-w-20" : "min-w-8"
-      }`}
+      className={`rounded-lg px-2.5 py-1.5 text-xs font-semibold transition opacity-50 cursor-not-allowed ${wide ? "min-w-20" : "min-w-8"}`}
+      style={{
+        border: "1px solid var(--devdoc-border)",
+        backgroundColor: "var(--devdoc-surface)",
+        color: "var(--devdoc-muted)",
+      }}
       disabled
       title="Formatting tools will be added later."
       type="button"
@@ -315,19 +319,20 @@ function DocumentEditor() {
 
   if (isLoading) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-slate-50 px-6 text-slate-900">
-        <p className="text-sm font-medium text-slate-600">Loading document...</p>
+      <main className="flex min-h-screen items-center justify-center px-6" style={{ backgroundColor: "var(--devdoc-bg)", color: "var(--devdoc-text)" }}>
+        <p className="text-sm font-medium" style={{ color: "var(--devdoc-muted)" }}>Loading document...</p>
       </main>
     );
   }
 
   if (loadError === "not-found") {
     return (
-      <main className="min-h-screen bg-slate-50 px-6 py-10 text-slate-950">
-        <section className="mx-auto max-w-3xl rounded-lg border border-slate-200 bg-white p-8 shadow-sm">
-          <p className="text-lg font-semibold text-slate-950">Document not found.</p>
+      <main className="min-h-screen px-6 py-10" style={{ backgroundColor: "var(--devdoc-bg)" }}>
+        <section className="mx-auto max-w-3xl devdoc-card-border p-8">
+          <p className="text-lg font-semibold" style={{ color: "var(--devdoc-text)" }}>Document not found.</p>
           <Link
-            className="mt-5 inline-flex text-sm font-semibold text-teal-700 hover:text-teal-800"
+            className="mt-5 inline-flex text-sm font-semibold"
+            style={{ color: "var(--devdoc-primary)" }}
             to={`/projects/${projectId}`}
           >
             Back to project workspace
@@ -339,13 +344,14 @@ function DocumentEditor() {
 
   if (loadError) {
     return (
-      <main className="min-h-screen bg-slate-50 px-6 py-10 text-slate-950">
-        <section className="mx-auto max-w-3xl rounded-lg border border-slate-200 bg-white p-8 shadow-sm">
-          <p className="text-lg font-semibold text-slate-950">
+      <main className="min-h-screen px-6 py-10" style={{ backgroundColor: "var(--devdoc-bg)" }}>
+        <section className="mx-auto max-w-3xl devdoc-card-border p-8">
+          <p className="text-lg font-semibold" style={{ color: "var(--devdoc-text)" }}>
             Could not load document. Check your connection and try again.
           </p>
           <Link
-            className="mt-5 inline-flex text-sm font-semibold text-teal-700 hover:text-teal-800"
+            className="mt-5 inline-flex text-sm font-semibold"
+            style={{ color: "var(--devdoc-primary)" }}
             to={`/projects/${projectId}`}
           >
             Back to project workspace
@@ -356,17 +362,18 @@ function DocumentEditor() {
   }
 
   return (
-    <main className="min-h-screen bg-slate-200 text-slate-950">
-      <header className="border-b border-slate-300 bg-white shadow-sm">
+    <main className="min-h-screen" style={{ backgroundColor: "var(--devdoc-bg)", color: "var(--devdoc-text)" }}>
+      <header
+        className="border-b shadow-sm"
+        style={{ borderColor: "var(--devdoc-border)", backgroundColor: "var(--devdoc-surface)" }}
+      >
         <div className="mx-auto flex max-w-[1800px] flex-col gap-4 px-4 py-3 sm:px-6 xl:flex-row xl:items-center xl:justify-between">
           <div className="min-w-0">
-            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-teal-700">
-              DevDoc document workspace
-            </p>
-            <h1 className="mt-1 truncate text-2xl font-bold text-slate-950">{document.title}</h1>
+            <p className="devdoc-label">DevDoc document workspace</p>
+            <h1 className="mt-1 truncate text-2xl font-bold" style={{ color: "var(--devdoc-text)" }}>{document.title}</h1>
             {document.template?.name ? (
-              <p className="mt-1 text-sm text-slate-600">
-                Template: <span className="font-semibold text-slate-800">{document.template.name}</span>
+              <p className="mt-1 text-sm" style={{ color: "var(--devdoc-muted)" }}>
+                Template: <span className="font-semibold" style={{ color: "var(--devdoc-text)" }}>{document.template.name}</span>
               </p>
             ) : null}
           </div>
@@ -388,17 +395,17 @@ function DocumentEditor() {
               <Badge>{document.completionPercent}% complete</Badge>
             </div>
             <span
-              className={`rounded-full px-3 py-1 text-xs font-semibold ring-1 ${
-                hasUnsavedChanges
-                  ? "bg-amber-50 text-amber-700 ring-amber-100"
-                  : "bg-emerald-50 text-emerald-700 ring-emerald-100"
-              }`}
+              className="rounded-full px-2.5 py-0.5 text-xs font-bold"
+              style={{
+                backgroundColor: hasUnsavedChanges ? "rgba(245,158,11,0.12)" : "rgba(16,185,129,0.12)",
+                border: `1px solid ${hasUnsavedChanges ? "rgba(245,158,11,0.35)" : "rgba(16,185,129,0.35)"}`,
+                color: hasUnsavedChanges ? "var(--devdoc-warning)" : "var(--devdoc-success)",
+              }}
             >
               Save status: {hasUnsavedChanges ? "Unsaved changes" : "Saved"}
             </span>
           </div>
         </div>
-
       </header>
 
       <section className="mx-auto max-w-[1800px] px-4 py-6 sm:px-6">

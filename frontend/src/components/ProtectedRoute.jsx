@@ -6,8 +6,8 @@ function ProtectedRoute({ children }) {
 
   if (isLoading) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-slate-50 px-6 text-slate-900">
-        <p className="text-sm font-medium text-slate-600">Loading DevDoc...</p>
+      <main className="flex min-h-screen items-center justify-center bg-[var(--devdoc-bg)] px-6 text-[var(--devdoc-text)]">
+        <p className="text-sm font-semibold text-[var(--devdoc-muted)]">Loading DevDoc...</p>
       </main>
     );
   }

@@ -19,7 +19,7 @@ function SearchPlaceholder() {
     <label className="hidden min-w-0 flex-1 md:block">
       <span className="sr-only">Search</span>
       <input
-        className="w-full rounded-md border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-500 outline-none transition placeholder:text-slate-400 focus:border-teal-300 focus:bg-white focus:ring-2 focus:ring-teal-100"
+        className="h-9 w-full rounded-full border border-[var(--devdoc-border)] bg-[var(--devdoc-surface)] px-4 text-sm text-[var(--devdoc-muted)] shadow-sm outline-none transition placeholder:text-[var(--devdoc-subtle)] disabled:cursor-not-allowed"
         type="search"
         placeholder={getPlaceholder(location.pathname)}
         aria-label="Search placeholder"

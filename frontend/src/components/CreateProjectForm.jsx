@@ -43,7 +43,7 @@ function CreateProjectForm({ onCreated }) {
             maxLength={200}
           />
           {fieldErrors.name ? (
-            <span className="mt-2 block text-sm text-red-700">{fieldErrors.name}</span>
+            <span className="mt-2 block text-sm font-medium text-[var(--devdoc-error)]">{fieldErrors.name}</span>
           ) : null}
         </label>
 
@@ -56,7 +56,7 @@ function CreateProjectForm({ onCreated }) {
             maxLength={5000}
           />
           {fieldErrors.description ? (
-            <span className="mt-2 block text-sm text-red-700">
+            <span className="mt-2 block text-sm font-medium text-[var(--devdoc-error)]">
               {fieldErrors.description}
             </span>
           ) : null}
@@ -64,7 +64,7 @@ function CreateProjectForm({ onCreated }) {
       </div>
 
       {errorMessage ? (
-        <div className="mt-5 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        <div className="mt-5 rounded-xl border px-4 py-3 text-sm font-medium text-[var(--devdoc-error)]" style={{ backgroundColor: "color-mix(in srgb, var(--devdoc-error) 9%, transparent)", borderColor: "color-mix(in srgb, var(--devdoc-error) 32%, var(--devdoc-border))" }}>
           {errorMessage}
         </div>
       ) : null}

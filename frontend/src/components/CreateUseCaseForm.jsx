@@ -38,7 +38,7 @@ function CreateUseCaseForm({ onCreate, onCreated }) {
 
   return (
     <form className="devdoc-card-border p-6" onSubmit={handleSubmit}>
-      <div className="mb-5 rounded-2xl bg-slate-50 p-4 text-sm leading-6 text-slate-600">
+      <div className="devdoc-inset mb-5 text-sm leading-6 text-[var(--devdoc-muted)]">
         <p>Use cases describe how actors or users interact with the system.</p>
         <p className="mt-1">
           Example: User logs in, user creates a project, or admin reviews validation issues.
@@ -57,13 +57,13 @@ function CreateUseCaseForm({ onCreate, onCreated }) {
             onChange={(event) => updateField("title", event.target.value)}
           />
           {fieldErrors.title ? (
-            <span className="mt-2 block text-sm text-red-700">{fieldErrors.title}</span>
+            <span className="mt-2 block text-sm font-medium text-[var(--devdoc-error)]">{fieldErrors.title}</span>
           ) : null}
         </label>
 
         <label className="block">
           <span className="devdoc-label">Description</span>
-          <p className="mt-1 text-xs leading-5 text-slate-500">
+          <p className="mt-1 text-xs leading-5 text-[var(--devdoc-muted)]">
             Example: User enters valid credentials and reaches the dashboard.
           </p>
           <textarea
@@ -74,13 +74,13 @@ function CreateUseCaseForm({ onCreate, onCreated }) {
             onChange={(event) => updateField("description", event.target.value)}
           />
           {fieldErrors.description ? (
-            <span className="mt-2 block text-sm text-red-700">{fieldErrors.description}</span>
+            <span className="mt-2 block text-sm font-medium text-[var(--devdoc-error)]">{fieldErrors.description}</span>
           ) : null}
         </label>
       </div>
 
       {errorMessage ? (
-        <div className="mt-5 rounded-2xl bg-red-50 px-4 py-3 text-sm text-red-700 ring-1 ring-red-100">
+        <div className="mt-5 rounded-xl border px-4 py-3 text-sm font-medium text-[var(--devdoc-error)]" style={{ backgroundColor: "color-mix(in srgb, var(--devdoc-error) 9%, transparent)", borderColor: "color-mix(in srgb, var(--devdoc-error) 32%, var(--devdoc-border))" }}>
           {errorMessage}
         </div>
       ) : null}

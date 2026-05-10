@@ -43,10 +43,10 @@ function UseCaseCard({ useCase, onUpdate }) {
       <div className="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="rounded-full bg-indigo-50 px-3 py-1 text-xs font-bold text-indigo-700 ring-1 ring-indigo-100">
+            <span className="rounded-full px-3 py-1 text-xs font-bold text-[var(--devdoc-primary)] ring-1 ring-[var(--devdoc-primary)]" style={{ backgroundColor: "var(--devdoc-primary-soft)" }}>
               {useCase.code}
             </span>
-            <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700 ring-1 ring-slate-200">
+            <span className="rounded-full bg-[var(--devdoc-surface-muted)] px-3 py-1 text-xs font-bold text-[var(--devdoc-muted)] ring-1 ring-[var(--devdoc-border)]">
               Use Case
             </span>
           </div>
@@ -74,18 +74,18 @@ function UseCaseCard({ useCase, onUpdate }) {
             </label>
           </div>
 
-          <p className="mt-4 text-xs text-slate-500">Created {formatDate(useCase.createdAt)}</p>
+          <p className="mt-4 text-xs text-[var(--devdoc-muted)]">Created {formatDate(useCase.createdAt)}</p>
         </div>
 
-        <div className="w-full rounded-2xl bg-slate-50 p-4 lg:w-64">
-          <h4 className="text-sm font-semibold text-slate-950">Scenario details</h4>
-          <p className="mt-1 text-xs leading-5 text-slate-500">
+        <div className="w-full rounded-2xl border border-[var(--devdoc-border)] bg-[var(--devdoc-surface-muted)] p-4 lg:w-64">
+          <h4 className="text-sm font-bold text-[var(--devdoc-text)]">Scenario details</h4>
+          <p className="mt-1 text-xs leading-5 text-[var(--devdoc-muted)]">
             Code stays fixed after creation.
           </p>
 
-          {errorMessage ? <p className="mt-4 text-sm text-red-700">{errorMessage}</p> : null}
+          {errorMessage ? <p className="mt-4 text-sm font-medium text-[var(--devdoc-error)]">{errorMessage}</p> : null}
           {successMessage ? (
-            <p className="mt-4 text-sm text-emerald-700">{successMessage}</p>
+            <p className="mt-4 text-sm font-medium text-[var(--devdoc-success)]">{successMessage}</p>
           ) : null}
 
           <button

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { Outlet, useLocation, useNavigate, useParams } from "react-router-dom";
+import LoadingSpinner from "../components/LoadingSpinner";
 import ProjectErrorState from "../components/project/ProjectErrorState";
 import ProjectSidebar from "../components/project/ProjectSidebar";
 import { ProjectProvider } from "../context/ProjectContext";
@@ -54,11 +55,7 @@ function ProjectShell() {
   }, [loadProject]);
 
   if (isLoading) {
-    return (
-      <main className="flex min-h-[calc(100vh-5rem)] items-center justify-center bg-slate-50 px-6 text-slate-900">
-        <p className="text-sm font-medium text-slate-600">Loading project...</p>
-      </main>
-    );
+    return <LoadingSpinner fullScreen label="Loading project..." />;
   }
 
   if (loadError || !project) {
@@ -70,7 +67,7 @@ function ProjectShell() {
       {isEditorRoute ? (
         <Outlet />
       ) : (
-        <div className="min-h-[calc(100vh-73px)] bg-slate-50 lg:flex">
+        <div className="min-h-[calc(100vh-64px)] bg-[var(--devdoc-bg)] lg:flex">
           <ProjectSidebar />
           <div className="min-w-0 flex-1">
             <Outlet />

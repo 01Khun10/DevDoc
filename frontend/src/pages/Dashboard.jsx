@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import CreateProjectForm from "../components/CreateProjectForm";
+import LoadingSpinner from "../components/LoadingSpinner";
 import ProjectCard from "../components/ProjectCard";
 import useAuth from "../hooks/useAuth";
 import { listProjects } from "../services/projectService";
@@ -16,7 +17,6 @@ function Dashboard() {
   const loadProjects = useCallback(async () => {
     setIsLoadingProjects(true);
     setLoadError("");
-
     try {
       const loadedProjects = await listProjects();
       setProjects(loadedProjects);
@@ -26,7 +26,6 @@ function Dashboard() {
         navigate("/login", { replace: true });
         return;
       }
-
       setLoadError("Could not load projects. Check your connection and try again.");
     } finally {
       setIsLoadingProjects(false);
@@ -37,68 +36,52 @@ function Dashboard() {
     loadProjects();
   }, [loadProjects]);
 
-  function handleLogout() {
-    logout();
-    navigate("/login", { replace: true });
-  }
-
   async function handleProjectCreated() {
     setIsCreateFormOpen(false);
     await loadProjects();
   }
 
   return (
-    <main className="min-h-screen bg-[#f8f9fa] px-6 py-10 text-slate-950">
+    <main className="min-h-screen px-6 py-8" style={{ backgroundColor: "var(--devdoc-bg)", color: "var(--devdoc-text)" }}>
       <section className="mx-auto max-w-7xl">
-        <div className="devdoc-card p-8">
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-          <div>
-            <p className="text-xs font-extrabold uppercase tracking-[0.2em] text-indigo-700">
-              Executive Overview
-            </p>
-            <h1 className="font-headline mt-2 text-4xl font-extrabold tracking-tight">
-              Your Projects
-            </h1>
-            <div className="mt-3 text-sm leading-6 text-slate-600">
-              <span className="font-medium text-slate-700">Signed in as</span>{" "}
-              {user?.name ? `${user.name} ` : ""}
-              <span className="break-all">{user?.email}</span>
-            </div>
-          </div>
 
-          <div className="flex flex-wrap gap-3">
-            <button
-              className="devdoc-gradient-button"
-              type="button"
-              onClick={() => setIsCreateFormOpen((isOpen) => !isOpen)}
-            >
-              + New Project
-            </button>
-            <button
-              className="rounded-full bg-slate-100 px-4 py-2 text-sm font-bold text-slate-700 transition hover:bg-slate-200"
-              type="button"
-              onClick={handleLogout}
-            >
-              Logout
-            </button>
+        {/* Header */}
+        <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="devdoc-label text-[var(--devdoc-primary)]">Dashboard</p>
+            <h1 className="font-headline mt-2 text-4xl font-extrabold tracking-tight">Your Projects</h1>
+            {user?.name || user?.email ? (
+              <p className="devdoc-muted mt-2 text-sm">
+                Signed in as{" "}
+                <span className="font-semibold text-[var(--devdoc-text)]">
+                  {user.name || user.email}
+                </span>
+              </p>
+            ) : null}
           </div>
-          </div>
+          <button
+            className="devdoc-gradient-button self-start sm:self-auto"
+            type="button"
+            onClick={() => setIsCreateFormOpen((v) => !v)}
+          >
+            + New project
+          </button>
         </div>
 
+        {/* Create form */}
         {isCreateFormOpen ? <CreateProjectForm onCreated={handleProjectCreated} /> : null}
 
-        <section className="mt-8">
+        {/* Project list */}
+        <section className="mt-6">
           {isLoadingProjects ? (
-            <div className="devdoc-card-border p-6 text-sm text-slate-600">
-              Loading projects...
-            </div>
+            <LoadingSpinner label="Loading projects..." />
           ) : null}
 
           {!isLoadingProjects && loadError ? (
-            <div className="rounded-2xl bg-red-50 p-6 text-sm text-red-700 ring-1 ring-red-100">
-              <p>{loadError}</p>
+            <div className="devdoc-card-border p-6">
+              <p className="text-sm font-medium text-red-600 dark:text-red-400">{loadError}</p>
               <button
-                className="mt-4 rounded-md bg-white px-4 py-2 text-sm font-semibold text-red-700 ring-1 ring-red-200 transition hover:bg-red-100"
+                className="devdoc-gradient-button mt-4"
                 type="button"
                 onClick={loadProjects}
               >
@@ -108,14 +91,16 @@ function Dashboard() {
           ) : null}
 
           {!isLoadingProjects && !loadError && projects.length === 0 ? (
-            <div className="devdoc-card-border flex flex-col items-center justify-center p-12 text-center">
-              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-indigo-50 text-indigo-700">
+            <div className="devdoc-card-border flex flex-col items-center justify-center p-14 text-center">
+              <div className="flex h-16 w-16 items-center justify-center rounded-lg border text-[var(--devdoc-primary)]" style={{ backgroundColor: "var(--devdoc-primary-soft)", borderColor: "var(--devdoc-border)" }}>
                 <svg className="h-8 w-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
                 </svg>
               </div>
-              <h2 className="mt-4 font-headline text-xl font-extrabold text-slate-950">Welcome to DevDoc</h2>
-              <p className="mt-2 max-w-md text-sm text-slate-600">
+              <h2 className="font-headline mt-5 text-2xl font-extrabold text-[var(--devdoc-text)]">
+                Welcome to DevDoc
+              </h2>
+              <p className="devdoc-muted mt-3 max-w-md text-sm leading-6">
                 You don't have any projects yet. Create your first project to start managing documentation, requirements, and traceability.
               </p>
               <button
@@ -123,32 +108,38 @@ function Dashboard() {
                 type="button"
                 onClick={() => setIsCreateFormOpen(true)}
               >
-                Create First Project
+                Create first project
               </button>
             </div>
           ) : null}
 
           {!isLoadingProjects && !loadError && projects.length > 0 ? (
             <div className="grid gap-6">
+              {/* Quick stats */}
               <div className="grid gap-4 sm:grid-cols-3">
                 <div className="devdoc-card-border p-5">
-                  <span className="devdoc-label">Total Projects</span>
-                  <span className="mt-2 block font-headline text-3xl font-extrabold text-slate-950">{projects.length}</span>
+                  <p className="devdoc-label">Total projects</p>
+                  <p className="font-headline mt-2 text-3xl font-extrabold text-[var(--devdoc-text)]">
+                    {projects.length}
+                  </p>
                 </div>
                 <div className="devdoc-card-border p-5">
-                  <span className="devdoc-label">Recently Updated</span>
-                  <span className="mt-2 block truncate font-headline text-xl font-extrabold text-slate-950">
+                  <p className="devdoc-label">Last active</p>
+                  <p className="font-headline mt-2 truncate text-xl font-extrabold text-[var(--devdoc-text)]">
                     {projects[0].name}
-                  </span>
+                  </p>
                 </div>
                 <div className="devdoc-card-border p-5">
-                  <span className="devdoc-label">Getting Started</span>
-                  <span className="mt-2 block font-headline text-xl font-extrabold text-teal-700">In Progress</span>
+                  <p className="devdoc-label">Status</p>
+                  <p className="font-headline mt-2 text-xl font-extrabold text-[var(--devdoc-primary)]">
+                    In progress
+                  </p>
                 </div>
               </div>
 
+              {/* Project cards */}
               <div>
-                <h2 className="mb-4 font-headline text-2xl font-extrabold text-slate-950">Continue Working</h2>
+                <h2 className="mb-4 font-headline text-2xl font-extrabold" style={{ color: "var(--devdoc-text)" }}>Continue working</h2>
                 <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
                   {projects.map((project, index) => (
                     <ProjectCard key={project.id} project={project} isRecent={index === 0} />

@@ -12,8 +12,8 @@ function Register() {
 
   if (isLoading) {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-slate-50 px-6 text-slate-900">
-        <p className="text-sm font-medium text-slate-600">Loading DevDoc...</p>
+      <main className="flex min-h-screen items-center justify-center bg-[var(--devdoc-bg)] px-6 text-[var(--devdoc-text)]">
+        <p className="text-sm font-semibold text-[var(--devdoc-muted)]">Loading DevDoc...</p>
       </main>
     );
   }
@@ -47,26 +47,26 @@ function Register() {
   }
 
   return (
-    <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#f8f9fa] px-6 py-12 text-slate-950">
-      <div className="pointer-events-none absolute right-[-12rem] top-[-12rem] h-[34rem] w-[34rem] rounded-full bg-indigo-100 blur-3xl" />
-      <div className="pointer-events-none absolute bottom-[-10rem] left-[-10rem] h-[28rem] w-[28rem] rounded-full bg-emerald-100 blur-3xl" />
+    <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[var(--devdoc-bg)] px-6 py-12 text-[var(--devdoc-text)]">
+      <div className="pointer-events-none absolute right-[-12rem] top-[-12rem] h-[34rem] w-[34rem] rounded-full bg-[var(--devdoc-primary-soft)] blur-3xl" />
+      <div className="pointer-events-none absolute bottom-[-10rem] left-[-10rem] h-[28rem] w-[28rem] rounded-full bg-[var(--devdoc-primary-softer)] blur-3xl" />
       <section className="devdoc-card relative w-full max-w-md p-10 md:p-12">
         <div className="text-center">
-          <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-3xl bg-gradient-to-br from-[#3525cd] to-[#4f46e5] text-lg font-black text-white shadow-lg shadow-indigo-500/20">
+          <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-3xl bg-gradient-to-br from-[var(--devdoc-primary-strong)] to-[var(--devdoc-primary)] text-lg font-black text-white shadow-lg shadow-indigo-500/20">
             D
           </span>
-          <p className="font-headline mt-4 text-3xl font-extrabold tracking-tight text-slate-950">
+          <p className="font-headline mt-4 text-3xl font-extrabold tracking-tight text-[var(--devdoc-text)]">
             DevDoc
           </p>
-          <p className="mt-1 text-xs font-bold uppercase tracking-[0.22em] text-slate-500">
+          <p className="devdoc-label mt-1">
             IDE for documentation
           </p>
         </div>
         <h1 className="mt-10 text-3xl font-bold">Create account</h1>
-        <p className="mt-2 text-sm leading-6 text-slate-600">Start with a simple DevDoc account.</p>
+        <p className="mt-2 text-sm leading-6 text-[var(--devdoc-muted)]">Start with a simple DevDoc account.</p>
 
         {errorMessage ? (
-          <div className="mt-6 rounded-2xl bg-red-50 px-4 py-3 text-sm font-semibold text-red-700 ring-1 ring-red-100">
+          <div className="mt-6 rounded-2xl border px-4 py-3 text-sm font-semibold text-[var(--devdoc-error)]" style={{ backgroundColor: "color-mix(in srgb, var(--devdoc-error) 9%, transparent)", borderColor: "color-mix(in srgb, var(--devdoc-error) 32%, var(--devdoc-border))" }}>
             {errorMessage}
           </div>
         ) : null}
@@ -98,7 +98,7 @@ function Register() {
               required
             />
             {fieldErrors.email ? (
-              <span className="mt-2 block text-sm text-red-700">{fieldErrors.email}</span>
+              <span className="mt-2 block text-sm font-medium text-[var(--devdoc-error)]">{fieldErrors.email}</span>
             ) : null}
           </label>
 
@@ -115,7 +115,7 @@ function Register() {
               required
             />
             {fieldErrors.password ? (
-              <span className="mt-2 block text-sm text-red-700">
+              <span className="mt-2 block text-sm font-medium text-[var(--devdoc-error)]">
                 {fieldErrors.password}
               </span>
             ) : null}
@@ -130,9 +130,9 @@ function Register() {
           </button>
         </form>
 
-        <p className="mt-6 text-center text-sm text-slate-600">
+        <p className="mt-6 text-center text-sm text-[var(--devdoc-muted)]">
           Already have an account?{" "}
-          <Link className="font-semibold text-indigo-700 hover:text-indigo-800" to="/login">
+          <Link className="font-bold text-[var(--devdoc-primary)] hover:underline" to="/login">
             Sign in
           </Link>
         </p>

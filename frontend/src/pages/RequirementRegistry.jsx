@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import CreateRequirementForm from "../components/CreateRequirementForm";
+import LoadingSpinner from "../components/LoadingSpinner";
 import RequirementCard from "../components/RequirementCard";
 import useAuth from "../hooks/useAuth";
 import { getProject } from "../services/projectService";
@@ -9,6 +10,25 @@ import {
   listRequirements,
   updateRequirement
 } from "../services/requirementService";
+
+const FILTERS = [
+  ["ALL", "All"],
+  ["FR", "Functional"],
+  ["NFR", "Non-Functional"],
+  ["HIGH", "High Priority"],
+  ["APPROVED_VERIFIED", "Approved / Verified"]
+];
+
+function StatCard({ label, value, accent = false }) {
+  return (
+    <div className="devdoc-card-border p-4">
+      <p className="devdoc-label">{label}</p>
+      <p className={`mt-2 font-headline text-3xl font-extrabold ${accent ? "text-[var(--devdoc-primary)]" : "text-[var(--devdoc-text)]"}`}>
+        {value}
+      </p>
+    </div>
+  );
+}
 
 function RequirementRegistry() {
   const { id } = useParams();
@@ -23,35 +43,22 @@ function RequirementRegistry() {
   const summary = useMemo(
     () => ({
       total: requirements.length,
-      fr: requirements.filter((requirement) => requirement.type === "FR").length,
-      nfr: requirements.filter((requirement) => requirement.type === "NFR").length,
-      highPriority: requirements.filter((requirement) => requirement.priority === "HIGH").length,
-      approvedOrVerified: requirements.filter((requirement) =>
-        ["APPROVED", "VERIFIED"].includes(requirement.status)
+      fr: requirements.filter((r) => r.type === "FR").length,
+      nfr: requirements.filter((r) => r.type === "NFR").length,
+      highPriority: requirements.filter((r) => r.priority === "HIGH").length,
+      approvedOrVerified: requirements.filter((r) =>
+        ["APPROVED", "VERIFIED"].includes(r.status)
       ).length
     }),
     [requirements]
   );
 
   const filteredRequirements = useMemo(() => {
-    if (activeFilter === "FR") {
-      return requirements.filter((requirement) => requirement.type === "FR");
-    }
-
-    if (activeFilter === "NFR") {
-      return requirements.filter((requirement) => requirement.type === "NFR");
-    }
-
-    if (activeFilter === "HIGH") {
-      return requirements.filter((requirement) => requirement.priority === "HIGH");
-    }
-
-    if (activeFilter === "APPROVED_VERIFIED") {
-      return requirements.filter((requirement) =>
-        ["APPROVED", "VERIFIED"].includes(requirement.status)
-      );
-    }
-
+    if (activeFilter === "FR") return requirements.filter((r) => r.type === "FR");
+    if (activeFilter === "NFR") return requirements.filter((r) => r.type === "NFR");
+    if (activeFilter === "HIGH") return requirements.filter((r) => r.priority === "HIGH");
+    if (activeFilter === "APPROVED_VERIFIED")
+      return requirements.filter((r) => ["APPROVED", "VERIFIED"].includes(r.status));
     return requirements;
   }, [activeFilter, requirements]);
 
@@ -62,7 +69,6 @@ function RequirementRegistry() {
         navigate("/login", { replace: true });
         return true;
       }
-
       return false;
     },
     [logout, navigate]
@@ -71,7 +77,6 @@ function RequirementRegistry() {
   const loadPage = useCallback(async () => {
     setIsLoading(true);
     setErrorType("");
-
     try {
       const [loadedProject, loadedRequirements] = await Promise.all([
         getProject(id),
@@ -80,10 +85,7 @@ function RequirementRegistry() {
       setProject(loadedProject);
       setRequirements(loadedRequirements);
     } catch (error) {
-      if (handleRequestError(error)) {
-        return;
-      }
-
+      if (handleRequestError(error)) return;
       setErrorType(error.status === 404 ? "not-found" : "load-error");
     } finally {
       setIsLoading(false);
@@ -94,164 +96,99 @@ function RequirementRegistry() {
     loadPage();
   }, [loadPage]);
 
-  function handleLogout() {
-    logout();
-    navigate("/login", { replace: true });
-  }
-
   async function handleCreateRequirement(input) {
     return createRequirement(id, input);
   }
 
   async function handleRequirementCreated() {
-    const loadedRequirements = await listRequirements(id);
-    setRequirements(loadedRequirements);
+    const loaded = await listRequirements(id);
+    setRequirements(loaded);
     setActiveFilter("ALL");
   }
 
   async function handleUpdateRequirement(requirementId, input) {
-    const updatedRequirement = await updateRequirement(id, requirementId, input);
-    setRequirements((currentRequirements) =>
-      currentRequirements.map((requirement) =>
-        requirement.id === updatedRequirement.id ? updatedRequirement : requirement
-      )
-    );
-    return updatedRequirement;
+    const updated = await updateRequirement(id, requirementId, input);
+    setRequirements((cur) => cur.map((r) => (r.id === updated.id ? updated : r)));
+    return updated;
   }
 
-  if (isLoading) {
-    return (
-      <main className="flex min-h-screen items-center justify-center bg-slate-50 px-6 text-slate-900">
-        <p className="text-sm font-medium text-slate-600">Loading requirements...</p>
-      </main>
-    );
-  }
+  if (isLoading) return <LoadingSpinner fullScreen label="Loading requirements..." />;
 
   if (errorType === "not-found") {
     return (
-      <main className="min-h-screen bg-slate-50 px-6 py-10 text-slate-950">
-        <section className="mx-auto max-w-3xl rounded-lg border border-slate-200 bg-white p-8 shadow-sm">
-          <p className="text-lg font-semibold text-slate-950">Project not found.</p>
-          <Link
-            className="mt-5 inline-flex text-sm font-semibold text-teal-700 hover:text-teal-800"
-            to="/dashboard"
-          >
+      <main className="flex min-h-screen items-center justify-center bg-[var(--devdoc-bg)] px-6">
+        <div className="devdoc-card-border max-w-md p-8 text-center">
+          <p className="font-headline text-xl font-extrabold text-[var(--devdoc-text)]">Project not found</p>
+          <button className="devdoc-gradient-button mt-6" onClick={() => navigate("/dashboard")}>
             Back to dashboard
-          </Link>
-        </section>
+          </button>
+        </div>
       </main>
     );
   }
 
   if (errorType === "load-error") {
     return (
-      <main className="min-h-screen bg-slate-50 px-6 py-10 text-slate-950">
-        <section className="mx-auto max-w-3xl rounded-lg border border-slate-200 bg-white p-8 shadow-sm">
-          <p className="text-lg font-semibold text-slate-950">
-            Could not load requirements. Check your connection and try again.
-          </p>
-          <button
-            className="mt-5 rounded-md bg-teal-700 px-4 py-2 text-sm font-semibold text-white transition hover:bg-teal-800"
-            type="button"
-            onClick={loadPage}
-          >
-            Retry
-          </button>
-        </section>
+      <main className="flex min-h-screen items-center justify-center bg-[var(--devdoc-bg)] px-6">
+        <div className="devdoc-card-border max-w-md p-8 text-center">
+          <p className="font-headline text-xl font-extrabold text-[var(--devdoc-text)]">Could not load requirements</p>
+          <p className="mt-2 text-sm text-[var(--devdoc-muted)]">Check your connection and try again.</p>
+          <button className="devdoc-gradient-button mt-6" onClick={loadPage}>Retry</button>
+        </div>
       </main>
     );
   }
 
   return (
-    <main className="min-h-screen bg-[#f8f9fa] px-6 py-10 text-slate-950">
-      <section className="mx-auto max-w-6xl">
-        <div className="devdoc-card p-8">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <Link
-              className="text-sm font-bold text-indigo-700 hover:text-indigo-800"
-              to={`/projects/${id}`}
-            >
-              Back to project workspace
-            </Link>
-            <h1 className="font-headline mt-3 text-4xl font-extrabold tracking-tight">
-              Requirements Registry
-            </h1>
-            <p className="mt-3 text-sm leading-6 text-slate-600">
-              Capture functional and non-functional requirements before linking them to design,
-              tests, and validation.
-            </p>
-            <p className="mt-2 text-sm leading-6 text-slate-600">
-              Project: <span className="font-semibold text-slate-800">{project.name}</span>
-            </p>
-          </div>
-          <button
-            className="rounded-full bg-slate-100 px-4 py-2 text-sm font-bold text-slate-700 transition hover:bg-slate-200"
-            type="button"
-            onClick={handleLogout}
-          >
-            Logout
-          </button>
-        </div>
+    <main className="min-h-screen bg-[var(--devdoc-bg)] px-6 py-8 text-[var(--devdoc-text)]">
+      <section className="mx-auto max-w-5xl">
+
+        {/* Page header */}
+        <div className="mb-8">
+          <p className="devdoc-label text-[var(--devdoc-primary)]">{project.name}</p>
+          <h1 className="font-headline mt-2 text-4xl font-extrabold tracking-tight">
+            Requirements Registry
+          </h1>
+          <p className="mt-2 text-sm leading-6 text-[var(--devdoc-muted)]">
+            Capture functional and non-functional requirements, then link them to design, tests, and validation.
+          </p>
         </div>
 
-        <section className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
-          <div className="devdoc-card-border p-4">
-            <p className="text-xs font-semibold uppercase text-slate-500">Total Requirements</p>
-            <p className="mt-2 text-2xl font-bold text-slate-950">{summary.total}</p>
-          </div>
-          <div className="devdoc-card-border p-4">
-            <p className="text-xs font-semibold uppercase text-slate-500">Functional Requirements</p>
-            <p className="mt-2 text-2xl font-bold text-slate-950">{summary.fr}</p>
-          </div>
-          <div className="devdoc-card-border p-4">
-            <p className="text-xs font-semibold uppercase text-slate-500">Non-Functional Requirements</p>
-            <p className="mt-2 text-2xl font-bold text-slate-950">{summary.nfr}</p>
-          </div>
-          <div className="devdoc-card-border p-4">
-            <p className="text-xs font-semibold uppercase text-slate-500">High Priority</p>
-            <p className="mt-2 text-2xl font-bold text-slate-950">{summary.highPriority}</p>
-          </div>
-          <div className="devdoc-card-border p-4">
-            <p className="text-xs font-semibold uppercase text-slate-500">Approved / Verified</p>
-            <p className="mt-2 text-2xl font-bold text-slate-950">
-              {summary.approvedOrVerified}
-            </p>
-          </div>
+        {/* Stats */}
+        <div className="mb-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+          <StatCard label="Total" value={summary.total} />
+          <StatCard label="Functional" value={summary.fr} />
+          <StatCard label="Non-Functional" value={summary.nfr} />
+          <StatCard label="High Priority" value={summary.highPriority} />
+          <StatCard label="Approved / Verified" value={summary.approvedOrVerified} accent />
+        </div>
+
+        {/* Create form */}
+        <section className="mb-8">
+          <h2 className="mb-4 font-headline text-xl font-extrabold">Create requirement</h2>
+          <CreateRequirementForm
+            onCreate={handleCreateRequirement}
+            onCreated={handleRequirementCreated}
+          />
         </section>
 
-        <section className="mt-8">
-          <h2 className="text-lg font-semibold text-slate-950">Create requirement</h2>
-          <div className="mt-4">
-            <CreateRequirementForm
-              onCreate={handleCreateRequirement}
-              onCreated={handleRequirementCreated}
-            />
-          </div>
-        </section>
-
-        <section className="mt-8">
-          <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
+        {/* Filter + list */}
+        <section>
+          <div className="mb-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
             <div>
-              <h2 className="text-lg font-semibold text-slate-950">Requirements</h2>
-              <p className="mt-1 text-sm text-slate-600">
+              <h2 className="font-headline text-xl font-extrabold">Requirements</h2>
+              <p className="mt-1 text-sm text-[var(--devdoc-muted)]">
                 Showing {filteredRequirements.length} of {requirements.length}
               </p>
             </div>
             <div className="flex flex-wrap gap-2">
-              {[
-                ["ALL", "All"],
-                ["FR", "FR"],
-                ["NFR", "NFR"],
-                ["HIGH", "HIGH priority"],
-                ["APPROVED_VERIFIED", "APPROVED/VERIFIED"]
-              ].map(([value, label]) => (
+              {FILTERS.map(([value, label]) => (
                 <button
                   key={value}
                   className={`rounded-full px-3 py-1.5 text-xs font-semibold ring-1 transition ${
                     activeFilter === value
-                      ? "bg-teal-700 text-white ring-teal-700"
-                      : "bg-white text-slate-700 ring-slate-200 hover:bg-slate-50"
+                      ? "bg-[var(--devdoc-primary)] text-white ring-[var(--devdoc-primary)]"
+                      : "bg-[var(--devdoc-surface)] text-[var(--devdoc-muted)] ring-[var(--devdoc-border)] hover:text-[var(--devdoc-text)] hover:ring-[var(--devdoc-border-strong)]"
                   }`}
                   type="button"
                   onClick={() => setActiveFilter(value)}
@@ -263,27 +200,33 @@ function RequirementRegistry() {
           </div>
 
           {requirements.length === 0 ? (
-            <div className="mt-4 rounded-lg border border-dashed border-slate-300 bg-white p-8 text-sm text-slate-600 shadow-sm">
-              <p className="font-semibold text-slate-950">
-                No requirements yet. Start by creating your first FR or NFR.
+            <div className="devdoc-card-border p-10 text-center">
+              <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl border border-[var(--devdoc-border)] bg-[var(--devdoc-primary-soft)] text-[var(--devdoc-primary)]">
+                <svg className="h-7 w-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                </svg>
+              </div>
+              <p className="font-headline text-lg font-extrabold text-[var(--devdoc-text)]">No requirements yet</p>
+              <p className="mt-2 text-sm text-[var(--devdoc-muted)]">
+                Start by creating your first FR or NFR above.
               </p>
-              <div className="mt-4 grid gap-3 sm:grid-cols-2">
-                <div className="rounded-md bg-slate-50 p-4">
-                  <p className="font-semibold text-slate-800">FR example</p>
-                  <p className="mt-1">User can create a project.</p>
+              <div className="mx-auto mt-6 grid max-w-md gap-3 sm:grid-cols-2">
+                <div className="devdoc-inset text-left">
+                  <p className="font-bold text-[var(--devdoc-primary)]">FR example</p>
+                  <p className="mt-1 text-sm text-[var(--devdoc-muted)]">User can create a project.</p>
                 </div>
-                <div className="rounded-md bg-slate-50 p-4">
-                  <p className="font-semibold text-slate-800">NFR example</p>
-                  <p className="mt-1">The dashboard loads within 2 seconds.</p>
+                <div className="devdoc-inset text-left">
+                  <p className="font-bold text-[var(--devdoc-text)]">NFR example</p>
+                  <p className="mt-1 text-sm text-[var(--devdoc-muted)]">Dashboard loads in under 2 seconds.</p>
                 </div>
               </div>
             </div>
           ) : filteredRequirements.length === 0 ? (
-            <div className="mt-4 rounded-lg border border-dashed border-slate-300 bg-white p-8 text-sm text-slate-600 shadow-sm">
+            <div className="devdoc-card-border p-8 text-center text-sm text-[var(--devdoc-muted)]">
               No requirements match this filter.
             </div>
           ) : (
-            <div className="mt-4 grid gap-4">
+            <div className="grid gap-4">
               {filteredRequirements.map((requirement) => (
                 <RequirementCard
                   key={requirement.id}
@@ -295,10 +238,9 @@ function RequirementRegistry() {
           )}
         </section>
 
-        <p className="mt-8 rounded-lg border border-slate-200 bg-white px-5 py-4 text-sm text-slate-600 shadow-sm">
-          Use the project workspace to open Traceability Matrix and Doc-Linter Validation after
-          creating requirements.
-        </p>
+        <div className="devdoc-card-border mt-8 px-5 py-4 text-sm text-[var(--devdoc-muted)]">
+          Use the Traceability Matrix to link requirements to document sections after creating them.
+        </div>
       </section>
     </main>
   );

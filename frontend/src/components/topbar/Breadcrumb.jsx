@@ -83,10 +83,10 @@ function Breadcrumb() {
   const isProjectRoute = location.pathname.startsWith("/projects/");
 
   return (
-    <div className="flex min-w-0 items-center gap-2 text-sm text-slate-500">
+    <div className="flex min-w-0 items-center gap-2 text-sm text-[var(--devdoc-muted)]">
       <span className="hidden sm:inline">{isProjectRoute ? projectName || "Project" : "Workspace"}</span>
-      <span className="hidden text-slate-300 sm:inline">/</span>
-      <span className="truncate font-semibold text-slate-700">{label}</span>
+      <span className="hidden text-[var(--devdoc-subtle)] sm:inline">/</span>
+      <span className="truncate font-semibold text-[var(--devdoc-text)]">{label}</span>
     </div>
   );
 }
