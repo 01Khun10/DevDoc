@@ -203,8 +203,12 @@ function ValidationEngine() {
               Project: <span className="font-semibold text-slate-800">{project.name}</span>
             </p>
             <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">
-              Run basic checks for missing documents, empty required sections, unlinked
-              requirements, and incomplete documents.
+              Run checks for missing documents, empty required sections, use case coverage,
+              requirement traceability, and incomplete documents.
+            </p>
+            <p className="mt-2 max-w-3xl text-sm leading-6 text-slate-600">
+              Doc-Linter now checks use cases, requirements, document sections, and traceability
+              coverage.
             </p>
           </div>
           <button

@@ -70,7 +70,13 @@ async function verifyProjectOwnership(ownerId, projectId) {
   return project;
 }
 
-function buildValidationResults(documents, requirements, traceabilityLinks) {
+function hasTraceabilityLink(traceabilityLinks, criteria) {
+  return traceabilityLinks.some((link) =>
+    Object.entries(criteria).every(([key, value]) => link[key] === value)
+  );
+}
+
+function buildValidationResults(documents, requirements, useCases, traceabilityLinks) {
   const results = [];
   const documentSections = documents.flatMap((document) =>
     document.sections.map((section) => ({
@@ -79,6 +85,8 @@ function buildValidationResults(documents, requirements, traceabilityLinks) {
     }))
   );
   const documentSectionIds = new Set(documentSections.map((section) => section.id));
+  const requirementIds = new Set(requirements.map((requirement) => requirement.id));
+  const useCaseIds = new Set(useCases.map((useCase) => useCase.id));
   const linkedRequirementIds = new Set(
     traceabilityLinks
       .filter((link) => link.sourceType === "REQUIREMENT")
@@ -103,6 +111,17 @@ function buildValidationResults(documents, requirements, traceabilityLinks) {
         "WARNING",
         "This project does not have any requirements yet.",
         "Add functional or non-functional requirements in the Requirements Registry."
+      )
+    );
+  }
+
+  if (useCases.length === 0) {
+    results.push(
+      createResult(
+        "UC-001",
+        "WARNING",
+        "This project does not have any use cases yet.",
+        "Add use cases to describe how users interact with the system."
       )
     );
   }
@@ -138,6 +157,72 @@ function buildValidationResults(documents, requirements, traceabilityLinks) {
       );
     });
 
+  useCases.forEach((useCase) => {
+    const coversRequirement = hasTraceabilityLink(traceabilityLinks, {
+      sourceType: "USE_CASE",
+      sourceId: useCase.id,
+      targetType: "REQUIREMENT",
+      linkType: "covers"
+    });
+
+    if (!coversRequirement) {
+      results.push(
+        createResult(
+          "UC-002",
+          "WARNING",
+          `Use case ${useCase.code} is not linked to any requirement.`,
+          "Open the Traceability Matrix and link this use case to at least one requirement.",
+          "USE_CASE",
+          useCase.id
+        )
+      );
+    }
+
+    const describedBySection = hasTraceabilityLink(traceabilityLinks, {
+      sourceType: "USE_CASE",
+      sourceId: useCase.id,
+      targetType: "DOCUMENT_SECTION",
+      linkType: "described_by"
+    });
+
+    if (!describedBySection) {
+      results.push(
+        createResult(
+          "UC-003",
+          "INFO",
+          `Use case ${useCase.code} is not linked to any document section.`,
+          "Link this use case to a document section where the scenario is explained.",
+          "USE_CASE",
+          useCase.id
+        )
+      );
+    }
+  });
+
+  requirements
+    .filter((requirement) => requirement.type === "FR")
+    .filter(
+      (requirement) =>
+        !hasTraceabilityLink(traceabilityLinks, {
+          sourceType: "USE_CASE",
+          targetType: "REQUIREMENT",
+          targetId: requirement.id,
+          linkType: "covers"
+        })
+    )
+    .forEach((requirement) => {
+      results.push(
+        createResult(
+          "REQ-002",
+          "WARNING",
+          `Functional requirement ${requirement.code} is not covered by any use case.`,
+          "Create or link a use case that explains the user scenario behind this requirement.",
+          "REQUIREMENT",
+          requirement.id
+        )
+      );
+    });
+
   documents
     .filter((document) => document.completionPercent < 100)
     .forEach((document) => {
@@ -160,6 +245,48 @@ function buildValidationResults(documents, requirements, traceabilityLinks) {
           "TRC-002",
           "ERROR",
           "A traceability link points to a missing document section.",
+          "Remove the broken traceability link and create a valid one."
+        )
+      );
+    });
+
+  traceabilityLinks
+    .filter((link) => link.targetType === "REQUIREMENT")
+    .filter((link) => !requirementIds.has(link.targetId))
+    .forEach(() => {
+      results.push(
+        createResult(
+          "TRC-002",
+          "ERROR",
+          "A traceability link points to a missing requirement.",
+          "Remove the broken traceability link and create a valid one."
+        )
+      );
+    });
+
+  traceabilityLinks
+    .filter((link) => link.sourceType === "USE_CASE")
+    .filter((link) => !useCaseIds.has(link.sourceId))
+    .forEach(() => {
+      results.push(
+        createResult(
+          "TRC-002",
+          "ERROR",
+          "A traceability link points from a missing use case.",
+          "Remove the broken traceability link and create a valid one."
+        )
+      );
+    });
+
+  traceabilityLinks
+    .filter((link) => link.sourceType === "REQUIREMENT")
+    .filter((link) => !requirementIds.has(link.sourceId))
+    .forEach(() => {
+      results.push(
+        createResult(
+          "TRC-002",
+          "ERROR",
+          "A traceability link points from a missing requirement.",
           "Remove the broken traceability link and create a valid one."
         )
       );
@@ -231,6 +358,14 @@ async function runProjectValidation(ownerId, projectId) {
         where: { projectId: project.id },
         select: {
           id: true,
+          code: true,
+          type: true
+        }
+      });
+      const useCases = await tx.useCase.findMany({
+        where: { projectId: project.id },
+        select: {
+          id: true,
           code: true
         }
       });
@@ -240,10 +375,16 @@ async function runProjectValidation(ownerId, projectId) {
           sourceType: true,
           sourceId: true,
           targetType: true,
-          targetId: true
+          targetId: true,
+          linkType: true
         }
       });
-      const results = buildValidationResults(documents, requirements, traceabilityLinks);
+      const results = buildValidationResults(
+        documents,
+        requirements,
+        useCases,
+        traceabilityLinks
+      );
       const readinessScore = calculateReadinessScore(results);
 
       if (results.length > 0) {

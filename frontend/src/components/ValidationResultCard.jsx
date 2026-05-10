@@ -4,6 +4,19 @@ const severityStyles = {
   INFO: "border-sky-200 bg-sky-50 text-sky-800"
 };
 
+const ruleLabels = {
+  "DOC-001": "Document coverage",
+  "DOC-002": "Document progress",
+  "REQ-001": "Requirement coverage",
+  "REQ-002": "Use case coverage",
+  "SEC-001": "Required section",
+  "TRC-001": "Requirement traceability",
+  "TRC-002": "Broken traceability",
+  "UC-001": "Use case coverage",
+  "UC-002": "Use case to requirement",
+  "UC-003": "Use case documentation"
+};
+
 function formatTargetType(targetType) {
   if (!targetType) {
     return "";
@@ -18,6 +31,7 @@ function formatTargetType(targetType) {
 function ValidationResultCard({ result }) {
   const severityClass = severityStyles[result.severity] || severityStyles.INFO;
   const targetTypeLabel = formatTargetType(result.targetType);
+  const ruleLabel = ruleLabels[result.ruleCode] || "Doc-Linter check";
 
   return (
     <article className="rounded-lg border border-slate-200 bg-white p-5 shadow-sm">
@@ -27,6 +41,9 @@ function ValidationResultCard({ result }) {
         </span>
         <span className="rounded-full border border-slate-200 bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">
           {result.ruleCode}
+        </span>
+        <span className="rounded-full border border-slate-200 bg-white px-3 py-1 text-xs font-semibold text-slate-700">
+          {ruleLabel}
         </span>
         {targetTypeLabel ? (
           <span className="rounded-full border border-teal-200 bg-teal-50 px-3 py-1 text-xs font-semibold text-teal-800">
