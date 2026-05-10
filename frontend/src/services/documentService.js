@@ -38,4 +38,12 @@ async function updateDocumentSection(projectId, documentId, sectionId, content) 
   );
 }
 
-export { createDocumentFromTemplate, getDocument, updateDocumentSection };
+async function getSectionLinkedArtefacts(projectId, documentId, sectionId) {
+  const response = await apiRequest(
+    `/api/projects/${encodeURIComponent(projectId)}/documents/${encodeURIComponent(documentId)}/sections/${encodeURIComponent(sectionId)}/linked-artefacts`
+  );
+
+  return response.linkedArtefacts;
+}
+
+export { createDocumentFromTemplate, getDocument, updateDocumentSection, getSectionLinkedArtefacts };

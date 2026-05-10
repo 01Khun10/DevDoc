@@ -5,7 +5,7 @@ import DocumentGuidancePanel from "../components/DocumentGuidancePanel";
 import DocumentSectionSidebar from "../components/DocumentSectionSidebar";
 import { useNotify } from "../context/NotificationContext";
 import useAuth from "../hooks/useAuth";
-import { getDocument, updateDocumentSection } from "../services/documentService";
+import { getDocument, updateDocumentSection, getSectionLinkedArtefacts } from "../services/documentService";
 
 function Badge({ children, tone = "slate" }) {
   const classes =
@@ -72,6 +72,10 @@ function DocumentEditor() {
   const [showSectionRail, setShowSectionRail] = useState(true);
   const [showGuidancePanel, setShowGuidancePanel] = useState(true);
   const [writingIssues, setWritingIssues] = useState(null);
+
+  const [linkedArtefacts, setLinkedArtefacts] = useState(null);
+  const [isLoadingLinkedArtefacts, setIsLoadingLinkedArtefacts] = useState(false);
+  const [linkedArtefactsError, setLinkedArtefactsError] = useState("");
 
   const getGridClasses = () => {
     if (isFocusMode) return "xl:grid-cols-1 max-w-5xl mx-auto";
@@ -171,6 +175,41 @@ function DocumentEditor() {
     };
   }, [documentId, handleRequestError, projectId]);
 
+  useEffect(() => {
+    let isCancelled = false;
+
+    async function loadLinkedArtefacts() {
+      if (!selectedSectionId) return;
+
+      setIsLoadingLinkedArtefacts(true);
+      setLinkedArtefactsError("");
+
+      try {
+        const artefacts = await getSectionLinkedArtefacts(projectId, documentId, selectedSectionId);
+        if (!isCancelled) {
+          setLinkedArtefacts(artefacts);
+        }
+      } catch (error) {
+        if (handleRequestError(error)) {
+          return;
+        }
+        if (!isCancelled) {
+          setLinkedArtefactsError("Could not load linked artefacts.");
+        }
+      } finally {
+        if (!isCancelled) {
+          setIsLoadingLinkedArtefacts(false);
+        }
+      }
+    }
+
+    loadLinkedArtefacts();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, [selectedSectionId, projectId, documentId, handleRequestError]);
+
   function switchToSection(section, options = {}) {
     if (!section || section.id === selectedSectionId) {
       return false;
@@ -189,6 +228,7 @@ function DocumentEditor() {
     setHasUnsavedChanges(false);
     setSaveError("");
     setSaveSuccess("");
+    setLinkedArtefacts(null);
     return true;
   }
 
@@ -402,7 +442,13 @@ function DocumentEditor() {
             onNext={handleNextSection}
           />
           {showGuidancePanel && !isFocusMode && (
-            <DocumentGuidancePanel section={selectedSection} writingIssues={writingIssues} />
+            <DocumentGuidancePanel 
+              section={selectedSection} 
+              writingIssues={writingIssues}
+              linkedArtefacts={linkedArtefacts}
+              isLoadingLinkedArtefacts={isLoadingLinkedArtefacts}
+              linkedArtefactsError={linkedArtefactsError}
+            />
           )}
         </div>
       </section>

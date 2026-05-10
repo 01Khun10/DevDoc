@@ -32,7 +32,13 @@ function TextBlock({ label, children }) {
   );
 }
 
-function DocumentGuidancePanel({ section, writingIssues }) {
+function DocumentGuidancePanel({ 
+  section, 
+  writingIssues, 
+  linkedArtefacts, 
+  isLoadingLinkedArtefacts, 
+  linkedArtefactsError 
+}) {
   if (!section) {
     return (
       <aside className="rounded-xl border border-slate-200 bg-white p-6 text-sm text-slate-600 shadow-sm">
@@ -68,8 +74,54 @@ function DocumentGuidancePanel({ section, writingIssues }) {
         )}
       </HelperBlock>
 
-      <HelperBlock title="Validation">
-        <div>
+      <HelperBlock title="Linked Artefacts">
+        {isLoadingLinkedArtefacts ? (
+          <p className="text-sm text-slate-500">Loading linked artefacts...</p>
+        ) : linkedArtefactsError ? (
+          <p className="text-sm text-red-600">{linkedArtefactsError}</p>
+        ) : linkedArtefacts?.summary?.hasLinks ? (
+          <div className="grid gap-4">
+            {linkedArtefacts.requirements.length > 0 && (
+              <div>
+                <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">Requirements</p>
+                <div className="grid gap-2">
+                  {linkedArtefacts.requirements.map((req) => (
+                    <div key={req.id} className="flex flex-col gap-1 rounded-md border border-slate-200 bg-slate-50 p-2 shadow-sm">
+                      <div className="flex items-center justify-between">
+                        <span className="text-xs font-bold text-slate-700">{req.code}</span>
+                        <Badge tone={req.status === 'APPROVED' ? 'emerald' : req.status === 'IMPLEMENTED' ? 'teal' : 'slate'}>
+                          {req.status}
+                        </Badge>
+                      </div>
+                      <p className="text-sm text-slate-800">{req.title}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+            {linkedArtefacts.useCases.length > 0 && (
+              <div>
+                <p className="mb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">Use Cases</p>
+                <div className="grid gap-2">
+                  {linkedArtefacts.useCases.map((uc) => (
+                    <div key={uc.id} className="flex flex-col gap-1 rounded-md border border-slate-200 bg-slate-50 p-2 shadow-sm">
+                      <span className="text-xs font-bold text-slate-700">{uc.code}</span>
+                      <p className="text-sm text-slate-800">{uc.title}</p>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+        ) : (
+          <p className="rounded-lg bg-slate-50 p-3 text-sm leading-6 text-slate-700">
+            No linked artefacts yet. Use the Traceability Matrix to connect this section to requirements or use cases.
+          </p>
+        )}
+      </HelperBlock>
+
+      <HelperBlock title="Validation Hints">
+        <div className="mb-3">
           <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
             {section.isRequired ? "Required" : "Optional"}
           </p>
@@ -79,15 +131,24 @@ function DocumentGuidancePanel({ section, writingIssues }) {
             </Badge>
           </div>
         </div>
-        <p className="rounded-lg bg-slate-50 p-3 text-sm leading-6 text-slate-700">
-          Validation issues will appear in a later phase.
-        </p>
-      </HelperBlock>
 
-      <HelperBlock title="Linked Artefacts">
-        <p className="rounded-lg bg-slate-50 p-3 text-sm leading-6 text-slate-700">
-          Linked artefacts will appear in a later phase.
-        </p>
+        {section.isRequired && linkedArtefacts && !linkedArtefacts.summary.hasLinks ? (
+          <p className="mt-2 rounded-lg bg-amber-50 p-3 text-sm leading-6 text-amber-800 ring-1 ring-amber-200">
+            This required section is not linked to any artefact yet.
+          </p>
+        ) : null}
+
+        {linkedArtefacts?.summary?.requirementCount > 0 ? (
+          <p className="mt-2 rounded-lg bg-emerald-50 p-3 text-sm leading-6 text-emerald-800 ring-1 ring-emerald-200">
+            This section is connected to requirements.
+          </p>
+        ) : null}
+
+        {linkedArtefacts?.summary?.useCaseCount > 0 ? (
+          <p className="mt-2 rounded-lg bg-emerald-50 p-3 text-sm leading-6 text-emerald-800 ring-1 ring-emerald-200">
+            This section is connected to use cases.
+          </p>
+        ) : null}
       </HelperBlock>
     </aside>
   );

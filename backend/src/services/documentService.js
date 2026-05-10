@@ -316,6 +316,82 @@ async function updateDocumentSection(ownerId, projectId, documentId, sectionId, 
   });
 }
 
+async function getSectionLinkedArtefacts(ownerId, projectId, documentId, sectionId) {
+  const document = await prisma.document.findFirst({
+    where: {
+      id: documentId,
+      projectId,
+      project: { ownerId }
+    },
+    select: { id: true }
+  });
+
+  if (!document) {
+    throw createDocumentError(DOCUMENT_NOT_FOUND, "Document not found");
+  }
+
+  const section = await prisma.documentSection.findFirst({
+    where: {
+      id: sectionId,
+      documentId: document.id
+    },
+    select: { id: true }
+  });
+
+  if (!section) {
+    throw createDocumentError(SECTION_NOT_FOUND, "Section not found");
+  }
+
+  const links = await prisma.traceabilityLink.findMany({
+    where: {
+      projectId,
+      targetType: "DOCUMENT_SECTION",
+      targetId: sectionId
+    }
+  });
+
+  const reqIds = links.filter((l) => l.sourceType === "REQUIREMENT").map((l) => l.sourceId);
+  const ucIds = links.filter((l) => l.sourceType === "USE_CASE").map((l) => l.sourceId);
+
+  const requirements =
+    reqIds.length > 0
+      ? await prisma.requirement.findMany({
+          where: { id: { in: reqIds } },
+          select: { id: true, code: true, type: true, title: true, status: true }
+        })
+      : [];
+
+  const useCases =
+    ucIds.length > 0
+      ? await prisma.useCase.findMany({
+          where: { id: { in: ucIds } },
+          select: { id: true, code: true, title: true, description: true }
+        })
+      : [];
+
+  const formattedRequirements = requirements.map((r) => {
+    const link = links.find((l) => l.sourceId === r.id);
+    return { ...r, linkType: link ? link.linkType : null };
+  });
+
+  const formattedUseCases = useCases.map((u) => {
+    const link = links.find((l) => l.sourceId === u.id);
+    return { ...u, linkType: link ? link.linkType : null };
+  });
+
+  return {
+    linkedArtefacts: {
+      requirements: formattedRequirements,
+      useCases: formattedUseCases,
+      summary: {
+        requirementCount: formattedRequirements.length,
+        useCaseCount: formattedUseCases.length,
+        hasLinks: formattedRequirements.length > 0 || formattedUseCases.length > 0
+      }
+    }
+  };
+}
+
 module.exports = {
   PROJECT_NOT_FOUND,
   TEMPLATE_NOT_FOUND,
@@ -324,5 +400,6 @@ module.exports = {
   SECTION_NOT_FOUND,
   createDocumentFromTemplate,
   getDocumentById,
-  updateDocumentSection
+  updateDocumentSection,
+  getSectionLinkedArtefacts
 };

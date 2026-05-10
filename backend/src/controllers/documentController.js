@@ -10,7 +10,8 @@ const {
   SECTION_NOT_FOUND,
   createDocumentFromTemplate,
   getDocumentById,
-  updateDocumentSection
+  updateDocumentSection,
+  getSectionLinkedArtefacts: getSectionLinkedArtefactsService
 } = require("../services/documentService");
 
 function sendError(res, statusCode, message, fields) {
@@ -105,8 +106,32 @@ async function updateSection(req, res) {
   }
 }
 
+async function getSectionLinkedArtefacts(req, res) {
+  try {
+    const result = await getSectionLinkedArtefactsService(
+      req.user.id,
+      req.params.projectId,
+      req.params.documentId,
+      req.params.sectionId
+    );
+
+    return res.status(200).json(result);
+  } catch (error) {
+    if (error.code === DOCUMENT_NOT_FOUND) {
+      return sendError(res, 404, "Document not found");
+    }
+
+    if (error.code === SECTION_NOT_FOUND) {
+      return sendError(res, 404, "Section not found");
+    }
+
+    return sendError(res, 500, "Unexpected server error");
+  }
+}
+
 module.exports = {
   createFromTemplate,
   getDocument,
-  updateSection
+  updateSection,
+  getSectionLinkedArtefacts
 };
