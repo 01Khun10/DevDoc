@@ -61,14 +61,14 @@ function ProfileMenu() {
             to="/help"
             onClick={() => setIsOpen(false)}
           >
-            Help
+            Help / FAQ
           </Link>
           <Link
             className="block px-4 py-2 text-slate-700 hover:bg-slate-50"
             to="/about"
             onClick={() => setIsOpen(false)}
           >
-            About
+            About DevDoc
           </Link>
           <button
             className="mt-1 block w-full border-t border-slate-100 px-4 py-2 text-left font-semibold text-red-700 hover:bg-red-50"

@@ -21,7 +21,7 @@ function TopBar() {
   return (
     <header className="sticky top-0 z-30 bg-white/85 shadow-[0_20px_40px_rgba(53,37,205,0.06)] backdrop-blur-xl">
       <div className="mx-auto flex max-w-[1700px] flex-col gap-3 px-4 py-3 sm:px-6 lg:flex-row lg:items-center">
-        <div className="flex min-w-0 flex-1 items-center gap-4">
+        <div className="flex min-w-0 flex-1 items-center gap-3">
           <BackButton />
           <Link
             className="flex shrink-0 items-center gap-2 text-slate-950"
@@ -101,12 +101,6 @@ function TopBar() {
                 </div>
               ) : null}
             </div>
-            <Link
-              className="rounded-full bg-[#f3f4f5] px-3 py-2 text-xs font-semibold text-slate-600 transition hover:bg-white hover:shadow-sm"
-              to="/help"
-            >
-              Help
-            </Link>
             <ProfileMenu />
           </div>
         </div>
