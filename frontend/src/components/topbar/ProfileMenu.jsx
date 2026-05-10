@@ -1,10 +1,20 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useLanguage } from "../../context/LanguageContext";
 import useAuth from "../../hooks/useAuth";
+
+const languages = [
+  { code: "en", label: "English" },
+  { code: "ur", label: "Urdu" },
+  { code: "ar", label: "Arabic" },
+  { code: "de", label: "German" },
+  { code: "es", label: "Spanish" }
+];
 
 function ProfileMenu() {
   const navigate = useNavigate();
   const { user, logout } = useAuth();
+  const { selectedLanguage, setLanguage } = useLanguage();
   const [isOpen, setIsOpen] = useState(false);
   const displayName = user?.name || user?.email || "Account";
   const initial = displayName.charAt(0).toUpperCase();
@@ -70,8 +80,28 @@ function ProfileMenu() {
           >
             About DevDoc
           </Link>
+          <div className="border-t border-slate-100 px-4 py-3">
+            <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-slate-500">Language</p>
+            <div className="grid grid-cols-2 gap-1">
+              {languages.map((lang) => (
+                <button
+                  key={lang.code}
+                  type="button"
+                  onClick={() => setLanguage(lang.code)}
+                  className={`rounded-md px-2 py-1 text-left text-xs font-medium transition-colors ${
+                    selectedLanguage === lang.code
+                      ? "bg-teal-50 text-teal-700"
+                      : "text-slate-600 hover:bg-slate-50"
+                  }`}
+                >
+                  {lang.label}
+                </button>
+              ))}
+            </div>
+            <p className="mt-2 text-[10px] text-slate-400">Full interface translation will be added later.</p>
+          </div>
           <button
-            className="mt-1 block w-full border-t border-slate-100 px-4 py-2 text-left font-semibold text-red-700 hover:bg-red-50"
+            className="block w-full border-t border-slate-100 px-4 py-2 text-left font-semibold text-red-700 hover:bg-red-50"
             type="button"
             onClick={handleSignOut}
           >

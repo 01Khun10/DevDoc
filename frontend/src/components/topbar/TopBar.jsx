@@ -48,19 +48,21 @@ function TopBar() {
             </div>
             <div className="relative">
               <button
-                className="rounded-full bg-[#f3f4f5] px-3 py-2 text-xs font-semibold text-slate-600 transition hover:bg-white hover:shadow-sm"
+                className="flex h-8 w-8 items-center justify-center rounded-full bg-[#f3f4f5] text-slate-600 transition hover:bg-white hover:text-slate-900 hover:shadow-sm"
                 type="button"
                 title="Notifications"
                 onClick={() => toggleMenu("alerts")}
               >
-                Alerts
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-4 w-4">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
+                </svg>
               </button>
               {openMenu === "alerts" ? (
                 <div className="absolute right-0 z-40 mt-2 w-72 rounded-lg border border-slate-200 bg-white p-4 text-sm shadow-xl">
                   <p className="font-semibold text-slate-950">No notifications yet.</p>
                   <p className="mt-2 leading-6 text-slate-600">
-                    Notifications for document saves, validation runs, and traceability updates
-                    will appear here later.
+                    Document saves, validation results, and traceability updates
+                    will appear here.
                   </p>
                 </div>
               ) : null}
@@ -83,24 +85,7 @@ function TopBar() {
                 </div>
               ) : null}
             </div>
-            <div className="relative hidden sm:block">
-              <button
-                className="rounded-full bg-[#f3f4f5] px-3 py-2 text-xs font-semibold text-slate-600 transition hover:bg-white hover:shadow-sm"
-                type="button"
-                title="Language"
-                onClick={() => {
-                  toggleMenu("language");
-                  showComingSoon("Language");
-                }}
-              >
-                EN
-              </button>
-              {openMenu === "language" ? (
-                <div className="absolute right-0 z-40 mt-2 w-56 rounded-lg border border-slate-200 bg-white p-4 text-sm text-slate-600 shadow-xl">
-                  More languages coming later.
-                </div>
-              ) : null}
-            </div>
+
             <ProfileMenu />
           </div>
         </div>

@@ -7,6 +7,7 @@ import Dashboard from "./pages/Dashboard";
 import DocumentEditor from "./pages/DocumentEditor";
 import DocsPlaceholder from "./pages/DocsPlaceholder";
 import HelpPlaceholder from "./pages/HelpPlaceholder";
+import LandingPage from "./pages/LandingPage";
 import Login from "./pages/Login";
 import ProfilePlaceholder from "./pages/ProfilePlaceholder";
 import ProjectAnalyticsPlaceholder from "./pages/ProjectAnalyticsPlaceholder";
@@ -34,7 +35,7 @@ function HomeRedirect() {
     );
   }
 
-  return <Navigate to={user ? "/dashboard" : "/login"} replace />;
+  return user ? <Navigate to="/dashboard" replace /> : <LandingPage />;
 }
 
 function App() {
