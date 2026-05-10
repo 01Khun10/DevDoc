@@ -46,7 +46,9 @@ function RibbonButton({ children, wide = false }) {
 }
 
 function DocumentEditor() {
-  const { projectId, documentId } = useParams();
+  const params = useParams();
+  const projectId = params.id || params.projectId;
+  const documentId = params.documentId;
   const navigate = useNavigate();
   const { logout } = useAuth();
   const [document, setDocument] = useState(null);

@@ -1,4 +1,5 @@
 import { useLocation } from "react-router-dom";
+import { useOptionalProject } from "../../context/ProjectContext";
 
 function getBreadcrumbLabel(pathname) {
   const segments = pathname.split("/").filter(Boolean);
@@ -31,6 +32,10 @@ function getBreadcrumbLabel(pathname) {
     return "Document Editor";
   }
 
+  if (segments[0] === "projects" && segments[2] === "documents") {
+    return "Documents";
+  }
+
   if (segments[0] === "projects" && segments[2] === "templates") {
     return "Templates";
   }
@@ -47,6 +52,22 @@ function getBreadcrumbLabel(pathname) {
     return "Validation";
   }
 
+  if (segments[0] === "projects" && segments[2] === "diagrams") {
+    return "Diagrams";
+  }
+
+  if (segments[0] === "projects" && segments[2] === "versions") {
+    return "Versions";
+  }
+
+  if (segments[0] === "projects" && segments[2] === "analytics") {
+    return "Analytics";
+  }
+
+  if (segments[0] === "projects" && segments[2] === "settings") {
+    return "Project Settings";
+  }
+
   if (segments[0] === "projects" && segments[1]) {
     return "Project Workspace";
   }
@@ -57,10 +78,13 @@ function getBreadcrumbLabel(pathname) {
 function Breadcrumb() {
   const location = useLocation();
   const label = getBreadcrumbLabel(location.pathname);
+  const projectContext = useOptionalProject();
+  const projectName = projectContext?.project?.name || "";
+  const isProjectRoute = location.pathname.startsWith("/projects/");
 
   return (
     <div className="flex min-w-0 items-center gap-2 text-sm text-slate-500">
-      <span className="hidden sm:inline">Workspace</span>
+      <span className="hidden sm:inline">{isProjectRoute ? projectName || "Project" : "Workspace"}</span>
       <span className="hidden text-slate-300 sm:inline">/</span>
       <span className="truncate font-semibold text-slate-700">{label}</span>
     </div>

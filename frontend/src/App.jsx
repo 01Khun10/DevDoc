@@ -1,6 +1,7 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import useAuth from "./hooks/useAuth";
 import AppShell from "./layouts/AppShell";
+import ProjectShell from "./layouts/ProjectShell";
 import AboutPlaceholder from "./pages/AboutPlaceholder";
 import Dashboard from "./pages/Dashboard";
 import DocumentEditor from "./pages/DocumentEditor";
@@ -8,6 +9,11 @@ import DocsPlaceholder from "./pages/DocsPlaceholder";
 import HelpPlaceholder from "./pages/HelpPlaceholder";
 import Login from "./pages/Login";
 import ProfilePlaceholder from "./pages/ProfilePlaceholder";
+import ProjectAnalyticsPlaceholder from "./pages/ProjectAnalyticsPlaceholder";
+import ProjectDiagramsPlaceholder from "./pages/ProjectDiagramsPlaceholder";
+import ProjectDocumentsPlaceholder from "./pages/ProjectDocumentsPlaceholder";
+import ProjectSettingsPlaceholder from "./pages/ProjectSettingsPlaceholder";
+import ProjectVersionsPlaceholder from "./pages/ProjectVersionsPlaceholder";
 import ProjectWorkspace from "./pages/ProjectWorkspace";
 import Register from "./pages/Register";
 import RequirementRegistry from "./pages/RequirementRegistry";
@@ -38,12 +44,19 @@ function App() {
       <Route path="/register" element={<Register />} />
       <Route element={<AppShell />}>
         <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/projects/:id" element={<ProjectWorkspace />} />
-        <Route path="/projects/:id/templates" element={<TemplateLibrary />} />
-        <Route path="/projects/:id/requirements" element={<RequirementRegistry />} />
-        <Route path="/projects/:id/traceability" element={<TraceabilityMatrix />} />
-        <Route path="/projects/:id/validation" element={<ValidationEngine />} />
-        <Route path="/projects/:projectId/documents/:documentId" element={<DocumentEditor />} />
+        <Route path="/projects/:id" element={<ProjectShell />}>
+          <Route index element={<ProjectWorkspace />} />
+          <Route path="documents" element={<ProjectDocumentsPlaceholder />} />
+          <Route path="documents/:documentId" element={<DocumentEditor />} />
+          <Route path="templates" element={<TemplateLibrary />} />
+          <Route path="requirements" element={<RequirementRegistry />} />
+          <Route path="traceability" element={<TraceabilityMatrix />} />
+          <Route path="validation" element={<ValidationEngine />} />
+          <Route path="diagrams" element={<ProjectDiagramsPlaceholder />} />
+          <Route path="versions" element={<ProjectVersionsPlaceholder />} />
+          <Route path="analytics" element={<ProjectAnalyticsPlaceholder />} />
+          <Route path="settings" element={<ProjectSettingsPlaceholder />} />
+        </Route>
         <Route path="/profile" element={<ProfilePlaceholder />} />
         <Route path="/settings" element={<SettingsPlaceholder />} />
         <Route path="/help" element={<HelpPlaceholder />} />

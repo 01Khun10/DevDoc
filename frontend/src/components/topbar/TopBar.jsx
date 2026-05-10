@@ -1,20 +1,28 @@
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useNotify } from "../../context/NotificationContext";
+import BackButton from "./BackButton";
 import Breadcrumb from "./Breadcrumb";
 import ProfileMenu from "./ProfileMenu";
 import SearchPlaceholder from "./SearchPlaceholder";
 
 function TopBar() {
   const { notify } = useNotify();
+  const [openMenu, setOpenMenu] = useState("");
 
   function showComingSoon(label) {
     notify(`${label} controls are coming soon.`, { tone: "info" });
+  }
+
+  function toggleMenu(menuName) {
+    setOpenMenu((currentMenu) => (currentMenu === menuName ? "" : menuName));
   }
 
   return (
     <header className="sticky top-0 z-30 border-b border-slate-200 bg-white/95 shadow-sm backdrop-blur">
       <div className="mx-auto flex max-w-[1600px] flex-col gap-3 px-4 py-3 sm:px-6 lg:flex-row lg:items-center">
         <div className="flex min-w-0 flex-1 items-center gap-4">
+          <BackButton />
           <Link
             className="flex shrink-0 items-center gap-2 text-slate-950"
             to="/dashboard"
@@ -32,30 +40,61 @@ function TopBar() {
         <div className="flex min-w-0 flex-1 items-center gap-3">
           <SearchPlaceholder />
           <div className="flex shrink-0 items-center gap-2">
-            <button
-              className="rounded-md border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-600 shadow-sm transition hover:bg-slate-50"
-              type="button"
-              title="Notifications are coming soon."
-              onClick={() => showComingSoon("Notification")}
-            >
-              Alerts
-            </button>
-            <button
-              className="rounded-md border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-600 shadow-sm transition hover:bg-slate-50"
-              type="button"
-              title="Theme controls are coming soon."
-              onClick={() => showComingSoon("Theme")}
-            >
-              Theme
-            </button>
-            <button
-              className="hidden rounded-md border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-600 shadow-sm transition hover:bg-slate-50 sm:inline-flex"
-              type="button"
-              title="Language controls are coming soon."
-              onClick={() => showComingSoon("Language")}
-            >
-              EN
-            </button>
+            <div className="relative">
+              <button
+                className="rounded-md border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-600 shadow-sm transition hover:bg-slate-50"
+                type="button"
+                title="Notifications"
+                onClick={() => toggleMenu("alerts")}
+              >
+                Alerts
+              </button>
+              {openMenu === "alerts" ? (
+                <div className="absolute right-0 z-40 mt-2 w-72 rounded-lg border border-slate-200 bg-white p-4 text-sm shadow-xl">
+                  <p className="font-semibold text-slate-950">No notifications yet.</p>
+                  <p className="mt-2 leading-6 text-slate-600">
+                    Notifications for document saves, validation runs, and traceability updates
+                    will appear here later.
+                  </p>
+                </div>
+              ) : null}
+            </div>
+            <div className="relative">
+              <button
+                className="rounded-md border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-600 shadow-sm transition hover:bg-slate-50"
+                type="button"
+                title="Theme settings"
+                onClick={() => {
+                  toggleMenu("theme");
+                  showComingSoon("Theme");
+                }}
+              >
+                Theme
+              </button>
+              {openMenu === "theme" ? (
+                <div className="absolute right-0 z-40 mt-2 w-56 rounded-lg border border-slate-200 bg-white p-4 text-sm text-slate-600 shadow-xl">
+                  Theme settings are coming soon.
+                </div>
+              ) : null}
+            </div>
+            <div className="relative hidden sm:block">
+              <button
+                className="rounded-md border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-600 shadow-sm transition hover:bg-slate-50"
+                type="button"
+                title="Language"
+                onClick={() => {
+                  toggleMenu("language");
+                  showComingSoon("Language");
+                }}
+              >
+                EN
+              </button>
+              {openMenu === "language" ? (
+                <div className="absolute right-0 z-40 mt-2 w-56 rounded-lg border border-slate-200 bg-white p-4 text-sm text-slate-600 shadow-xl">
+                  More languages coming later.
+                </div>
+              ) : null}
+            </div>
             <Link
               className="rounded-md border border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-600 shadow-sm transition hover:bg-slate-50"
               to="/help"
