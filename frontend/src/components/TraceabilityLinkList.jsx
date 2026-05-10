@@ -6,29 +6,90 @@ function formatDate(value) {
   return new Date(value).toLocaleDateString();
 }
 
-function buildRequirementMap(requirements) {
-  return requirements.reduce((map, requirement) => {
-    map[requirement.id] = requirement;
+function buildMap(items) {
+  return items.reduce((map, item) => {
+    map[item.id] = item;
     return map;
   }, {});
 }
 
-function buildSectionMap(documentSections) {
-  return documentSections.reduce((map, section) => {
-    map[section.id] = section;
-    return map;
-  }, {});
+function formatLinkLabel(linkType) {
+  return linkType === "covers" ? "covers" : "described_by";
+}
+
+function getSourceLabel(link, maps) {
+  if (link.sourceType === "USE_CASE") {
+    const useCase = maps.useCases[link.sourceId];
+    return {
+      label: useCase ? `${useCase.code} - ${useCase.title}` : "Use case is no longer available",
+      type: "Use case",
+      badge: useCase?.code || "UC"
+    };
+  }
+
+  if (link.sourceType === "REQUIREMENT") {
+    const requirement = maps.requirements[link.sourceId];
+    return {
+      label: requirement
+        ? `${requirement.code} - ${requirement.title}`
+        : "Requirement is no longer available",
+      type: "Requirement",
+      badge: requirement?.type || "REQ"
+    };
+  }
+
+  return {
+    label: "Source artefact is no longer available",
+    type: "Source",
+    badge: "SRC"
+  };
+}
+
+function getTargetLabel(link, maps) {
+  if (link.targetType === "REQUIREMENT") {
+    const requirement = maps.requirements[link.targetId];
+    return {
+      label: requirement
+        ? `${requirement.code} - ${requirement.title}`
+        : "Requirement is no longer available",
+      type: "Requirement",
+      badge: requirement?.type || "REQ"
+    };
+  }
+
+  if (link.targetType === "DOCUMENT_SECTION") {
+    const section = maps.documentSections[link.targetId];
+    return {
+      label: section
+        ? `${section.document?.documentType || "DOC"} - Section ${section.sectionNumber} - ${
+            section.title
+          }`
+        : "Document section is no longer available",
+      type: section?.document?.title || "Document section",
+      badge: section?.document?.documentType || "DOC"
+    };
+  }
+
+  return {
+    label: "Target artefact is no longer available",
+    type: "Target",
+    badge: "TGT"
+  };
 }
 
 function TraceabilityLinkList({
-  links,
-  requirements,
-  documentSections,
+  links = [],
+  useCases = [],
+  requirements = [],
+  documentSections = [],
   onDelete,
   isDeletingId,
 }) {
-  const requirementMap = buildRequirementMap(requirements);
-  const sectionMap = buildSectionMap(documentSections);
+  const maps = {
+    useCases: buildMap(useCases),
+    requirements: buildMap(requirements),
+    documentSections: buildMap(documentSections),
+  };
 
   if (links.length === 0) {
     return (
@@ -41,8 +102,8 @@ function TraceabilityLinkList({
   return (
     <div className="grid gap-3">
       {links.map((link) => {
-        const requirement = requirementMap[link.sourceId];
-        const section = sectionMap[link.targetId];
+        const source = getSourceLabel(link, maps);
+        const target = getTargetLabel(link, maps);
 
         return (
           <article
@@ -52,39 +113,30 @@ function TraceabilityLinkList({
             <div className="grid gap-4 xl:grid-cols-[minmax(0,1fr)_9rem_minmax(0,1fr)_auto] xl:items-center">
               <div>
                 <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-                  Requirement
+                  {source.type}
                 </p>
                 <div className="mt-2 flex flex-wrap items-center gap-2">
-                  <span className="text-sm font-bold text-teal-700">
-                    {requirement?.code || "Unknown requirement"}
+                  <span className="rounded-full bg-teal-50 px-2 py-1 text-xs font-semibold text-teal-700">
+                    {source.badge}
                   </span>
-                  {requirement?.type ? (
-                    <span className="rounded-full bg-slate-100 px-2 py-1 text-xs font-semibold text-slate-700">
-                      {requirement.type}
-                    </span>
-                  ) : null}
                 </div>
-                <p className="mt-2 text-sm leading-6 text-slate-700">
-                  {requirement?.title || "Requirement is no longer available"}
-                </p>
+                <p className="mt-2 text-sm leading-6 text-slate-700">{source.label}</p>
               </div>
 
               <div className="rounded-full bg-teal-50 px-3 py-2 text-center text-xs font-bold text-teal-700 ring-1 ring-teal-100">
-                described by
+                {formatLinkLabel(link.linkType)}
               </div>
 
               <div>
                 <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">
-                  Document section
+                  {target.type}
                 </p>
-                <p className="mt-2 text-sm font-bold text-slate-950">
-                  {section?.document?.title || "Unknown document"}
-                </p>
-                <p className="mt-2 text-sm leading-6 text-slate-700">
-                  {section
-                    ? `Section ${section.sectionNumber} - ${section.title}`
-                    : "Section is no longer available"}
-                </p>
+                <div className="mt-2 flex flex-wrap items-center gap-2">
+                  <span className="rounded-full bg-slate-100 px-2 py-1 text-xs font-semibold text-slate-700">
+                    {target.badge}
+                  </span>
+                </div>
+                <p className="mt-2 text-sm leading-6 text-slate-700">{target.label}</p>
                 <p className="mt-2 text-xs text-slate-500">Created {formatDate(link.createdAt)}</p>
               </div>
 

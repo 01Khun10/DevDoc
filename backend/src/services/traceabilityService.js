@@ -5,6 +5,7 @@ const SOURCE_NOT_FOUND = "SOURCE_NOT_FOUND";
 const TARGET_NOT_FOUND = "TARGET_NOT_FOUND";
 const LINK_NOT_FOUND = "LINK_NOT_FOUND";
 const DUPLICATE_LINK = "DUPLICATE_LINK";
+const UNSUPPORTED_LINK_TYPE = "UNSUPPORTED_LINK_TYPE";
 
 function createTraceabilityError(code, message) {
   const error = new Error(message);
@@ -25,6 +26,22 @@ function getTraceabilityLinkSelect() {
   };
 }
 
+function getSupportedLinkType(sourceType, targetType) {
+  if (sourceType === "USE_CASE" && targetType === "REQUIREMENT") {
+    return "covers";
+  }
+
+  if (sourceType === "USE_CASE" && targetType === "DOCUMENT_SECTION") {
+    return "described_by";
+  }
+
+  if (sourceType === "REQUIREMENT" && targetType === "DOCUMENT_SECTION") {
+    return "described_by";
+  }
+
+  return null;
+}
+
 async function verifyProjectOwnership(tx, ownerId, projectId) {
   const project = await tx.project.findFirst({
     where: {
@@ -39,6 +56,80 @@ async function verifyProjectOwnership(tx, ownerId, projectId) {
   }
 
   return project;
+}
+
+async function verifySourceArtefact(tx, projectId, values) {
+  if (values.sourceType === "USE_CASE") {
+    const useCase = await tx.useCase.findFirst({
+      where: {
+        id: values.sourceId,
+        projectId
+      },
+      select: { id: true }
+    });
+
+    if (!useCase) {
+      throw createTraceabilityError(SOURCE_NOT_FOUND, "Source artefact not found");
+    }
+
+    return useCase;
+  }
+
+  if (values.sourceType === "REQUIREMENT") {
+    const requirement = await tx.requirement.findFirst({
+      where: {
+        id: values.sourceId,
+        projectId
+      },
+      select: { id: true }
+    });
+
+    if (!requirement) {
+      throw createTraceabilityError(SOURCE_NOT_FOUND, "Source artefact not found");
+    }
+
+    return requirement;
+  }
+
+  throw createTraceabilityError(SOURCE_NOT_FOUND, "Source artefact not found");
+}
+
+async function verifyTargetArtefact(tx, projectId, values) {
+  if (values.targetType === "REQUIREMENT") {
+    const requirement = await tx.requirement.findFirst({
+      where: {
+        id: values.targetId,
+        projectId
+      },
+      select: { id: true }
+    });
+
+    if (!requirement) {
+      throw createTraceabilityError(TARGET_NOT_FOUND, "Target artefact not found");
+    }
+
+    return requirement;
+  }
+
+  if (values.targetType === "DOCUMENT_SECTION") {
+    const documentSection = await tx.documentSection.findFirst({
+      where: {
+        id: values.targetId,
+        document: {
+          projectId
+        }
+      },
+      select: { id: true }
+    });
+
+    if (!documentSection) {
+      throw createTraceabilityError(TARGET_NOT_FOUND, "Target artefact not found");
+    }
+
+    return documentSection;
+  }
+
+  throw createTraceabilityError(TARGET_NOT_FOUND, "Target artefact not found");
 }
 
 async function getTraceabilityLinks(ownerId, projectId) {
@@ -56,6 +147,17 @@ async function getTraceabilityLinks(ownerId, projectId) {
 async function getTraceabilityOptions(ownerId, projectId) {
   return prisma.$transaction(async (tx) => {
     const project = await verifyProjectOwnership(tx, ownerId, projectId);
+
+    const useCases = await tx.useCase.findMany({
+      where: { projectId: project.id },
+      orderBy: { code: "asc" },
+      select: {
+        id: true,
+        code: true,
+        title: true,
+        description: true
+      }
+    });
 
     const requirements = await tx.requirement.findMany({
       where: { projectId: project.id },
@@ -99,6 +201,7 @@ async function getTraceabilityOptions(ownerId, projectId) {
     });
 
     return {
+      useCases,
       requirements,
       documentSections
     };
@@ -108,32 +211,17 @@ async function getTraceabilityOptions(ownerId, projectId) {
 async function createTraceabilityLink(ownerId, projectId, values) {
   return prisma.$transaction(async (tx) => {
     const project = await verifyProjectOwnership(tx, ownerId, projectId);
+    const supportedLinkType = getSupportedLinkType(values.sourceType, values.targetType);
 
-    const sourceRequirement = await tx.requirement.findFirst({
-      where: {
-        id: values.sourceId,
-        projectId: project.id
-      },
-      select: { id: true }
-    });
-
-    if (!sourceRequirement) {
-      throw createTraceabilityError(SOURCE_NOT_FOUND, "Source requirement not found");
+    if (!supportedLinkType || values.linkType !== supportedLinkType) {
+      throw createTraceabilityError(
+        UNSUPPORTED_LINK_TYPE,
+        "Unsupported or invalid traceability link type"
+      );
     }
 
-    const targetSection = await tx.documentSection.findFirst({
-      where: {
-        id: values.targetId,
-        document: {
-          projectId: project.id
-        }
-      },
-      select: { id: true }
-    });
-
-    if (!targetSection) {
-      throw createTraceabilityError(TARGET_NOT_FOUND, "Target document section not found");
-    }
+    await verifySourceArtefact(tx, project.id, values);
+    await verifyTargetArtefact(tx, project.id, values);
 
     const existingLink = await tx.traceabilityLink.findFirst({
       where: {
@@ -203,6 +291,7 @@ module.exports = {
   TARGET_NOT_FOUND,
   LINK_NOT_FOUND,
   DUPLICATE_LINK,
+  UNSUPPORTED_LINK_TYPE,
   getTraceabilityLinks,
   getTraceabilityOptions,
   createTraceabilityLink,

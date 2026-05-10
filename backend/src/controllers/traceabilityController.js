@@ -5,6 +5,7 @@ const {
   TARGET_NOT_FOUND,
   LINK_NOT_FOUND,
   DUPLICATE_LINK,
+  UNSUPPORTED_LINK_TYPE,
   getTraceabilityLinks,
   getTraceabilityOptions,
   createTraceabilityLink,
@@ -27,11 +28,11 @@ function mapServiceError(res, error) {
   }
 
   if (error.code === SOURCE_NOT_FOUND) {
-    return sendError(res, 404, "Source requirement not found");
+    return sendError(res, 404, "Source artefact not found");
   }
 
   if (error.code === TARGET_NOT_FOUND) {
-    return sendError(res, 404, "Target document section not found");
+    return sendError(res, 404, "Target artefact not found");
   }
 
   if (error.code === LINK_NOT_FOUND) {
@@ -40,6 +41,10 @@ function mapServiceError(res, error) {
 
   if (error.code === DUPLICATE_LINK) {
     return sendError(res, 400, "Traceability link already exists");
+  }
+
+  if (error.code === UNSUPPORTED_LINK_TYPE) {
+    return sendError(res, 400, "Unsupported traceability link type");
   }
 
   return sendError(res, 500, "Unexpected server error");
@@ -65,6 +70,10 @@ async function options(req, res) {
 
 async function create(req, res) {
   const validation = validateCreateTraceabilityLinkInput(req.body);
+
+  if (validation.isUnsupportedPair) {
+    return sendError(res, 400, "Unsupported traceability link type");
+  }
 
   if (!validation.isValid) {
     return sendError(res, 400, "Validation failed", validation.fields);
