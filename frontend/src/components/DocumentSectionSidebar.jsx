@@ -89,7 +89,7 @@ function DocumentSectionSidebar({
           return (
             <button
               key={section.id}
-            className="w-full rounded-2xl p-3 text-left transition hover:-translate-y-0.5 hover:shadow-sm"
+              className="w-full rounded-xl p-3 text-left transition hover:-translate-y-0.5 hover:shadow-sm"
               style={{
                 border: `1px solid ${isSelected ? "var(--devdoc-primary)" : "var(--devdoc-border)"}`,
                 backgroundColor: isSelected ? "var(--devdoc-primary-soft)" : "var(--devdoc-surface)",
@@ -111,8 +111,12 @@ function DocumentSectionSidebar({
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
                     <span
-                      className="rounded-full px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wide"
-                      style={{ color: isComplete ? "var(--devdoc-success)" : "var(--devdoc-muted)" }}
+                      className="rounded-md border px-2 py-0.5 text-[10px] font-extrabold uppercase tracking-wide"
+                      style={{
+                        borderColor: isComplete ? "color-mix(in srgb, var(--devdoc-success) 35%, var(--devdoc-border))" : "var(--devdoc-border)",
+                        backgroundColor: isComplete ? "var(--devdoc-success-soft)" : "var(--devdoc-surface-muted)",
+                        color: isComplete ? "var(--devdoc-success)" : "var(--devdoc-muted)"
+                      }}
                       aria-hidden="true"
                     >
                       {getStatusIcon(section.status)}

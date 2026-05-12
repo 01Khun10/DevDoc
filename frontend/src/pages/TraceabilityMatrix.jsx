@@ -16,7 +16,7 @@ import {
 const TRACEABILITY_MODES = {
   USE_CASE_REQUIREMENT: {
     key: "USE_CASE_REQUIREMENT",
-    label: "Use Cases -> Requirements",
+    label: "Use Cases → Requirements",
     sourceType: "USE_CASE",
     targetType: "REQUIREMENT",
     linkType: "covers",
@@ -28,7 +28,7 @@ const TRACEABILITY_MODES = {
   },
   USE_CASE_DOCUMENT_SECTION: {
     key: "USE_CASE_DOCUMENT_SECTION",
-    label: "Use Cases -> Document Sections",
+    label: "Use Cases → Sections",
     sourceType: "USE_CASE",
     targetType: "DOCUMENT_SECTION",
     linkType: "described_by",
@@ -40,7 +40,7 @@ const TRACEABILITY_MODES = {
   },
   REQUIREMENT_DOCUMENT_SECTION: {
     key: "REQUIREMENT_DOCUMENT_SECTION",
-    label: "Requirements -> Document Sections",
+    label: "Requirements → Sections",
     sourceType: "REQUIREMENT",
     targetType: "DOCUMENT_SECTION",
     linkType: "described_by",
@@ -58,45 +58,19 @@ const MODE_ORDER = [
   "REQUIREMENT_DOCUMENT_SECTION",
 ];
 
-function SummaryCard({ label, value, tone = "slate" }) {
-  const valueColor =
-    tone === "amber" ? "var(--devdoc-warning)" :
-    tone === "emerald" ? "var(--devdoc-success)" :
-    "var(--devdoc-text)";
-
-  return (
-    <div className="devdoc-card-border p-4">
-      <p className="devdoc-label">{label}</p>
-      <p className="mt-2 text-2xl font-bold" style={{ color: valueColor }}>{value}</p>
-    </div>
-  );
-}
-
 function getDefaultModeKey(useCases) {
   return useCases.length > 0 ? "USE_CASE_REQUIREMENT" : "REQUIREMENT_DOCUMENT_SECTION";
 }
 
 function getItemsByKind(kind, options) {
-  if (kind === "useCase") {
-    return options.useCases;
-  }
-
-  if (kind === "requirement") {
-    return options.requirements;
-  }
-
+  if (kind === "useCase") return options.useCases;
+  if (kind === "requirement") return options.requirements;
   return options.documentSections;
 }
 
 function getMissingMessage(kind) {
-  if (kind === "useCase") {
-    return "Create use cases before linking this traceability view.";
-  }
-
-  if (kind === "requirement") {
-    return "Create requirements before linking this traceability view.";
-  }
-
+  if (kind === "useCase") return "Create use cases before linking this traceability view.";
+  if (kind === "requirement") return "Create requirements before linking this traceability view.";
   return "Create a document before linking this traceability view.";
 }
 
@@ -149,7 +123,6 @@ function TraceabilityMatrix() {
         navigate("/login", { replace: true });
         return true;
       }
-
       return false;
     },
     [logout, navigate]
@@ -159,7 +132,6 @@ function TraceabilityMatrix() {
     setIsLoading(true);
     setErrorType("");
     setCreateError("");
-
     try {
       const [loadedProject, loadedOptions, traceabilityLinks] = await Promise.all([
         getProject(id),
@@ -169,7 +141,6 @@ function TraceabilityMatrix() {
       const loadedUseCases = loadedOptions.useCases || [];
       const loadedRequirements = loadedOptions.requirements || [];
       const loadedDocumentSections = loadedOptions.documentSections || [];
-
       setProject(loadedProject);
       setUseCases(loadedUseCases);
       setRequirements(loadedRequirements);
@@ -178,10 +149,7 @@ function TraceabilityMatrix() {
       setModeKey((currentMode) => currentMode || getDefaultModeKey(loadedUseCases));
       setSelectedSourceId("");
     } catch (error) {
-      if (handleRequestError(error)) {
-        return;
-      }
-
+      if (handleRequestError(error)) return;
       setErrorType(error.status === 404 ? "not-found" : "load-error");
     } finally {
       setIsLoading(false);
@@ -198,24 +166,17 @@ function TraceabilityMatrix() {
     setCreateError("");
   }
 
-  async function handleDelete(linkId, options = {}) {
-    if (!options.skipConfirm && !window.confirm("Remove this traceability link?")) {
-      return false;
-    }
-
+  async function handleDelete(linkId, opts = {}) {
+    if (!opts.skipConfirm && !window.confirm("Remove this traceability link?")) return false;
     setIsDeletingId(linkId);
     setCreateError("");
-
     try {
       await deleteTraceabilityLink(id, linkId);
       setLinks((currentLinks) => currentLinks.filter((link) => link.id !== linkId));
       notify("Traceability link removed.", { tone: "success" });
       return true;
     } catch (error) {
-      if (handleRequestError(error)) {
-        return false;
-      }
-
+      if (handleRequestError(error)) return false;
       setCreateError(error.message || "Could not remove traceability link.");
       return false;
     } finally {
@@ -224,30 +185,19 @@ function TraceabilityMatrix() {
   }
 
   async function handleToggleLink(target) {
-    if (!selectedSourceId || processingTargetId) {
-      return;
-    }
-
+    if (!selectedSourceId || processingTargetId) return;
     const existingLink =
-      modeLinks.find(
-        (link) => link.sourceId === selectedSourceId && link.targetId === target.id
-      ) || null;
-
+      modeLinks.find((link) => link.sourceId === selectedSourceId && link.targetId === target.id) || null;
     setProcessingTargetId(target.id);
     setCreateError("");
-
     try {
       if (existingLink) {
-        if (!window.confirm("Remove this traceability link?")) {
-          return;
-        }
-
+        if (!window.confirm("Remove this traceability link?")) return;
         await deleteTraceabilityLink(id, existingLink.id);
         setLinks((currentLinks) => currentLinks.filter((link) => link.id !== existingLink.id));
         notify("Traceability link removed.", { tone: "success" });
         return;
       }
-
       const createdLink = await createTraceabilityLink(id, {
         sourceType: activeMode.sourceType,
         sourceId: selectedSourceId,
@@ -255,17 +205,13 @@ function TraceabilityMatrix() {
         targetId: target.id,
         linkType: activeMode.linkType,
       });
-
       setLinks((currentLinks) => {
         const alreadyExists = currentLinks.some((link) => link.id === createdLink.id);
         return alreadyExists ? currentLinks : [createdLink, ...currentLinks];
       });
       notify("Traceability link added.", { tone: "success" });
     } catch (error) {
-      if (handleRequestError(error)) {
-        return;
-      }
-
+      if (handleRequestError(error)) return;
       setCreateError(error.message || "Could not update traceability link.");
     } finally {
       setProcessingTargetId("");
@@ -276,9 +222,9 @@ function TraceabilityMatrix() {
 
   if (errorType === "not-found") {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-[var(--devdoc-bg)] px-6">
+      <main className="flex min-h-screen items-center justify-center px-6" style={{ backgroundColor: "var(--devdoc-bg)" }}>
         <div className="devdoc-card-border max-w-md p-8 text-center">
-          <p className="font-headline text-xl font-extrabold text-[var(--devdoc-text)]">Project not found</p>
+          <p className="font-headline text-xl font-extrabold" style={{ color: "var(--devdoc-text)" }}>Project not found</p>
           <button className="devdoc-gradient-button mt-6" onClick={() => navigate("/dashboard")}>Back to dashboard</button>
         </div>
       </main>
@@ -287,10 +233,10 @@ function TraceabilityMatrix() {
 
   if (errorType === "load-error") {
     return (
-      <main className="flex min-h-screen items-center justify-center bg-[var(--devdoc-bg)] px-6">
+      <main className="flex min-h-screen items-center justify-center px-6" style={{ backgroundColor: "var(--devdoc-bg)" }}>
         <div className="devdoc-card-border max-w-md p-8 text-center">
-          <p className="font-headline text-xl font-extrabold text-[var(--devdoc-text)]">Could not load traceability</p>
-          <p className="mt-2 text-sm text-[var(--devdoc-muted)]">Check your connection and try again.</p>
+          <p className="font-headline text-xl font-extrabold" style={{ color: "var(--devdoc-text)" }}>Could not load traceability</p>
+          <p className="mt-2 text-sm" style={{ color: "var(--devdoc-muted)" }}>Check your connection and try again.</p>
           <button className="devdoc-gradient-button mt-6" onClick={loadPage}>Retry</button>
         </div>
       </main>
@@ -302,34 +248,42 @@ function TraceabilityMatrix() {
   const canBuildLinks = sourceItems.length > 0 && targetItems.length > 0;
 
   return (
-    <main className="min-h-screen bg-[var(--devdoc-bg)] px-6 py-8 text-[var(--devdoc-text)]">
-      <section className="mx-auto max-w-7xl">
-        <div className="mb-8">
-          <p className="devdoc-label text-[var(--devdoc-primary)]">{project.name}</p>
-          <h1 className="font-headline mt-2 text-4xl font-extrabold tracking-tight">Traceability Matrix</h1>
-          <p className="mt-2 max-w-3xl text-sm leading-6 text-[var(--devdoc-muted)]">
-            Choose a relationship, select an item on the left, then click an item on the right to link or unlink it. Traceability links help verify coverage across use cases, requirements, and documentation.
-          </p>
-        </div>
+    <main
+      className="min-h-screen devdoc-fade-in"
+      style={{ backgroundColor: "var(--devdoc-bg)", color: "var(--devdoc-text)" }}
+    >
+      {/* Page header */}
+      <div
+        className="border-b px-6 py-5"
+        style={{ borderColor: "var(--devdoc-border)", backgroundColor: "var(--devdoc-surface)" }}
+      >
+        <p className="devdoc-label" style={{ color: "var(--devdoc-primary)" }}>{project.name}</p>
+        <h1 className="font-headline mt-1.5 text-2xl font-extrabold tracking-tight">Traceability Matrix</h1>
+        <p className="mt-1 max-w-3xl text-sm leading-6" style={{ color: "var(--devdoc-muted)" }}>
+          Select a relationship view, pick a source item, then click targets to link or unlink. Traceability helps verify documentation coverage.
+        </p>
+      </div>
 
-        <section
-          className="devdoc-card-border mt-8 p-5"
-          style={{ backgroundColor: "var(--devdoc-surface)", borderColor: "var(--devdoc-border)" }}
+      <div className="mx-auto max-w-7xl px-6 py-6">
+        {/* Mode selector */}
+        <div
+          className="mb-5 rounded-xl border p-4"
+          style={{ borderColor: "var(--devdoc-border)", backgroundColor: "var(--devdoc-surface)" }}
         >
-          <p className="devdoc-label">Relationship view</p>
-          <div className="mt-3 flex flex-wrap gap-2">
+          <p className="devdoc-label mb-3">Relationship view</p>
+          <div className="flex flex-wrap gap-2">
             {MODE_ORDER.map((key) => {
               const mode = TRACEABILITY_MODES[key];
               const isActive = mode.key === activeMode.key;
-
               return (
                 <button
                   key={mode.key}
-                  className="rounded-full px-4 py-2 text-sm font-bold transition"
+                  className="rounded-lg px-4 py-2 text-sm font-semibold transition-all duration-150"
                   style={{
                     backgroundColor: isActive ? "var(--devdoc-primary)" : "var(--devdoc-surface-muted)",
-                    color: isActive ? "#ffffff" : "var(--devdoc-text)",
+                    color: isActive ? "#ffffff" : "var(--devdoc-text-secondary)",
                     border: `1px solid ${isActive ? "var(--devdoc-primary)" : "var(--devdoc-border)"}`,
+                    boxShadow: isActive ? "0 1px 4px rgba(99,102,241,0.25)" : "none",
                   }}
                   type="button"
                   onClick={() => handleModeChange(mode.key)}
@@ -340,47 +294,63 @@ function TraceabilityMatrix() {
             })}
           </div>
           <p className="mt-3 text-sm" style={{ color: "var(--devdoc-muted)" }}>{activeMode.explanation}</p>
-        </section>
+        </div>
 
-        <section className="mt-8 grid gap-4 sm:grid-cols-3">
-          <SummaryCard label={`Total ${activeMode.sourceLabel.toLowerCase()}`} value={sourceItems.length} />
-          <SummaryCard label="Linked sources" value={linkedSourceCount} tone="emerald" />
-          <SummaryCard label="Unlinked sources" value={unlinkedSourceCount} tone="amber" />
-        </section>
+        {/* Stats */}
+        <div className="mb-5 grid gap-3 sm:grid-cols-3">
+          {[
+            { label: `Total ${activeMode.sourceLabel.toLowerCase()}`, value: sourceItems.length, color: "var(--devdoc-text)" },
+            { label: "Linked sources", value: linkedSourceCount, color: "var(--devdoc-success)" },
+            { label: "Unlinked sources", value: unlinkedSourceCount, color: unlinkedSourceCount > 0 ? "var(--devdoc-warning)" : "var(--devdoc-muted)" },
+          ].map((stat) => (
+            <div
+              key={stat.label}
+              className="rounded-xl border p-4"
+              style={{ borderColor: "var(--devdoc-border)", backgroundColor: "var(--devdoc-surface)" }}
+            >
+              <p className="devdoc-label">{stat.label}</p>
+              <p className="mt-2 font-headline text-2xl font-extrabold" style={{ color: stat.color }}>
+                {stat.value}
+              </p>
+            </div>
+          ))}
+        </div>
 
+        {/* Unlinked warning */}
         {unlinkedSourceCount > 0 ? (
           <div
-            className="mt-4 rounded-xl border px-4 py-3 text-sm font-semibold"
+            className="mb-5 flex items-center gap-3 rounded-xl border px-4 py-3 text-sm font-semibold"
             style={{
-              backgroundColor: "rgba(245,158,11,0.1)",
-              borderColor: "rgba(245,158,11,0.35)",
-              color: "var(--devdoc-warning)"
+              backgroundColor: "var(--devdoc-warning-soft)",
+              borderColor: "rgba(202,138,4,0.3)",
+              color: "var(--devdoc-warning)",
             }}
           >
-            Some sources are not linked yet. Linking them improves traceability clarity and future
-            validation readiness.
+            <svg viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4 shrink-0">
+              <path fillRule="evenodd" d="M8.485 2.495c.673-1.167 2.357-1.167 3.03 0l6.28 10.875c.673 1.167-.17 2.625-1.516 2.625H3.72c-1.347 0-2.189-1.458-1.515-2.625L8.485 2.495zM10 5a.75.75 0 0 1 .75.75v3.5a.75.75 0 0 1-1.5 0v-3.5A.75.75 0 0 1 10 5zm0 9a1 1 0 1 0 0-2 1 1 0 0 0 0 2z" clipRule="evenodd" />
+            </svg>
+            {unlinkedSourceCount} unlinked source{unlinkedSourceCount !== 1 ? "s" : ""}. Linking them improves validation readiness.
           </div>
         ) : null}
 
-        <section className="mt-8">
+        {/* Link builder */}
+        <section className="mb-8">
           {missingSourceMessage ? (
             <div
               className="rounded-xl border border-dashed p-6 text-sm"
-              style={{ borderColor: "var(--devdoc-border)", backgroundColor: "var(--devdoc-surface)", color: "var(--devdoc-muted)" }}
+              style={{ borderColor: "var(--devdoc-border)", color: "var(--devdoc-muted)" }}
             >
               {missingSourceMessage}
             </div>
           ) : null}
-
-          {missingTargetMessage ? (
+          {missingTargetMessage && !missingSourceMessage ? (
             <div
               className="mt-4 rounded-xl border border-dashed p-6 text-sm"
-              style={{ borderColor: "var(--devdoc-border)", backgroundColor: "var(--devdoc-surface)", color: "var(--devdoc-muted)" }}
+              style={{ borderColor: "var(--devdoc-border)", color: "var(--devdoc-muted)" }}
             >
               {missingTargetMessage}
             </div>
           ) : null}
-
           {canBuildLinks ? (
             <TraceabilityLinkForm
               sourceItems={sourceItems}
@@ -396,28 +366,32 @@ function TraceabilityMatrix() {
           ) : null}
         </section>
 
-        <section className="mt-8">
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+        {/* Audit log */}
+        <section>
+          <div
+            className="mb-4 flex items-end justify-between border-b pb-3"
+            style={{ borderColor: "var(--devdoc-border)" }}
+          >
             <div>
-              <h2 className="text-lg font-semibold" style={{ color: "var(--devdoc-text)" }}>Traceability audit log</h2>
+              <h2 className="font-headline text-lg font-extrabold">Traceability audit log</h2>
               <p className="mt-1 text-sm" style={{ color: "var(--devdoc-muted)" }}>
-                Established links across use cases, requirements, and document sections.
+                All established links across use cases, requirements, and document sections.
               </p>
             </div>
-            <p className="text-sm" style={{ color: "var(--devdoc-muted)" }}>{links.length} total</p>
+            <span className="text-sm font-semibold" style={{ color: "var(--devdoc-muted)" }}>
+              {links.length} total
+            </span>
           </div>
-          <div className="mt-4">
-            <TraceabilityLinkList
-              links={links}
-              useCases={useCases}
-              requirements={requirements}
-              documentSections={documentSections}
-              isDeletingId={isDeletingId}
-              onDelete={handleDelete}
-            />
-          </div>
+          <TraceabilityLinkList
+            links={links}
+            useCases={useCases}
+            requirements={requirements}
+            documentSections={documentSections}
+            isDeletingId={isDeletingId}
+            onDelete={handleDelete}
+          />
         </section>
-      </section>
+      </div>
     </main>
   );
 }

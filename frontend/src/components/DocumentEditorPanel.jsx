@@ -20,7 +20,7 @@ function Badge({ children, tone = "slate" }) {
 function RibbonButton({ children, wide = false, onClick, disabled, isActive }) {
   return (
     <button
-      className={`rounded-full px-2.5 py-1.5 text-xs font-bold transition-all ${wide ? "min-w-24" : "min-w-8"}`}
+      className={`rounded-lg px-2.5 py-1.5 text-xs font-bold transition-all ${wide ? "min-w-24" : "min-w-8"}`}
       style={{
         border: `1px solid ${isActive ? "var(--devdoc-primary)" : "var(--devdoc-border)"}`,
         backgroundColor: isActive ? "var(--devdoc-primary-soft)" : "var(--devdoc-surface)",
@@ -272,7 +272,7 @@ function DocumentEditorPanel({
             <button
               key={tab}
               onClick={() => setActiveRibbonTab(tab)}
-              className="rounded-full px-3 py-1 text-xs font-bold transition"
+              className="rounded-lg px-3 py-1 text-xs font-bold transition"
               style={{
                 backgroundColor: tab === activeRibbonTab ? "var(--devdoc-surface)" : "transparent",
                 color: tab === activeRibbonTab ? "var(--devdoc-primary)" : "var(--devdoc-muted)",
@@ -341,7 +341,7 @@ function DocumentEditorPanel({
           </div>
         </div>
 
-        {/* Textarea — keep white for readability, good paper feel */}
+        {/* Textarea keeps a readable paper feel. */}
         <div className="px-6 py-6 sm:px-12 sm:py-8" style={{ backgroundColor: "var(--devdoc-paper, #ffffff)" }}>
           <textarea
             ref={textareaRef}
@@ -356,7 +356,7 @@ function DocumentEditorPanel({
             value={editorContent}
             onChange={(event) => onChangeContent(event.target.value)}
           />
-          <div className="mt-4 flex justify-end border-t pt-3 text-xs" style={{ borderColor: "#e2e8f0", color: "var(--devdoc-muted)" }}>
+          <div className="mt-4 flex justify-end border-t pt-3 text-xs" style={{ borderColor: "var(--devdoc-border)", color: "var(--devdoc-muted)" }}>
             {editorContent.length} / 20000
           </div>
         </div>
@@ -380,7 +380,7 @@ function DocumentEditorPanel({
           </div>
           <div className="flex flex-wrap gap-2">
             <button
-              className="rounded-full px-4 py-2 text-sm font-bold transition disabled:cursor-not-allowed disabled:opacity-50"
+              className="devdoc-button-secondary disabled:cursor-not-allowed disabled:opacity-50"
               style={{
                 border: `1px solid var(--devdoc-border)`,
                 backgroundColor: "var(--devdoc-surface)",

@@ -31,6 +31,7 @@ const BellIcon = () => (
 );
 
 const THEME_ICONS = { light: <SunIcon />, dark: <MoonIcon />, system: <MonitorIcon /> };
+const THEME_CYCLE = ["light", "dark", "system"];
 
 function TopBar() {
   const { theme, setTheme } = useTheme();
@@ -52,36 +53,52 @@ function TopBar() {
     setOpenMenu((current) => (current === name ? "" : name));
   }
 
+  function cycleTheme() {
+    const idx = THEME_CYCLE.indexOf(theme);
+    const next = THEME_CYCLE[(idx + 1) % THEME_CYCLE.length];
+    setTheme(next);
+  }
+
   return (
-    <header className="sticky top-0 z-30 border-b border-[var(--devdoc-border)] bg-[var(--devdoc-topbar)] shadow-[var(--devdoc-shadow-soft)] backdrop-blur-xl">
-      <div className="mx-auto flex max-w-[1700px] flex-col gap-3 px-4 py-3 sm:px-6 lg:min-h-[64px] lg:flex-row lg:items-center">
-        <div className="flex min-w-0 flex-1 items-center gap-3">
+    <header
+      className="sticky top-0 z-30 border-b backdrop-blur-xl"
+      style={{
+        borderColor: "var(--devdoc-border)",
+        backgroundColor: "var(--devdoc-topbar)",
+      }}
+    >
+      <div className="mx-auto flex max-w-[1700px] items-center gap-3 px-4 py-2.5 sm:px-6">
+        {/* Left: Back + Logo + Breadcrumb */}
+        <div className="flex min-w-0 flex-1 items-center gap-2.5">
           <BackButton />
           <Link
             className="group flex shrink-0 items-center gap-2"
             to="/dashboard"
             aria-label="DevDoc dashboard"
           >
-            <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-[var(--devdoc-primary-strong)] to-[var(--devdoc-primary)] text-sm font-black text-white shadow-lg shadow-indigo-500/20 transition group-hover:scale-105">
+            <span
+              className="flex h-8 w-8 items-center justify-center rounded-lg text-sm font-black text-white shadow-sm transition-transform group-hover:scale-105"
+              style={{ background: "var(--devdoc-primary)" }}
+            >
               D
             </span>
-            <span className="font-headline hidden text-lg font-extrabold tracking-tight text-[var(--devdoc-primary)] sm:block">
+            <span
+              className="font-headline hidden text-base font-extrabold tracking-tight sm:block"
+              style={{ color: "var(--devdoc-primary)" }}
+            >
               DevDoc
             </span>
           </Link>
-          <div className="hidden h-7 w-px bg-[var(--devdoc-border)] sm:block" />
+          <div className="hidden h-5 w-px sm:block" style={{ backgroundColor: "var(--devdoc-border)" }} />
           <Breadcrumb />
         </div>
 
-        <div className="flex min-w-0 flex-1 items-center justify-end gap-3" ref={menuRef}>
+        {/* Right: Search + Actions */}
+        <div className="flex min-w-0 flex-1 items-center justify-end gap-2" ref={menuRef}>
           <SearchPlaceholder />
 
-          <div className="hidden items-center gap-2 rounded-full border border-[var(--devdoc-border)] bg-[var(--devdoc-surface)] px-3 py-2 text-xs font-bold text-[var(--devdoc-warning)] shadow-sm lg:flex">
-            <span className="h-2 w-2 rounded-full bg-[var(--devdoc-warning)]" />
-            Review ready
-          </div>
-
-          <div className="flex shrink-0 items-center gap-1.5">
+          <div className="flex shrink-0 items-center gap-1">
+            {/* Bell */}
             <div className="relative">
               <button
                 className="devdoc-icon-button"
@@ -92,48 +109,31 @@ function TopBar() {
                 <BellIcon />
               </button>
               {openMenu === "alerts" ? (
-                <div className="absolute right-0 z-40 mt-2 w-72 rounded-xl border border-[var(--devdoc-border)] bg-[var(--devdoc-surface)] p-4 text-sm text-[var(--devdoc-text)] shadow-xl">
+                <div
+                  className="devdoc-scale-in absolute right-0 z-40 mt-1.5 w-72 rounded-xl border p-4 text-sm shadow-lg"
+                  style={{
+                    borderColor: "var(--devdoc-border)",
+                    backgroundColor: "var(--devdoc-surface)",
+                    color: "var(--devdoc-text)",
+                  }}
+                >
                   <p className="font-bold">No notifications yet.</p>
-                  <p className="mt-2 leading-6 text-[var(--devdoc-muted)]">
+                  <p className="mt-2 leading-6" style={{ color: "var(--devdoc-muted)" }}>
                     Document saves, validation results, and traceability updates will appear here.
                   </p>
                 </div>
               ) : null}
             </div>
 
-            <div className="relative">
-              <button
-                className="devdoc-icon-button"
-                type="button"
-                title={`Theme: ${theme}`}
-                onClick={() => toggleMenu("theme")}
-              >
-                {THEME_ICONS[theme]}
-              </button>
-              {openMenu === "theme" ? (
-                <div className="absolute right-0 z-40 mt-2 w-40 rounded-xl border border-[var(--devdoc-border)] bg-[var(--devdoc-surface)] p-1.5 text-sm shadow-xl">
-                  {(["light", "dark", "system"]).map((mode) => (
-                    <button
-                      key={mode}
-                      className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left capitalize transition hover:bg-[var(--devdoc-surface-muted)]"
-                      style={{
-                        backgroundColor: theme === mode ? "var(--devdoc-primary-soft)" : "transparent",
-                        color: theme === mode ? "var(--devdoc-primary)" : "var(--devdoc-text)",
-                        fontWeight: theme === mode ? 800 : 600,
-                      }}
-                      type="button"
-                      onClick={() => {
-                        setTheme(mode);
-                        setOpenMenu("");
-                      }}
-                    >
-                      <span className="shrink-0">{THEME_ICONS[mode]}</span>
-                      {mode}
-                    </button>
-                  ))}
-                </div>
-              ) : null}
-            </div>
+            {/* Theme toggle - compact single button */}
+            <button
+              className="devdoc-icon-button"
+              type="button"
+              title={`Theme: ${theme} - click to cycle`}
+              onClick={cycleTheme}
+            >
+              {THEME_ICONS[theme]}
+            </button>
 
             <ProfileMenu />
           </div>

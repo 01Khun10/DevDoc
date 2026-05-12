@@ -133,10 +133,10 @@ function TraceabilityLinkList({
               </div>
 
               <button
-                className="rounded-full px-4 py-2 text-sm font-bold transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:translate-y-0"
+                className="rounded-lg px-4 py-2 text-sm font-bold transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:translate-y-0"
                 style={{
-                  border: "1px solid rgba(207,34,46,0.35)",
-                  backgroundColor: "rgba(207,34,46,0.08)",
+                  border: "1px solid color-mix(in srgb, var(--devdoc-error) 35%, var(--devdoc-border))",
+                  backgroundColor: "var(--devdoc-error-soft)",
                   color: "var(--devdoc-error)",
                 }}
                 disabled={isDeletingId === link.id}

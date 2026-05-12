@@ -307,18 +307,13 @@ function TemplateLibrary() {
   }
 
   return (
-    <main className="min-h-screen bg-[var(--devdoc-bg)] px-6 py-8 text-[var(--devdoc-text)]">
-      <section className="mx-auto max-w-7xl">
-        <div className="devdoc-card p-8">
+    <main className="min-h-screen px-6 py-8" style={{ backgroundColor: "var(--devdoc-bg)", color: "var(--devdoc-text)" }}>
+      <section className="mx-auto max-w-7xl devdoc-fade-in">
+        <div className="devdoc-card-border p-6">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div>
-            <Link
-              className="text-sm font-bold text-[var(--devdoc-primary)] hover:underline"
-              to={`/projects/${id}`}
-            >
-              Back to project workspace
-            </Link>
-            <h1 className="font-headline mt-3 text-4xl font-extrabold tracking-tight">
+            <p className="devdoc-label" style={{ color: "var(--devdoc-primary)" }}>Template Library</p>
+            <h1 className="font-headline mt-2 text-3xl font-extrabold tracking-tight">
               Template Library
             </h1>
             <p className="mt-3 text-sm leading-6 text-[var(--devdoc-muted)]">
@@ -326,13 +321,7 @@ function TemplateLibrary() {
               <span className="font-semibold text-[var(--devdoc-text)]">{project.name}</span>
             </p>
           </div>
-          <button
-            className="devdoc-button-secondary"
-            type="button"
-            onClick={handleLogout}
-          >
-            Logout
-          </button>
+          <Link className="devdoc-button-secondary" to={`/projects/${id}`}>Project overview</Link>
         </div>
         </div>
 
@@ -367,7 +356,14 @@ function TemplateLibrary() {
               ) : null}
 
               {selectedProfile && !templatesLoading && templatesError ? (
-                <div className="rounded-lg border border-red-200 bg-red-50 p-6 text-sm text-red-700">
+                <div
+                  className="rounded-xl border p-6 text-sm font-medium"
+                  style={{
+                    borderColor: "color-mix(in srgb, var(--devdoc-error) 35%, var(--devdoc-border))",
+                    backgroundColor: "var(--devdoc-error-soft)",
+                    color: "var(--devdoc-error)"
+                  }}
+                >
                   {templatesError}
                 </div>
               ) : null}

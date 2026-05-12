@@ -45,34 +45,62 @@ function ProfileMenu() {
   return (
     <div className="relative" ref={menuRef}>
       <button
-        className="flex h-9 items-center gap-2 rounded-full border border-[var(--devdoc-border)] bg-[var(--devdoc-surface)] py-1 pl-1 pr-2 text-sm font-bold text-[var(--devdoc-text)] shadow-sm transition hover:border-[var(--devdoc-border-strong)] hover:bg-[var(--devdoc-surface-muted)]"
+        className="flex h-8 items-center gap-2 rounded-lg py-0.5 pl-0.5 pr-2 text-sm font-bold transition"
+        style={{
+          border: "1px solid var(--devdoc-border)",
+          backgroundColor: "var(--devdoc-surface)",
+          color: "var(--devdoc-text)",
+        }}
         type="button"
         aria-expanded={isOpen}
         onClick={() => setIsOpen((value) => !value)}
       >
-        <span className="flex h-7 w-7 items-center justify-center rounded-full bg-gradient-to-br from-[var(--devdoc-primary-strong)] to-[var(--devdoc-primary)] text-xs font-black text-white">
+        <span
+          className="flex h-7 w-7 items-center justify-center rounded-md text-xs font-black text-white"
+          style={{ background: "var(--devdoc-primary)" }}
+        >
           {initial}
         </span>
-        <span className="hidden max-w-[110px] truncate lg:block">{user?.name || "Account"}</span>
+        <span className="hidden max-w-[100px] truncate lg:block">{user?.name || "Account"}</span>
       </button>
 
       {isOpen ? (
-        <div className="absolute right-0 z-50 mt-2 w-72 overflow-hidden rounded-2xl border border-[var(--devdoc-border)] bg-[var(--devdoc-surface)] text-sm text-[var(--devdoc-text)] shadow-2xl">
-          <div className="border-b border-[var(--devdoc-border)] bg-[var(--devdoc-surface-muted)] px-4 py-4">
+        <div
+          className="devdoc-scale-in absolute right-0 z-50 mt-1.5 w-72 overflow-hidden rounded-xl border text-sm shadow-lg"
+          style={{
+            borderColor: "var(--devdoc-border)",
+            backgroundColor: "var(--devdoc-surface)",
+            color: "var(--devdoc-text)",
+          }}
+        >
+          {/* User header */}
+          <div
+            className="border-b px-4 py-3.5"
+            style={{
+              borderColor: "var(--devdoc-border)",
+              backgroundColor: "var(--devdoc-surface-muted)",
+            }}
+          >
             <div className="flex items-center gap-3">
-              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-[var(--devdoc-primary-strong)] to-[var(--devdoc-primary)] text-sm font-black text-white shadow-lg shadow-indigo-500/20">
+              <span
+                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg text-sm font-black text-white"
+                style={{ background: "var(--devdoc-primary)" }}
+              >
                 {initial}
               </span>
               <div className="min-w-0">
-                <p className="truncate font-extrabold">{user?.name || "Account"}</p>
+                <p className="truncate font-bold">{user?.name || "Account"}</p>
                 {user?.email ? (
-                  <p className="truncate text-xs text-[var(--devdoc-muted)]">{user.email}</p>
+                  <p className="truncate text-xs" style={{ color: "var(--devdoc-muted)" }}>
+                    {user.email}
+                  </p>
                 ) : null}
               </div>
             </div>
           </div>
 
-          <div className="py-1.5">
+          {/* Navigation links */}
+          <div className="py-1">
             {[
               ["/profile", "My Profile"],
               ["/settings", "Settings"],
@@ -82,29 +110,44 @@ function ProfileMenu() {
             ].map(([to, label]) => (
               <Link
                 key={to}
-                className="block px-4 py-2.5 font-semibold text-[var(--devdoc-text)] transition hover:bg-[var(--devdoc-surface-muted)]"
+                className="block px-4 py-2 font-medium transition"
+                style={{ color: "var(--devdoc-text)" }}
                 to={to}
                 onClick={close}
+                onMouseEnter={(e) => {
+                  e.currentTarget.style.backgroundColor = "var(--devdoc-surface-muted)";
+                }}
+                onMouseLeave={(e) => {
+                  e.currentTarget.style.backgroundColor = "transparent";
+                }}
               >
                 {label}
               </Link>
             ))}
           </div>
 
-          <div className="border-t border-[var(--devdoc-border)] px-4 py-3">
+          {/* Language selector */}
+          <div
+            className="border-t px-4 py-3"
+            style={{ borderColor: "var(--devdoc-border)" }}
+          >
             <p className="devdoc-label mb-2">Language</p>
-            <div className="grid grid-cols-2 gap-1.5">
+            <div className="grid grid-cols-2 gap-1">
               {languages.map((language) => (
                 <button
                   key={language.code}
                   type="button"
                   onClick={() => setLanguage(language.code)}
-                  className="rounded-lg px-2.5 py-1.5 text-left text-xs font-bold transition hover:bg-[var(--devdoc-surface-muted)]"
+                  className="rounded-md px-2.5 py-1.5 text-left text-xs font-bold transition"
                   style={{
                     backgroundColor:
-                      selectedLanguage === language.code ? "var(--devdoc-primary-soft)" : "transparent",
+                      selectedLanguage === language.code
+                        ? "var(--devdoc-primary-soft)"
+                        : "transparent",
                     color:
-                      selectedLanguage === language.code ? "var(--devdoc-primary)" : "var(--devdoc-muted)",
+                      selectedLanguage === language.code
+                        ? "var(--devdoc-primary)"
+                        : "var(--devdoc-muted)",
                   }}
                 >
                   {language.label}
@@ -113,11 +156,22 @@ function ProfileMenu() {
             </div>
           </div>
 
-          <div className="border-t border-[var(--devdoc-border)] p-1.5">
+          {/* Sign out */}
+          <div
+            className="border-t p-1"
+            style={{ borderColor: "var(--devdoc-border)" }}
+          >
             <button
-              className="flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-left text-sm font-bold text-[var(--devdoc-error)] transition hover:bg-[var(--devdoc-surface-muted)]"
+              className="flex w-full items-center gap-2 rounded-lg px-3 py-2 text-left text-sm font-bold transition"
+              style={{ color: "var(--devdoc-error)" }}
               type="button"
               onClick={handleSignOut}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = "var(--devdoc-surface-muted)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = "transparent";
+              }}
             >
               Sign out
             </button>

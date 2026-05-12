@@ -5,19 +5,23 @@ const NOTIF_KEY = "devdoc_notifications_enabled";
 const toneStyles = {
   info: {
     color: "var(--devdoc-info)",
+    bg: "var(--devdoc-info-soft)",
     label: "i",
   },
   success: {
     color: "var(--devdoc-success)",
-    label: "OK",
+    bg: "var(--devdoc-success-soft)",
+    label: "✓",
   },
   warning: {
     color: "var(--devdoc-warning)",
+    bg: "var(--devdoc-warning-soft)",
     label: "!",
   },
   error: {
     color: "var(--devdoc-error)",
-    label: "X",
+    bg: "var(--devdoc-error-soft)",
+    label: "✕",
   },
 };
 
@@ -38,38 +42,39 @@ function Toaster() {
   if (visibleToasts.length === 0) return null;
 
   return (
-    <div className="fixed right-4 top-20 z-50 grid w-[min(23rem,calc(100vw-2rem))] gap-2">
+    <div className="fixed right-4 top-16 z-50 grid w-[min(22rem,calc(100vw-2rem))] gap-2">
       {visibleToasts.map((toast) => {
         const tone = toneStyles[toast.tone] || toneStyles.info;
 
         return (
           <div
             key={toast.id}
-            className="flex items-start gap-3 rounded-2xl border px-4 py-3 text-sm shadow-2xl backdrop-blur-xl"
+            className="devdoc-slide-down flex items-start gap-3 rounded-xl border px-4 py-3 text-sm backdrop-blur-xl"
             style={{
               backgroundColor: "var(--devdoc-surface)",
               borderColor: "var(--devdoc-border)",
               color: "var(--devdoc-text)",
+              boxShadow: "var(--devdoc-shadow-md)",
             }}
             role="status"
           >
             <span
-              className="mt-0.5 flex h-6 min-w-6 items-center justify-center rounded-full text-[10px] font-black"
+              className="mt-0.5 flex h-5 min-w-5 items-center justify-center rounded-md text-[10px] font-black"
               style={{
-                backgroundColor: "color-mix(in srgb, currentColor 12%, transparent)",
+                backgroundColor: tone.bg,
                 color: tone.color,
               }}
             >
               {tone.label}
             </span>
-            <p className="flex-1 leading-6">{toast.message}</p>
+            <p className="flex-1 leading-6 font-medium">{toast.message}</p>
             <button
-              className="shrink-0 rounded-full px-2 text-base leading-6 text-[var(--devdoc-muted)] transition hover:bg-[var(--devdoc-surface-muted)] hover:text-[var(--devdoc-text)]"
+              className="devdoc-icon-button h-6 w-6 shrink-0 text-xs"
               type="button"
               aria-label="Dismiss notification"
               onClick={() => dismiss(toast.id)}
             >
-              x
+              ✕
             </button>
           </div>
         );

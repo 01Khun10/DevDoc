@@ -1,7 +1,19 @@
 const severityStyles = {
-  ERROR:   "border-red-300 bg-red-50 text-red-800 dark:border-red-700 dark:bg-red-950/50 dark:text-red-300",
-  WARNING: "border-amber-300 bg-amber-50 text-amber-800 dark:border-amber-700 dark:bg-amber-950/50 dark:text-amber-300",
-  INFO:    "border-sky-300 bg-sky-50 text-sky-800 dark:border-sky-700 dark:bg-sky-950/50 dark:text-sky-300"
+  ERROR: {
+    border: "color-mix(in srgb, var(--devdoc-error) 35%, var(--devdoc-border))",
+    background: "var(--devdoc-error-soft)",
+    color: "var(--devdoc-error)"
+  },
+  WARNING: {
+    border: "color-mix(in srgb, var(--devdoc-warning) 35%, var(--devdoc-border))",
+    background: "var(--devdoc-warning-soft)",
+    color: "var(--devdoc-warning)"
+  },
+  INFO: {
+    border: "color-mix(in srgb, var(--devdoc-info) 35%, var(--devdoc-border))",
+    background: "var(--devdoc-info-soft)",
+    color: "var(--devdoc-info)"
+  }
 };
 
 const ruleLabels = {
@@ -33,7 +45,14 @@ function ValidationResultCard({ result }) {
   return (
     <article className="devdoc-card-border p-5">
       <div className="flex flex-wrap items-center gap-2">
-        <span className={`rounded-full border px-2.5 py-0.5 text-xs font-bold ${severityClass}`}>
+        <span
+          className="rounded-md border px-2.5 py-0.5 text-xs font-bold"
+          style={{
+            borderColor: severityClass.border,
+            backgroundColor: severityClass.background,
+            color: severityClass.color
+          }}
+        >
           {result.severity}
         </span>
         <span

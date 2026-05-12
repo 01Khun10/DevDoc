@@ -21,7 +21,7 @@ function SourceCard({ item, mode, isSelected, isLinked, onSelect }) {
   const isUseCase = mode.sourceType === "USE_CASE";
   return (
     <button
-      className="rounded-2xl p-4 text-left transition hover:-translate-y-0.5 hover:shadow-sm"
+      className="rounded-xl p-4 text-left transition hover:-translate-y-0.5 hover:shadow-sm"
       style={{
         border: `1px solid ${isSelected ? "var(--devdoc-primary)" : "var(--devdoc-border)"}`,
         backgroundColor: isSelected ? "var(--devdoc-primary-soft)" : "var(--devdoc-surface)",
@@ -53,10 +53,10 @@ function TargetCard({ item, mode, isLinked, isProcessing, onToggle }) {
   const isRequirement = mode.targetType === "REQUIREMENT";
   return (
     <button
-      className="rounded-2xl p-4 text-left transition hover:-translate-y-0.5 hover:shadow-sm disabled:cursor-wait disabled:opacity-70 disabled:hover:translate-y-0 disabled:hover:shadow-none"
+      className="rounded-xl p-4 text-left transition hover:-translate-y-0.5 hover:shadow-sm disabled:cursor-wait disabled:opacity-70 disabled:hover:translate-y-0 disabled:hover:shadow-none"
       style={{
         border: `1px solid ${isLinked ? "var(--devdoc-success)" : "var(--devdoc-border)"}`,
-        backgroundColor: isLinked ? "rgba(16,185,129,0.08)" : "var(--devdoc-surface)",
+        backgroundColor: isLinked ? "var(--devdoc-success-soft)" : "var(--devdoc-surface)",
       }}
       disabled={isProcessing}
       type="button"
@@ -146,13 +146,13 @@ function TraceabilityLinkForm({
             </div>
             <div
               className="rounded-xl px-3 py-2"
-              style={{ backgroundColor: "rgba(16,185,129,0.1)", border: "1px solid rgba(16,185,129,0.3)", color: "var(--devdoc-success)" }}
+              style={{ backgroundColor: "var(--devdoc-success-soft)", border: "1px solid color-mix(in srgb, var(--devdoc-success) 35%, var(--devdoc-border))", color: "var(--devdoc-success)" }}
             >
               <span className="font-bold">{linkedSourceCount}</span> linked
             </div>
             <div
               className="rounded-xl px-3 py-2"
-              style={{ backgroundColor: "rgba(245,158,11,0.1)", border: "1px solid rgba(245,158,11,0.3)", color: "var(--devdoc-warning)" }}
+              style={{ backgroundColor: "var(--devdoc-warning-soft)", border: "1px solid color-mix(in srgb, var(--devdoc-warning) 35%, var(--devdoc-border))", color: "var(--devdoc-warning)" }}
             >
               <span className="font-bold">{unlinkedSourceCount}</span> unlinked
             </div>
@@ -163,7 +163,7 @@ function TraceabilityLinkForm({
       {error ? (
         <div
           className="mx-5 mt-5 rounded-xl border px-4 py-3 text-sm font-semibold"
-          style={{ backgroundColor: "rgba(207,34,46,0.08)", borderColor: "rgba(207,34,46,0.3)", color: "var(--devdoc-error)" }}
+          style={{ backgroundColor: "var(--devdoc-error-soft)", borderColor: "color-mix(in srgb, var(--devdoc-error) 35%, var(--devdoc-border))", color: "var(--devdoc-error)" }}
         >
           {error}
         </div>
