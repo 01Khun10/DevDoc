@@ -1,7 +1,5 @@
 const prisma = require("../utils/prisma");
-
-const PROJECT_NOT_FOUND = "PROJECT_NOT_FOUND";
-const USE_CASE_NOT_FOUND = "USE_CASE_NOT_FOUND";
+const { PROJECT_NOT_FOUND, USE_CASE_NOT_FOUND } = require("../constants/errorCodes");
 
 function createUseCaseError(code, message) {
   const error = new Error(message);

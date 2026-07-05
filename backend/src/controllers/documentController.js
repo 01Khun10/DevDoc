@@ -13,16 +13,7 @@ const {
   updateDocumentSection,
   getSectionLinkedArtefacts: getSectionLinkedArtefactsService
 } = require("../services/documentService");
-
-function sendError(res, statusCode, message, fields) {
-  const error = { message };
-
-  if (fields) {
-    error.fields = fields;
-  }
-
-  return res.status(statusCode).json({ error });
-}
+const { sendError, sendUnexpectedError } = require("../utils/httpErrors");
 
 async function createFromTemplate(req, res) {
   const validation = validateCreateDocumentFromTemplateInput(req.body);
@@ -54,7 +45,7 @@ async function createFromTemplate(req, res) {
       return sendError(res, 400, "Template profile does not match this project");
     }
 
-    return sendError(res, 500, "Unexpected server error");
+    return sendUnexpectedError(res, error, "documentController.createFromTemplate");
   }
 }
 
@@ -72,7 +63,7 @@ async function getDocument(req, res) {
       return sendError(res, 404, "Document not found");
     }
 
-    return sendError(res, 500, "Unexpected server error");
+    return sendUnexpectedError(res, error, "documentController.getDocument");
   }
 }
 
@@ -102,7 +93,7 @@ async function updateSection(req, res) {
       return sendError(res, 404, "Section not found");
     }
 
-    return sendError(res, 500, "Unexpected server error");
+    return sendUnexpectedError(res, error, "documentController.updateSection");
   }
 }
 
@@ -125,7 +116,7 @@ async function getSectionLinkedArtefacts(req, res) {
       return sendError(res, 404, "Section not found");
     }
 
-    return sendError(res, 500, "Unexpected server error");
+    return sendUnexpectedError(res, error, "documentController.getSectionLinkedArtefacts");
   }
 }
 

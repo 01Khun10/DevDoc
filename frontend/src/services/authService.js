@@ -1,4 +1,4 @@
-import apiRequest, { TOKEN_KEY } from "./api";
+import apiRequest from "./api";
 
 function normalizeEmail(email) {
   return email.trim().toLowerCase();
@@ -18,7 +18,6 @@ async function register({ name, email, password }) {
     }
   });
 
-  localStorage.setItem(TOKEN_KEY, response.token);
   return response.user;
 }
 
@@ -31,7 +30,6 @@ async function login({ email, password }) {
     }
   });
 
-  localStorage.setItem(TOKEN_KEY, response.token);
   return response.user;
 }
 
@@ -40,8 +38,8 @@ async function me() {
   return response.user;
 }
 
-function logout() {
-  localStorage.removeItem(TOKEN_KEY);
+async function logout() {
+  await apiRequest("/api/auth/logout", { method: "POST" });
 }
 
 export default {

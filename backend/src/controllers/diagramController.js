@@ -2,14 +2,7 @@ const {
   PROJECT_NOT_FOUND,
   generateTraceabilityTreePlantUml
 } = require("../services/diagramService");
-
-function sendError(res, statusCode, message, fields) {
-  const error = { message };
-  if (fields) {
-    error.fields = fields;
-  }
-  return res.status(statusCode).json({ error });
-}
+const { sendError, sendUnexpectedError } = require("../utils/httpErrors");
 
 async function getTraceabilityTreePlantUml(req, res) {
   try {
@@ -24,7 +17,7 @@ async function getTraceabilityTreePlantUml(req, res) {
       return sendError(res, 404, "Project not found");
     }
 
-    return sendError(res, 500, "Unexpected server error");
+    return sendUnexpectedError(res, error, "diagramController.getTraceabilityTreePlantUml");
   }
 }
 

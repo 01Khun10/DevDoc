@@ -1,7 +1,5 @@
 const prisma = require("../utils/prisma");
-
-const PROFILE_NOT_FOUND = "PROFILE_NOT_FOUND";
-const TEMPLATE_NOT_FOUND = "TEMPLATE_NOT_FOUND";
+const { PROFILE_NOT_FOUND, TEMPLATE_NOT_FOUND } = require("../constants/errorCodes");
 
 function createTemplateError(code, message) {
   const error = new Error(message);

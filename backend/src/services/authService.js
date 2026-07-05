@@ -1,9 +1,10 @@
 const bcrypt = require("bcryptjs");
 const prisma = require("../utils/prisma");
 const { generateToken } = require("../utils/token");
+const { DUPLICATE_EMAIL, INVALID_CREDENTIALS } = require("../constants/errorCodes");
 
-const duplicateEmailCode = "DUPLICATE_EMAIL";
-const invalidCredentialsCode = "INVALID_CREDENTIALS";
+const duplicateEmailCode = DUPLICATE_EMAIL;
+const invalidCredentialsCode = INVALID_CREDENTIALS;
 
 function sanitizeUser(user) {
   const { passwordHash, ...safeUser } = user;

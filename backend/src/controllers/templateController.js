@@ -6,21 +6,14 @@ const {
   getTemplateByCode,
   getTemplateSections
 } = require("../services/templateService");
-
-function sendError(res, statusCode, message) {
-  return res.status(statusCode).json({
-    error: {
-      message
-    }
-  });
-}
+const { sendError, sendUnexpectedError } = require("../utils/httpErrors");
 
 async function listProfiles(req, res) {
   try {
     const profiles = await getProfiles();
     return res.status(200).json({ profiles });
   } catch (error) {
-    return sendError(res, 500, "Unexpected server error");
+    return sendUnexpectedError(res, error, "templateController.listProfiles");
   }
 }
 
@@ -33,7 +26,7 @@ async function listTemplatesByProfile(req, res) {
       return sendError(res, 404, "Profile not found");
     }
 
-    return sendError(res, 500, "Unexpected server error");
+    return sendUnexpectedError(res, error, "templateController.listTemplatesByProfile");
   }
 }
 
@@ -46,7 +39,7 @@ async function getTemplate(req, res) {
       return sendError(res, 404, "Template not found");
     }
 
-    return sendError(res, 500, "Unexpected server error");
+    return sendUnexpectedError(res, error, "templateController.getTemplate");
   }
 }
 
@@ -59,7 +52,7 @@ async function getSections(req, res) {
       return sendError(res, 404, "Template not found");
     }
 
-    return sendError(res, 500, "Unexpected server error");
+    return sendUnexpectedError(res, error, "templateController.getSections");
   }
 }
 

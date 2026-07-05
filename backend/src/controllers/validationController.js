@@ -5,16 +5,9 @@ const {
   getValidationRuns,
   getValidationRunById
 } = require("../services/validationService");
+const { sendError, sendUnexpectedError } = require("../utils/httpErrors");
 
-function sendError(res, statusCode, message) {
-  return res.status(statusCode).json({
-    error: {
-      message
-    }
-  });
-}
-
-function mapServiceError(res, error) {
+function mapServiceError(res, error, context) {
   if (error.code === PROJECT_NOT_FOUND) {
     return sendError(res, 404, "Project not found");
   }
@@ -23,7 +16,7 @@ function mapServiceError(res, error) {
     return sendError(res, 404, "Validation run not found");
   }
 
-  return sendError(res, 500, "Unexpected server error");
+  return sendUnexpectedError(res, error, context);
 }
 
 async function run(req, res) {
@@ -31,7 +24,7 @@ async function run(req, res) {
     const validationRun = await runProjectValidation(req.user.id, req.params.projectId);
     return res.status(201).json({ validationRun });
   } catch (error) {
-    return mapServiceError(res, error);
+    return mapServiceError(res, error, "validationController.run");
   }
 }
 
@@ -40,7 +33,7 @@ async function list(req, res) {
     const validationRuns = await getValidationRuns(req.user.id, req.params.projectId);
     return res.status(200).json({ validationRuns });
   } catch (error) {
-    return mapServiceError(res, error);
+    return mapServiceError(res, error, "validationController.list");
   }
 }
 
@@ -54,7 +47,7 @@ async function get(req, res) {
 
     return res.status(200).json({ validationRun });
   } catch (error) {
-    return mapServiceError(res, error);
+    return mapServiceError(res, error, "validationController.get");
   }
 }
 

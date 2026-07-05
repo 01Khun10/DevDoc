@@ -1,11 +1,12 @@
 const prisma = require("../utils/prisma");
-
-const PROJECT_NOT_FOUND = "PROJECT_NOT_FOUND";
-const SOURCE_NOT_FOUND = "SOURCE_NOT_FOUND";
-const TARGET_NOT_FOUND = "TARGET_NOT_FOUND";
-const LINK_NOT_FOUND = "LINK_NOT_FOUND";
-const DUPLICATE_LINK = "DUPLICATE_LINK";
-const UNSUPPORTED_LINK_TYPE = "UNSUPPORTED_LINK_TYPE";
+const {
+  PROJECT_NOT_FOUND,
+  SOURCE_NOT_FOUND,
+  TARGET_NOT_FOUND,
+  LINK_NOT_FOUND,
+  DUPLICATE_LINK,
+  UNSUPPORTED_LINK_TYPE
+} = require("../constants/errorCodes");
 
 function createTraceabilityError(code, message) {
   const error = new Error(message);

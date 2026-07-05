@@ -1,10 +1,11 @@
 const prisma = require("../utils/prisma");
-
-const PROJECT_NOT_FOUND = "PROJECT_NOT_FOUND";
-const TEMPLATE_NOT_FOUND = "TEMPLATE_NOT_FOUND";
-const PROFILE_MISMATCH = "PROFILE_MISMATCH";
-const DOCUMENT_NOT_FOUND = "DOCUMENT_NOT_FOUND";
-const SECTION_NOT_FOUND = "SECTION_NOT_FOUND";
+const {
+  PROJECT_NOT_FOUND,
+  TEMPLATE_NOT_FOUND,
+  PROFILE_MISMATCH,
+  DOCUMENT_NOT_FOUND,
+  SECTION_NOT_FOUND
+} = require("../constants/errorCodes");
 
 function createDocumentError(code, message) {
   const error = new Error(message);

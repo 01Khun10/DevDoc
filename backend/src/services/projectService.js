@@ -1,7 +1,5 @@
 const prisma = require("../utils/prisma");
-
-const PROJECT_NOT_FOUND = "PROJECT_NOT_FOUND";
-const PROFILE_NOT_FOUND = "PROFILE_NOT_FOUND";
+const { PROJECT_NOT_FOUND, PROFILE_NOT_FOUND } = require("../constants/errorCodes");
 
 function createProjectError(code, message) {
   const error = new Error(message);
@@ -70,37 +68,42 @@ async function getProjectById(ownerId, projectId) {
 }
 
 async function updateProject(ownerId, projectId, values) {
-  if (values.profileId !== undefined && values.profileId !== null) {
-      await checkProfileExists(values.profileId);
-  }
-
   if (Object.keys(values).length === 0) {
-      // Empty update body is allowed and should return unchanged project
-      return getProjectById(ownerId, projectId);
+    // Empty update body is allowed and should return unchanged project
+    return getProjectById(ownerId, projectId);
   }
 
-  const { count } = await prisma.project.updateMany({
-    where: {
-      id: projectId,
-      ownerId
-    },
-    data: values
+  return prisma.$transaction(async (tx) => {
+    if (values.profileId !== undefined && values.profileId !== null) {
+      const profile = await tx.validationProfile.findUnique({
+        where: { id: values.profileId }
+      });
+      if (!profile) {
+        throw createProjectError(PROFILE_NOT_FOUND, "Selected profile does not exist");
+      }
+    }
+
+    const { count } = await tx.project.updateMany({
+      where: {
+        id: projectId,
+        ownerId
+      },
+      data: values
+    });
+
+    if (count === 0) {
+      throw createProjectError(PROJECT_NOT_FOUND, "Project not found");
+    }
+
+    // After updateMany succeeds, re-fetch the project with profile summary.
+    return tx.project.findFirst({
+      where: {
+        id: projectId,
+        ownerId
+      },
+      include: profileInclude
+    });
   });
-
-  if (count === 0) {
-    throw createProjectError(PROJECT_NOT_FOUND, "Project not found");
-  }
-
-  // After updateMany succeeds, re-fetch the project with profile summary.
-  const updatedProject = await prisma.project.findFirst({
-    where: {
-      id: projectId,
-      ownerId
-    },
-    include: profileInclude
-  });
-
-  return updatedProject;
 }
 
 async function getProjectOverview(ownerId, projectId) {

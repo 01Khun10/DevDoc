@@ -8,15 +8,26 @@ const {
   validateRegisterInput,
   validateLoginInput
 } = require("../validators/authValidator");
+const { sendError, sendUnexpectedError } = require("../utils/httpErrors");
+const { AUTH_COOKIE_NAME, AUTH_COOKIE_MAX_AGE_MS } = require("../constants/auth");
 
-function sendError(res, statusCode, message, fields) {
-  const error = { message };
+function setAuthCookie(res, token) {
+  res.cookie(AUTH_COOKIE_NAME, token, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    maxAge: AUTH_COOKIE_MAX_AGE_MS,
+    path: "/"
+  });
+}
 
-  if (fields) {
-    error.fields = fields;
-  }
-
-  return res.status(statusCode).json({ error });
+function clearAuthCookie(res) {
+  res.clearCookie(AUTH_COOKIE_NAME, {
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production",
+    sameSite: "lax",
+    path: "/"
+  });
 }
 
 async function register(req, res) {
@@ -27,14 +38,15 @@ async function register(req, res) {
   }
 
   try {
-    const result = await registerUser(validation.values);
-    return res.status(201).json(result);
+    const { user, token } = await registerUser(validation.values);
+    setAuthCookie(res, token);
+    return res.status(201).json({ user });
   } catch (error) {
     if (error.code === duplicateEmailCode) {
       return sendError(res, 409, "Email is already registered");
     }
 
-    return sendError(res, 500, "Unexpected server error");
+    return sendUnexpectedError(res, error, "authController.register");
   }
 }
 
@@ -46,15 +58,21 @@ async function login(req, res) {
   }
 
   try {
-    const result = await loginUser(validation.values);
-    return res.status(200).json(result);
+    const { user, token } = await loginUser(validation.values);
+    setAuthCookie(res, token);
+    return res.status(200).json({ user });
   } catch (error) {
     if (error.code === invalidCredentialsCode) {
       return sendError(res, 401, "Invalid email or password");
     }
 
-    return sendError(res, 500, "Unexpected server error");
+    return sendUnexpectedError(res, error, "authController.login");
   }
+}
+
+function logout(req, res) {
+  clearAuthCookie(res);
+  return res.status(200).json({ message: "Logged out" });
 }
 
 function me(req, res) {
@@ -64,5 +82,6 @@ function me(req, res) {
 module.exports = {
   register,
   login,
+  logout,
   me
 };

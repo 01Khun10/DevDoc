@@ -1,6 +1,5 @@
 import { createContext, useCallback, useEffect, useMemo, useState } from "react";
 import authService from "../services/authService";
-import { TOKEN_KEY } from "../services/api";
 
 const AuthContext = createContext(null);
 
@@ -12,15 +11,8 @@ function AuthProvider({ children }) {
     let isMounted = true;
 
     async function loadUser() {
-      const token = localStorage.getItem(TOKEN_KEY);
-
-      if (!token) {
-        if (isMounted) {
-          setIsLoading(false);
-        }
-        return;
-      }
-
+      // The auth token lives in an httpOnly cookie, invisible to JS, so the
+      // only way to know whether a session exists is to ask the server.
       try {
         const currentUser = await authService.me();
 
@@ -28,8 +20,6 @@ function AuthProvider({ children }) {
           setUser(currentUser);
         }
       } catch (error) {
-        authService.logout();
-
         if (isMounted) {
           setUser(null);
         }
@@ -59,9 +49,12 @@ function AuthProvider({ children }) {
     return registeredUser;
   }, []);
 
-  const logout = useCallback(() => {
-    authService.logout();
-    setUser(null);
+  const logout = useCallback(async () => {
+    try {
+      await authService.logout();
+    } finally {
+      setUser(null);
+    }
   }, []);
 
   const value = useMemo(

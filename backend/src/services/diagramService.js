@@ -1,6 +1,5 @@
 const prisma = require("../utils/prisma");
-
-const PROJECT_NOT_FOUND = "PROJECT_NOT_FOUND";
+const { PROJECT_NOT_FOUND } = require("../constants/errorCodes");
 
 function createDiagramError(code, message) {
   const error = new Error(message);

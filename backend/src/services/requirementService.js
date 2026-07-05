@@ -1,7 +1,5 @@
 const prisma = require("../utils/prisma");
-
-const PROJECT_NOT_FOUND = "PROJECT_NOT_FOUND";
-const REQUIREMENT_NOT_FOUND = "REQUIREMENT_NOT_FOUND";
+const { PROJECT_NOT_FOUND, REQUIREMENT_NOT_FOUND } = require("../constants/errorCodes");
 
 function createRequirementError(code, message) {
   const error = new Error(message);

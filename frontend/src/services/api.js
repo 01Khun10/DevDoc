@@ -1,9 +1,4 @@
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
-const TOKEN_KEY = "devdoc_token";
-
-function getToken() {
-  return localStorage.getItem(TOKEN_KEY);
-}
 
 async function parseJsonSafely(response) {
   const text = await response.text();
@@ -25,15 +20,10 @@ async function apiRequest(path, options = {}) {
     Accept: "application/json"
   };
 
-  const token = getToken();
-
-  if (token) {
-    headers.Authorization = `Bearer ${token}`;
-  }
-
   const requestOptions = {
     method,
-    headers
+    headers,
+    credentials: "include"
   };
 
   if (body !== undefined) {
@@ -59,5 +49,4 @@ async function apiRequest(path, options = {}) {
   return data;
 }
 
-export { TOKEN_KEY };
 export default apiRequest;

@@ -1,7 +1,5 @@
 const prisma = require("../utils/prisma");
-
-const PROJECT_NOT_FOUND = "PROJECT_NOT_FOUND";
-const RUN_NOT_FOUND = "RUN_NOT_FOUND";
+const { PROJECT_NOT_FOUND, RUN_NOT_FOUND } = require("../constants/errorCodes");
 
 const SEVERITY_ORDER = {
   ERROR: 1,
@@ -54,8 +52,8 @@ function createResult(ruleCode, severity, message, suggestedFix, targetType = nu
   };
 }
 
-async function verifyProjectOwnership(ownerId, projectId) {
-  const project = await prisma.project.findFirst({
+async function verifyProjectOwnership(client, ownerId, projectId) {
+  const project = await client.project.findFirst({
     where: {
       id: projectId,
       ownerId
@@ -323,7 +321,7 @@ function getValidationRunSelect() {
 }
 
 async function runProjectValidation(ownerId, projectId) {
-  const project = await verifyProjectOwnership(ownerId, projectId);
+  const project = await verifyProjectOwnership(prisma, ownerId, projectId);
   const validationRun = await prisma.validationRun.create({
     data: {
       projectId: project.id,
@@ -427,7 +425,7 @@ async function runProjectValidation(ownerId, projectId) {
 }
 
 async function getValidationRuns(ownerId, projectId) {
-  const project = await verifyProjectOwnership(ownerId, projectId);
+  const project = await verifyProjectOwnership(prisma, ownerId, projectId);
   const validationRuns = await prisma.validationRun.findMany({
     where: { projectId: project.id },
     orderBy: { startedAt: "desc" },

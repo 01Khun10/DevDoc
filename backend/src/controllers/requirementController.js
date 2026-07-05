@@ -10,16 +10,7 @@ const {
   getRequirementById,
   updateRequirement
 } = require("../services/requirementService");
-
-function sendError(res, statusCode, message, fields) {
-  const error = { message };
-
-  if (fields) {
-    error.fields = fields;
-  }
-
-  return res.status(statusCode).json({ error });
-}
+const { sendError, sendUnexpectedError } = require("../utils/httpErrors");
 
 async function list(req, res) {
   try {
@@ -30,7 +21,7 @@ async function list(req, res) {
       return sendError(res, 404, "Project not found");
     }
 
-    return sendError(res, 500, "Unexpected server error");
+    return sendUnexpectedError(res, error, "requirementController.list");
   }
 }
 
@@ -54,7 +45,7 @@ async function create(req, res) {
       return sendError(res, 404, "Project not found");
     }
 
-    return sendError(res, 500, "Unexpected server error");
+    return sendUnexpectedError(res, error, "requirementController.create");
   }
 }
 
@@ -72,7 +63,7 @@ async function get(req, res) {
       return sendError(res, 404, "Requirement not found");
     }
 
-    return sendError(res, 500, "Unexpected server error");
+    return sendUnexpectedError(res, error, "requirementController.get");
   }
 }
 
@@ -97,7 +88,7 @@ async function update(req, res) {
       return sendError(res, 404, "Requirement not found");
     }
 
-    return sendError(res, 500, "Unexpected server error");
+    return sendUnexpectedError(res, error, "requirementController.update");
   }
 }
 

@@ -1,5 +1,6 @@
 const { verifyToken } = require("../utils/token");
 const { getUserById } = require("../services/authService");
+const { AUTH_COOKIE_NAME } = require("../constants/auth");
 
 function sendUnauthorized(res) {
   return res.status(401).json({
@@ -10,20 +11,14 @@ function sendUnauthorized(res) {
 }
 
 async function authMiddleware(req, res, next) {
-  const authHeader = req.headers.authorization;
+  const token = req.cookies && req.cookies[AUTH_COOKIE_NAME];
 
-  if (!authHeader || typeof authHeader !== "string") {
-    return sendUnauthorized(res);
-  }
-
-  const parts = authHeader.split(" ");
-
-  if (parts.length !== 2 || parts[0] !== "Bearer" || !parts[1]) {
+  if (!token || typeof token !== "string") {
     return sendUnauthorized(res);
   }
 
   try {
-    const payload = verifyToken(parts[1]);
+    const payload = verifyToken(token);
 
     if (!payload || !payload.userId) {
       return sendUnauthorized(res);

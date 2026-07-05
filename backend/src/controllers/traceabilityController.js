@@ -11,18 +11,9 @@ const {
   createTraceabilityLink,
   deleteTraceabilityLink
 } = require("../services/traceabilityService");
+const { sendError, sendUnexpectedError } = require("../utils/httpErrors");
 
-function sendError(res, statusCode, message, fields) {
-  const error = { message };
-
-  if (fields) {
-    error.fields = fields;
-  }
-
-  return res.status(statusCode).json({ error });
-}
-
-function mapServiceError(res, error) {
+function mapServiceError(res, error, context) {
   if (error.code === PROJECT_NOT_FOUND) {
     return sendError(res, 404, "Project not found");
   }
@@ -47,7 +38,7 @@ function mapServiceError(res, error) {
     return sendError(res, 400, "Unsupported traceability link type");
   }
 
-  return sendError(res, 500, "Unexpected server error");
+  return sendUnexpectedError(res, error, context);
 }
 
 async function list(req, res) {
@@ -55,7 +46,7 @@ async function list(req, res) {
     const traceabilityLinks = await getTraceabilityLinks(req.user.id, req.params.projectId);
     return res.status(200).json({ traceabilityLinks });
   } catch (error) {
-    return mapServiceError(res, error);
+    return mapServiceError(res, error, "traceabilityController.list");
   }
 }
 
@@ -64,7 +55,7 @@ async function options(req, res) {
     const traceabilityOptions = await getTraceabilityOptions(req.user.id, req.params.projectId);
     return res.status(200).json(traceabilityOptions);
   } catch (error) {
-    return mapServiceError(res, error);
+    return mapServiceError(res, error, "traceabilityController.options");
   }
 }
 
@@ -88,7 +79,7 @@ async function create(req, res) {
 
     return res.status(201).json({ traceabilityLink });
   } catch (error) {
-    return mapServiceError(res, error);
+    return mapServiceError(res, error, "traceabilityController.create");
   }
 }
 
@@ -102,7 +93,7 @@ async function remove(req, res) {
 
     return res.status(200).json(result);
   } catch (error) {
-    return mapServiceError(res, error);
+    return mapServiceError(res, error, "traceabilityController.remove");
   }
 }
 

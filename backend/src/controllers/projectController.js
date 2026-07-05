@@ -11,14 +11,7 @@ const {
   updateProject,
   getProjectOverview: getProjectOverviewService
 } = require("../services/projectService");
-
-function sendError(res, statusCode, message, fields) {
-  const error = { message };
-  if (fields) {
-    error.fields = fields;
-  }
-  return res.status(statusCode).json({ error });
-}
+const { sendError, sendUnexpectedError } = require("../utils/httpErrors");
 
 async function create(req, res) {
   const validation = validateCreateProjectInput(req.body);
@@ -34,7 +27,7 @@ async function create(req, res) {
     if (error.code === PROFILE_NOT_FOUND) {
       return sendError(res, 400, "Validation failed", { profileId: error.message });
     }
-    return sendError(res, 500, "Unexpected server error");
+    return sendUnexpectedError(res, error, "projectController.create");
   }
 }
 
@@ -43,7 +36,7 @@ async function list(req, res) {
     const projects = await getProjects(req.user.id);
     return res.status(200).json({ projects });
   } catch (error) {
-    return sendError(res, 500, "Unexpected server error");
+    return sendUnexpectedError(res, error, "projectController.list");
   }
 }
 
@@ -55,7 +48,7 @@ async function get(req, res) {
     if (error.code === PROJECT_NOT_FOUND) {
       return sendError(res, 404, "Project not found");
     }
-    return sendError(res, 500, "Unexpected server error");
+    return sendUnexpectedError(res, error, "projectController.get");
   }
 }
 
@@ -76,7 +69,7 @@ async function update(req, res) {
     if (error.code === PROFILE_NOT_FOUND) {
       return sendError(res, 400, "Validation failed", { profileId: error.message });
     }
-    return sendError(res, 500, "Unexpected server error");
+    return sendUnexpectedError(res, error, "projectController.update");
   }
 }
 
@@ -88,7 +81,7 @@ async function getProjectOverview(req, res) {
     if (error.code === PROJECT_NOT_FOUND) {
       return sendError(res, 404, "Project not found");
     }
-    return sendError(res, 500, "Unexpected server error");
+    return sendUnexpectedError(res, error, "projectController.getProjectOverview");
   }
 }
 

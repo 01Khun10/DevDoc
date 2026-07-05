@@ -10,16 +10,7 @@ const {
   getUseCaseById,
   updateUseCase
 } = require("../services/useCaseService");
-
-function sendError(res, statusCode, message, fields) {
-  const error = { message };
-
-  if (fields) {
-    error.fields = fields;
-  }
-
-  return res.status(statusCode).json({ error });
-}
+const { sendError, sendUnexpectedError } = require("../utils/httpErrors");
 
 async function list(req, res) {
   try {
@@ -30,7 +21,7 @@ async function list(req, res) {
       return sendError(res, 404, "Project not found");
     }
 
-    return sendError(res, 500, "Unexpected server error");
+    return sendUnexpectedError(res, error, "useCaseController.list");
   }
 }
 
@@ -50,7 +41,7 @@ async function create(req, res) {
       return sendError(res, 404, "Project not found");
     }
 
-    return sendError(res, 500, "Unexpected server error");
+    return sendUnexpectedError(res, error, "useCaseController.create");
   }
 }
 
@@ -68,7 +59,7 @@ async function get(req, res) {
       return sendError(res, 404, "Use case not found");
     }
 
-    return sendError(res, 500, "Unexpected server error");
+    return sendUnexpectedError(res, error, "useCaseController.get");
   }
 }
 
@@ -93,7 +84,7 @@ async function update(req, res) {
       return sendError(res, 404, "Use case not found");
     }
 
-    return sendError(res, 500, "Unexpected server error");
+    return sendUnexpectedError(res, error, "useCaseController.update");
   }
 }
 
