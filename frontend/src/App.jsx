@@ -11,7 +11,7 @@ import LandingPage from "./pages/LandingPage";
 import Login from "./pages/Login";
 import ProfilePlaceholder from "./pages/ProfilePlaceholder";
 import ProjectAnalyticsPlaceholder from "./pages/ProjectAnalyticsPlaceholder";
-import ProjectDiagramsPlaceholder from "./pages/ProjectDiagramsPlaceholder";
+import ProjectDiagrams from "./pages/ProjectDiagrams";
 import ProjectDocumentsPlaceholder from "./pages/ProjectDocumentsPlaceholder";
 import ProjectSettingsPlaceholder from "./pages/ProjectSettingsPlaceholder";
 import ProjectVersionsPlaceholder from "./pages/ProjectVersionsPlaceholder";
@@ -55,7 +55,7 @@ function App() {
           <Route path="requirements" element={<RequirementRegistry />} />
           <Route path="traceability" element={<TraceabilityMatrix />} />
           <Route path="validation" element={<ValidationEngine />} />
-          <Route path="diagrams" element={<ProjectDiagramsPlaceholder />} />
+          <Route path="diagrams" element={<ProjectDiagrams />} />
           <Route path="versions" element={<ProjectVersionsPlaceholder />} />
           <Route path="analytics" element={<ProjectAnalyticsPlaceholder />} />
           <Route path="settings" element={<ProjectSettingsPlaceholder />} />

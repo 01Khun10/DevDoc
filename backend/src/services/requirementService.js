@@ -1,4 +1,5 @@
 const prisma = require("../utils/prisma");
+const { getNextCode, createWithCodeRetry } = require("../utils/nextCode");
 const { PROJECT_NOT_FOUND, REQUIREMENT_NOT_FOUND } = require("../constants/errorCodes");
 
 function createRequirementError(code, message) {
@@ -39,47 +40,37 @@ async function verifyProjectOwnership(tx, ownerId, projectId) {
   return project;
 }
 
-function getNextRequirementCode(type, existingRequirements) {
-  const highestNumber = existingRequirements.reduce((highest, requirement) => {
-    const parts = requirement.code.split("-");
-    const number = Number(parts[1]);
-
-    if (Number.isInteger(number) && number > highest) {
-      return number;
-    }
-
-    return highest;
-  }, 0);
-
-  return `${type}-${String(highestNumber + 1).padStart(3, "0")}`;
-}
-
 async function createRequirement(ownerId, projectId, values) {
-  return prisma.$transaction(async (tx) => {
-    const project = await verifyProjectOwnership(tx, ownerId, projectId);
+  return createWithCodeRetry(() =>
+    prisma.$transaction(async (tx) => {
+      const project = await verifyProjectOwnership(tx, ownerId, projectId);
 
-    const existingRequirements = await tx.requirement.findMany({
-      where: {
-        projectId: project.id,
-        type: values.type
-      },
-      select: { code: true }
-    });
-    const code = getNextRequirementCode(values.type, existingRequirements);
+      const existingRequirements = await tx.requirement.findMany({
+        where: {
+          projectId: project.id,
+          type: values.type
+        },
+        select: { code: true }
+      });
+      const code = getNextCode(
+        values.type,
+        existingRequirements.map((requirement) => requirement.code)
+      );
 
-    return tx.requirement.create({
-      data: {
-        projectId: project.id,
-        code,
-        type: values.type,
-        title: values.title,
-        description: values.description,
-        priority: values.priority,
-        acceptanceCriteria: values.acceptanceCriteria
-      },
-      select: getRequirementSelect()
-    });
-  });
+      return tx.requirement.create({
+        data: {
+          projectId: project.id,
+          code,
+          type: values.type,
+          title: values.title,
+          description: values.description,
+          priority: values.priority,
+          acceptanceCriteria: values.acceptanceCriteria
+        },
+        select: getRequirementSelect()
+      });
+    })
+  );
 }
 
 async function getRequirements(ownerId, projectId) {

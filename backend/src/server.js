@@ -13,6 +13,7 @@ const traceabilityRoutes = require("./routes/traceabilityRoutes");
 const useCaseRoutes = require("./routes/useCaseRoutes");
 const validationRoutes = require("./routes/validationRoutes");
 const diagramRoutes = require("./routes/diagramRoutes");
+const { sendError, sendUnexpectedError } = require("./utils/httpErrors");
 
 dotenv.config();
 
@@ -55,6 +56,43 @@ app.get("/", (req, res) => {
 
 app.get("/health", (req, res) => {
   res.json({ status: "ok", service: "DevDoc API" });
+});
+
+const ERROR_STATUS_BY_CODE = {
+  PROJECT_NOT_FOUND: 404,
+  PROFILE_NOT_FOUND: 404,
+  TEMPLATE_NOT_FOUND: 404,
+  DOCUMENT_NOT_FOUND: 404,
+  SECTION_NOT_FOUND: 404,
+  REQUIREMENT_NOT_FOUND: 404,
+  USE_CASE_NOT_FOUND: 404,
+  SOURCE_NOT_FOUND: 404,
+  TARGET_NOT_FOUND: 404,
+  LINK_NOT_FOUND: 404,
+  RUN_NOT_FOUND: 404,
+  PROFILE_MISMATCH: 400,
+  UNSUPPORTED_LINK_TYPE: 400,
+  DUPLICATE_LINK: 409,
+  DUPLICATE_EMAIL: 409,
+  INVALID_CREDENTIALS: 401
+};
+
+app.use((error, req, res, next) => {
+  if (res.headersSent) {
+    return next(error);
+  }
+
+  const status = ERROR_STATUS_BY_CODE[error.code];
+
+  if (status) {
+    return sendError(res, status, error.message);
+  }
+
+  if (error.type === "entity.parse.failed" || error.type === "entity.too.large") {
+    return sendError(res, 400, "Invalid request body");
+  }
+
+  return sendUnexpectedError(res, error, "globalErrorHandler");
 });
 
 app.listen(PORT, () => {

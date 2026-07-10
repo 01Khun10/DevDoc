@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useProject } from "../context/ProjectContext";
 import { getTraceabilityTreePlantUml } from "../services/diagramService";
 
-function ProjectDiagramsPlaceholder() {
+function ProjectDiagrams() {
   const { projectId, project } = useProject();
   const [isGenerating, setIsGenerating] = useState(false);
   const [diagramResult, setDiagramResult] = useState(null);
@@ -160,4 +160,4 @@ function ProjectDiagramsPlaceholder() {
   );
 }
 
-export default ProjectDiagramsPlaceholder;
+export default ProjectDiagrams;

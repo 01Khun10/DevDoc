@@ -5,6 +5,15 @@ node_modules/
 .env
 .env.local
 .env.*.local
+*.env
+!.env.example
+!*.env.example
+
+# Local agent/tool state
+ruvector.db
+.swarm/
+.claude-flow/
+graphify-out/cache/
 
 # Build output
 dist/

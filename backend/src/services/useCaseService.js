@@ -1,4 +1,5 @@
 const prisma = require("../utils/prisma");
+const { getNextCode, createWithCodeRetry } = require("../utils/nextCode");
 const { PROJECT_NOT_FOUND, USE_CASE_NOT_FOUND } = require("../constants/errorCodes");
 
 function createUseCaseError(code, message) {
@@ -35,41 +36,31 @@ async function verifyProjectOwnership(tx, ownerId, projectId) {
   return project;
 }
 
-function getNextUseCaseCode(existingUseCases) {
-  const highestNumber = existingUseCases.reduce((highest, useCase) => {
-    const parts = useCase.code.split("-");
-    const number = Number(parts[1]);
-
-    if (Number.isInteger(number) && number > highest) {
-      return number;
-    }
-
-    return highest;
-  }, 0);
-
-  return `UC-${String(highestNumber + 1).padStart(3, "0")}`;
-}
-
 async function createUseCase(ownerId, projectId, values) {
-  return prisma.$transaction(async (tx) => {
-    const project = await verifyProjectOwnership(tx, ownerId, projectId);
+  return createWithCodeRetry(() =>
+    prisma.$transaction(async (tx) => {
+      const project = await verifyProjectOwnership(tx, ownerId, projectId);
 
-    const existingUseCases = await tx.useCase.findMany({
-      where: { projectId: project.id },
-      select: { code: true }
-    });
-    const code = getNextUseCaseCode(existingUseCases);
+      const existingUseCases = await tx.useCase.findMany({
+        where: { projectId: project.id },
+        select: { code: true }
+      });
+      const code = getNextCode(
+        "UC",
+        existingUseCases.map((useCase) => useCase.code)
+      );
 
-    return tx.useCase.create({
-      data: {
-        projectId: project.id,
-        code,
-        title: values.title,
-        description: values.description
-      },
-      select: getUseCaseSelect()
-    });
-  });
+      return tx.useCase.create({
+        data: {
+          projectId: project.id,
+          code,
+          title: values.title,
+          description: values.description
+        },
+        select: getUseCaseSelect()
+      });
+    })
+  );
 }
 
 async function getUseCases(ownerId, projectId) {

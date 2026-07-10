@@ -221,18 +221,24 @@ function buildValidationResults(documents, requirements, useCases, traceabilityL
       );
     });
 
-  documents
-    .filter((document) => document.completionPercent < 100)
-    .forEach((document) => {
-      results.push(
-        createResult(
-          "DOC-002",
-          "INFO",
-          `Document '${document.title}' is ${document.completionPercent}% complete.`,
-          "Complete the remaining required sections to improve readiness."
-        )
-      );
-    });
+  const incompleteDocuments = documents.filter(
+    (document) => document.completionPercent < 100
+  );
+
+  if (incompleteDocuments.length > 0) {
+    const documentList = incompleteDocuments
+      .map((document) => `'${document.title}' (${document.completionPercent}%)`)
+      .join(", ");
+
+    results.push(
+      createResult(
+        "DOC-002",
+        "INFO",
+        `${incompleteDocuments.length} document(s) are not fully complete: ${documentList}.`,
+        "Complete the remaining required sections to improve readiness."
+      )
+    );
+  }
 
   traceabilityLinks
     .filter((link) => link.targetType === "DOCUMENT_SECTION")
