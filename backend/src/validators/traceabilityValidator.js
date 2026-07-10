@@ -1,7 +1,9 @@
 const SUPPORTED_LINKS = {
   "USE_CASE->REQUIREMENT": "covers",
   "USE_CASE->DOCUMENT_SECTION": "described_by",
-  "REQUIREMENT->DOCUMENT_SECTION": "described_by"
+  "REQUIREMENT->DOCUMENT_SECTION": "described_by",
+  "REQUIREMENT->DESIGN_ELEMENT": "implemented_by",
+  "REQUIREMENT->TEST_CASE": "verified_by"
 };
 
 function getPairKey(sourceType, targetType) {

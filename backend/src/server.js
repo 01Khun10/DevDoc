@@ -11,6 +11,8 @@ const requirementRoutes = require("./routes/requirementRoutes");
 const templateRoutes = require("./routes/templateRoutes");
 const traceabilityRoutes = require("./routes/traceabilityRoutes");
 const useCaseRoutes = require("./routes/useCaseRoutes");
+const designElementRoutes = require("./routes/designElementRoutes");
+const testCaseRoutes = require("./routes/testCaseRoutes");
 const validationRoutes = require("./routes/validationRoutes");
 const diagramRoutes = require("./routes/diagramRoutes");
 const { sendError, sendUnexpectedError } = require("./utils/httpErrors");
@@ -45,6 +47,8 @@ app.use("/api/projects", projectRoutes);
 app.use("/api/projects/:projectId/documents", documentRoutes);
 app.use("/api/projects/:projectId/requirements", requirementRoutes);
 app.use("/api/projects/:projectId/use-cases", useCaseRoutes);
+app.use("/api/projects/:projectId/design-elements", designElementRoutes);
+app.use("/api/projects/:projectId/test-cases", testCaseRoutes);
 app.use("/api/projects/:projectId/traceability", traceabilityRoutes);
 app.use("/api/projects/:projectId/validation", validationRoutes);
 app.use("/api/projects/:projectId/diagrams", diagramRoutes);
@@ -66,6 +70,8 @@ const ERROR_STATUS_BY_CODE = {
   SECTION_NOT_FOUND: 404,
   REQUIREMENT_NOT_FOUND: 404,
   USE_CASE_NOT_FOUND: 404,
+  DESIGN_ELEMENT_NOT_FOUND: 404,
+  TEST_CASE_NOT_FOUND: 404,
   SOURCE_NOT_FOUND: 404,
   TARGET_NOT_FOUND: 404,
   LINK_NOT_FOUND: 404,

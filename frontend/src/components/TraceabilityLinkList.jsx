@@ -11,7 +11,7 @@ function buildMap(items) {
 }
 
 function formatLinkLabel(linkType) {
-  return linkType === "covers" ? "covers" : "described_by";
+  return linkType;
 }
 
 function getSourceLabel(link, maps) {
@@ -53,6 +53,24 @@ function getTargetLabel(link, maps) {
       badge: section?.document?.documentType || "DOC"
     };
   }
+  if (link.targetType === "DESIGN_ELEMENT") {
+    const designElement = maps.designElements[link.targetId];
+    return {
+      label: designElement
+        ? `${designElement.code} - ${designElement.title}`
+        : "Design element is no longer available",
+      type: "Design element",
+      badge: designElement?.code || "DE"
+    };
+  }
+  if (link.targetType === "TEST_CASE") {
+    const testCase = maps.testCases[link.targetId];
+    return {
+      label: testCase ? `${testCase.code} - ${testCase.title}` : "Test case is no longer available",
+      type: "Test case",
+      badge: testCase?.code || "TC"
+    };
+  }
   return { label: "Target artefact is no longer available", type: "Target", badge: "TGT" };
 }
 
@@ -61,6 +79,8 @@ function TraceabilityLinkList({
   useCases = [],
   requirements = [],
   documentSections = [],
+  designElements = [],
+  testCases = [],
   onDelete,
   isDeletingId,
 }) {
@@ -68,6 +88,8 @@ function TraceabilityLinkList({
     useCases: buildMap(useCases),
     requirements: buildMap(requirements),
     documentSections: buildMap(documentSections),
+    designElements: buildMap(designElements),
+    testCases: buildMap(testCases),
   };
 
   if (links.length === 0) {

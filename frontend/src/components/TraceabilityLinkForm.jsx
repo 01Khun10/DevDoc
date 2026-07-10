@@ -51,6 +51,35 @@ function SourceCard({ item, mode, isSelected, isLinked, onSelect }) {
 
 function TargetCard({ item, mode, isLinked, isProcessing, onToggle }) {
   const isRequirement = mode.targetType === "REQUIREMENT";
+  const isCoded = mode.targetType === "DESIGN_ELEMENT" || mode.targetType === "TEST_CASE";
+
+  if (isCoded) {
+    return (
+      <button
+        className="rounded-xl p-4 text-left transition hover:-translate-y-0.5 hover:shadow-sm disabled:cursor-wait disabled:opacity-70 disabled:hover:translate-y-0 disabled:hover:shadow-none"
+        style={{
+          border: `1px solid ${isLinked ? "var(--devdoc-success)" : "var(--devdoc-border)"}`,
+          backgroundColor: isLinked ? "var(--devdoc-success-soft)" : "var(--devdoc-surface)",
+        }}
+        disabled={isProcessing}
+        type="button"
+        onClick={() => onToggle(item)}
+      >
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="text-sm font-bold" style={{ color: "var(--devdoc-primary)" }}>{item.code}</span>
+          {item.elementType ? <Badge tone="slate">{item.elementType}</Badge> : null}
+          <Badge tone={isLinked ? "emerald" : "slate"}>
+            {isProcessing ? "Working..." : isLinked ? "Linked" : "Click to link"}
+          </Badge>
+        </div>
+        <p className="mt-3 text-sm font-semibold" style={{ color: "var(--devdoc-text)" }}>{item.title}</p>
+        {item.status ? (
+          <p className="mt-2 text-xs font-semibold uppercase" style={{ color: "var(--devdoc-muted)" }}>{item.status}</p>
+        ) : null}
+      </button>
+    );
+  }
+
   return (
     <button
       className="rounded-xl p-4 text-left transition hover:-translate-y-0.5 hover:shadow-sm disabled:cursor-wait disabled:opacity-70 disabled:hover:translate-y-0 disabled:hover:shadow-none"

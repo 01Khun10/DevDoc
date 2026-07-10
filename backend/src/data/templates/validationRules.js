@@ -50,6 +50,26 @@ const baseRules = [
     suggestedFix: "Create or link a use case that explains the user scenario behind this requirement."
   },
   {
+    ruleCode: "REQ-003",
+    ruleName: "Functional requirements are implemented by design elements",
+    ruleCategory: "T",
+    severity: "WARNING",
+    checkKey: "frs_implemented_by_design",
+    message: "Functional requirement {code} has no implementing design element.",
+    suggestedFix:
+      "Create a design element and link it to this requirement with an implemented_by link."
+  },
+  {
+    ruleCode: "REQ-004",
+    ruleName: "Functional requirements are verified by test cases",
+    ruleCategory: "T",
+    severity: "WARNING",
+    checkKey: "frs_verified_by_tests",
+    message: "Functional requirement {code} is not verified by any test case.",
+    suggestedFix:
+      "Create a test case and link it to this requirement with a verified_by link."
+  },
+  {
     ruleCode: "UC-001",
     ruleName: "Project has use cases",
     ruleCategory: "C",

@@ -149,15 +149,70 @@ const validationChecks = {
       }));
   },
 
-  links_have_valid_endpoints({ sections, requirements, useCases, traceabilityLinks }) {
+  frs_implemented_by_design({ requirements, traceabilityLinks }) {
+    return requirements
+      .filter((requirement) => requirement.type === "FR")
+      .filter(
+        (requirement) =>
+          !hasTraceabilityLink(traceabilityLinks, {
+            sourceType: "REQUIREMENT",
+            sourceId: requirement.id,
+            targetType: "DESIGN_ELEMENT",
+            linkType: "implemented_by"
+          })
+      )
+      .map((requirement) => ({
+        params: { code: requirement.code },
+        targetType: "REQUIREMENT",
+        targetId: requirement.id
+      }));
+  },
+
+  frs_verified_by_tests({ requirements, traceabilityLinks }) {
+    return requirements
+      .filter((requirement) => requirement.type === "FR")
+      .filter(
+        (requirement) =>
+          !hasTraceabilityLink(traceabilityLinks, {
+            sourceType: "REQUIREMENT",
+            sourceId: requirement.id,
+            targetType: "TEST_CASE",
+            linkType: "verified_by"
+          })
+      )
+      .map((requirement) => ({
+        params: { code: requirement.code },
+        targetType: "REQUIREMENT",
+        targetId: requirement.id
+      }));
+  },
+
+  links_have_valid_endpoints({
+    sections,
+    requirements,
+    useCases,
+    designElements,
+    testCases,
+    traceabilityLinks
+  }) {
     const sectionIds = new Set(sections.map((section) => section.id));
     const requirementIds = new Set(requirements.map((requirement) => requirement.id));
     const useCaseIds = new Set(useCases.map((useCase) => useCase.id));
+    const designElementIds = new Set(designElements.map((element) => element.id));
+    const testCaseIds = new Set(testCases.map((testCase) => testCase.id));
     const findings = [];
 
     for (const link of traceabilityLinks) {
       if (link.targetType === "DOCUMENT_SECTION" && !sectionIds.has(link.targetId)) {
         findings.push({ params: { description: "to a missing document section" } });
+      }
+
+      if (link.targetType === "DESIGN_ELEMENT" && !designElementIds.has(link.targetId)) {
+        findings.push({ params: { description: "to a missing design element" } });
+      }
+
+      if (link.targetType === "TEST_CASE" && !testCaseIds.has(link.targetId)) {
+        findings.push({ params: { description: "to a missing test case" } });
       }
 
       if (link.targetType === "REQUIREMENT" && !requirementIds.has(link.targetId)) {

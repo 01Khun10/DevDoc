@@ -31,6 +31,18 @@ const RequirementsIcon = () => (
   </svg>
 );
 
+const DesignElementsIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" className="h-[17px] w-[17px] shrink-0">
+    <path d="M12 2L2 7l10 5 10-5-10-5z" /><path d="M2 17l10 5 10-5" /><path d="M2 12l10 5 10-5" />
+  </svg>
+);
+
+const TestCasesIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" className="h-[17px] w-[17px] shrink-0">
+    <path d="M14.5 2v6.5L19 16a2 2 0 0 1-1.75 3H6.75A2 2 0 0 1 5 16l4.5-7.5V2" /><path d="M8.5 2h7" /><path d="M7 15h10" />
+  </svg>
+);
+
 const TraceabilityIcon = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" className="h-[17px] w-[17px] shrink-0">
     <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" /><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
@@ -73,6 +85,8 @@ const navigationItems = [
   { Icon: TemplatesIcon, label: "Templates", path: "templates" },
   { Icon: UseCasesIcon, label: "Use Cases", path: "use-cases" },
   { Icon: RequirementsIcon, label: "Requirements", path: "requirements" },
+  { Icon: DesignElementsIcon, label: "Design Elements", path: "design-elements" },
+  { Icon: TestCasesIcon, label: "Test Cases", path: "test-cases" },
   { Icon: TraceabilityIcon, label: "Traceability", path: "traceability" },
   { Icon: ValidationIcon, label: "Validation", path: "validation" },
   { Icon: DiagramsIcon, label: "Diagrams", path: "diagrams" },

@@ -50,12 +50,38 @@ const TRACEABILITY_MODES = {
     targetKind: "documentSection",
     explanation: "Link requirements to the document sections that describe them.",
   },
+  REQUIREMENT_DESIGN_ELEMENT: {
+    key: "REQUIREMENT_DESIGN_ELEMENT",
+    label: "Requirements → Design Elements",
+    sourceType: "REQUIREMENT",
+    targetType: "DESIGN_ELEMENT",
+    linkType: "implemented_by",
+    sourceLabel: "Requirements",
+    targetLabel: "Design Elements",
+    sourceKind: "requirement",
+    targetKind: "designElement",
+    explanation: "Link requirements to the design elements that implement them.",
+  },
+  REQUIREMENT_TEST_CASE: {
+    key: "REQUIREMENT_TEST_CASE",
+    label: "Requirements → Test Cases",
+    sourceType: "REQUIREMENT",
+    targetType: "TEST_CASE",
+    linkType: "verified_by",
+    sourceLabel: "Requirements",
+    targetLabel: "Test Cases",
+    sourceKind: "requirement",
+    targetKind: "testCase",
+    explanation: "Link requirements to the test cases that verify them.",
+  },
 };
 
 const MODE_ORDER = [
   "USE_CASE_REQUIREMENT",
   "USE_CASE_DOCUMENT_SECTION",
   "REQUIREMENT_DOCUMENT_SECTION",
+  "REQUIREMENT_DESIGN_ELEMENT",
+  "REQUIREMENT_TEST_CASE",
 ];
 
 function getDefaultModeKey(useCases) {
@@ -65,12 +91,16 @@ function getDefaultModeKey(useCases) {
 function getItemsByKind(kind, options) {
   if (kind === "useCase") return options.useCases;
   if (kind === "requirement") return options.requirements;
+  if (kind === "designElement") return options.designElements;
+  if (kind === "testCase") return options.testCases;
   return options.documentSections;
 }
 
 function getMissingMessage(kind) {
   if (kind === "useCase") return "Create use cases before linking this traceability view.";
   if (kind === "requirement") return "Create requirements before linking this traceability view.";
+  if (kind === "designElement") return "Create design elements before linking this traceability view.";
+  if (kind === "testCase") return "Create test cases before linking this traceability view.";
   return "Create a document before linking this traceability view.";
 }
 
@@ -83,6 +113,8 @@ function TraceabilityMatrix() {
   const [useCases, setUseCases] = useState([]);
   const [requirements, setRequirements] = useState([]);
   const [documentSections, setDocumentSections] = useState([]);
+  const [designElements, setDesignElements] = useState([]);
+  const [testCases, setTestCases] = useState([]);
   const [links, setLinks] = useState([]);
   const [modeKey, setModeKey] = useState("");
   const [selectedSourceId, setSelectedSourceId] = useState("");
@@ -94,8 +126,8 @@ function TraceabilityMatrix() {
 
   const activeMode = TRACEABILITY_MODES[modeKey] || TRACEABILITY_MODES.REQUIREMENT_DOCUMENT_SECTION;
   const options = useMemo(
-    () => ({ useCases, requirements, documentSections }),
-    [documentSections, requirements, useCases]
+    () => ({ useCases, requirements, documentSections, designElements, testCases }),
+    [designElements, documentSections, requirements, testCases, useCases]
   );
   const sourceItems = getItemsByKind(activeMode.sourceKind, options);
   const targetItems = getItemsByKind(activeMode.targetKind, options);
@@ -145,6 +177,8 @@ function TraceabilityMatrix() {
       setUseCases(loadedUseCases);
       setRequirements(loadedRequirements);
       setDocumentSections(loadedDocumentSections);
+      setDesignElements(loadedOptions.designElements || []);
+      setTestCases(loadedOptions.testCases || []);
       setLinks(traceabilityLinks);
       setModeKey((currentMode) => currentMode || getDefaultModeKey(loadedUseCases));
       setSelectedSourceId("");
@@ -387,6 +421,8 @@ function TraceabilityMatrix() {
             useCases={useCases}
             requirements={requirements}
             documentSections={documentSections}
+            designElements={designElements}
+            testCases={testCases}
             isDeletingId={isDeletingId}
             onDelete={handleDelete}
           />

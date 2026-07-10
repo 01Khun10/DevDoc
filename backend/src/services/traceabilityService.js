@@ -40,6 +40,14 @@ function getSupportedLinkType(sourceType, targetType) {
     return "described_by";
   }
 
+  if (sourceType === "REQUIREMENT" && targetType === "DESIGN_ELEMENT") {
+    return "implemented_by";
+  }
+
+  if (sourceType === "REQUIREMENT" && targetType === "TEST_CASE") {
+    return "verified_by";
+  }
+
   return null;
 }
 
@@ -130,6 +138,38 @@ async function verifyTargetArtefact(tx, projectId, values) {
     return documentSection;
   }
 
+  if (values.targetType === "DESIGN_ELEMENT") {
+    const designElement = await tx.designElement.findFirst({
+      where: {
+        id: values.targetId,
+        projectId
+      },
+      select: { id: true }
+    });
+
+    if (!designElement) {
+      throw createTraceabilityError(TARGET_NOT_FOUND, "Target artefact not found");
+    }
+
+    return designElement;
+  }
+
+  if (values.targetType === "TEST_CASE") {
+    const testCase = await tx.testCase.findFirst({
+      where: {
+        id: values.targetId,
+        projectId
+      },
+      select: { id: true }
+    });
+
+    if (!testCase) {
+      throw createTraceabilityError(TARGET_NOT_FOUND, "Target artefact not found");
+    }
+
+    return testCase;
+  }
+
   throw createTraceabilityError(TARGET_NOT_FOUND, "Target artefact not found");
 }
 
@@ -201,10 +241,34 @@ async function getTraceabilityOptions(ownerId, projectId) {
       }
     });
 
+    const designElements = await tx.designElement.findMany({
+      where: { projectId: project.id },
+      orderBy: { code: "asc" },
+      select: {
+        id: true,
+        code: true,
+        title: true,
+        elementType: true
+      }
+    });
+
+    const testCases = await tx.testCase.findMany({
+      where: { projectId: project.id },
+      orderBy: { code: "asc" },
+      select: {
+        id: true,
+        code: true,
+        title: true,
+        status: true
+      }
+    });
+
     return {
       useCases,
       requirements,
-      documentSections
+      documentSections,
+      designElements,
+      testCases
     };
   });
 }

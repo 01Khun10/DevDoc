@@ -17,6 +17,12 @@ function generateSafeAlias(type, id, code, index) {
   if (type === "DOCUMENT_SECTION") {
     return `SEC_${index}`;
   }
+  if (type === "DESIGN_ELEMENT") {
+    return code ? code.replace(/[^a-zA-Z0-9_]/g, "_") : `DE_${index}`;
+  }
+  if (type === "TEST_CASE") {
+    return code ? code.replace(/[^a-zA-Z0-9_]/g, "_") : `TC_${index}`;
+  }
   return `NODE_${index}`;
 }
 
@@ -67,13 +73,29 @@ async function generateTraceabilityTreePlantUml(ownerId, projectId) {
       ]
     });
 
+    const designElements = await tx.designElement.findMany({
+      where: { projectId: project.id },
+      orderBy: { code: "asc" }
+    });
+
+    const testCases = await tx.testCase.findMany({
+      where: { projectId: project.id },
+      orderBy: { code: "asc" }
+    });
+
     const links = await tx.traceabilityLink.findMany({
       where: { projectId: project.id }
     });
 
     let plantUml = "@startuml\nleft to right direction\nskinparam shadowing false\nskinparam packageStyle rectangle\n\n";
 
-    if (useCases.length === 0 && requirements.length === 0 && documentSections.length === 0) {
+    if (
+      useCases.length === 0 &&
+      requirements.length === 0 &&
+      documentSections.length === 0 &&
+      designElements.length === 0 &&
+      testCases.length === 0
+    ) {
       plantUml += "rectangle \"No traceability data yet\" as EMPTY\n";
       plantUml += "@enduml\n";
       return {
@@ -85,6 +107,8 @@ async function generateTraceabilityTreePlantUml(ownerId, projectId) {
           useCaseCount: 0,
           requirementCount: 0,
           documentSectionCount: 0,
+          designElementCount: 0,
+          testCaseCount: 0,
           linkCount: 0
         }
       };
@@ -94,6 +118,8 @@ async function generateTraceabilityTreePlantUml(ownerId, projectId) {
     const ucAliases = new Map();
     const reqAliases = new Map();
     const secAliases = new Map();
+    const deAliases = new Map();
+    const tcAliases = new Map();
 
     if (useCases.length > 0) {
       plantUml += "package \"Use Cases\" {\n";
@@ -128,10 +154,34 @@ async function generateTraceabilityTreePlantUml(ownerId, projectId) {
       plantUml += "}\n\n";
     }
 
+    if (designElements.length > 0) {
+      plantUml += "package \"Design Elements\" {\n";
+      designElements.forEach((de, idx) => {
+        const alias = generateSafeAlias("DESIGN_ELEMENT", de.id, de.code, idx);
+        deAliases.set(de.id, alias);
+        const label = escapeLabel(`${de.code}\\n${de.title}`);
+        plantUml += `  rectangle "${label}" as ${alias}\n`;
+      });
+      plantUml += "}\n\n";
+    }
+
+    if (testCases.length > 0) {
+      plantUml += "package \"Test Cases\" {\n";
+      testCases.forEach((tc, idx) => {
+        const alias = generateSafeAlias("TEST_CASE", tc.id, tc.code, idx);
+        tcAliases.set(tc.id, alias);
+        const label = escapeLabel(`${tc.code}\\n${tc.title}`);
+        plantUml += `  rectangle "${label}" as ${alias}\n`;
+      });
+      plantUml += "}\n\n";
+    }
+
     const getAlias = (type, id) => {
       if (type === "USE_CASE") return ucAliases.get(id);
       if (type === "REQUIREMENT") return reqAliases.get(id);
       if (type === "DOCUMENT_SECTION") return secAliases.get(id);
+      if (type === "DESIGN_ELEMENT") return deAliases.get(id);
+      if (type === "TEST_CASE") return tcAliases.get(id);
       return null;
     };
 
@@ -157,6 +207,8 @@ async function generateTraceabilityTreePlantUml(ownerId, projectId) {
         useCaseCount: useCases.length,
         requirementCount: requirements.length,
         documentSectionCount: documentSections.length,
+        designElementCount: designElements.length,
+        testCaseCount: testCases.length,
         linkCount: links.length
       }
     };

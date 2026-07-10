@@ -18,6 +18,8 @@ import ProjectVersionsPlaceholder from "./pages/ProjectVersionsPlaceholder";
 import ProjectWorkspace from "./pages/ProjectWorkspace";
 import Register from "./pages/Register";
 import RequirementRegistry from "./pages/RequirementRegistry";
+import DesignElementRegistry from "./pages/DesignElementRegistry";
+import TestCaseRegistry from "./pages/TestCaseRegistry";
 import SettingsPlaceholder from "./pages/SettingsPlaceholder";
 import TemplateLibrary from "./pages/TemplateLibrary";
 import TraceabilityMatrix from "./pages/TraceabilityMatrix";
@@ -53,6 +55,8 @@ function App() {
           <Route path="templates" element={<TemplateLibrary />} />
           <Route path="use-cases" element={<UseCaseRegistry />} />
           <Route path="requirements" element={<RequirementRegistry />} />
+          <Route path="design-elements" element={<DesignElementRegistry />} />
+          <Route path="test-cases" element={<TestCaseRegistry />} />
           <Route path="traceability" element={<TraceabilityMatrix />} />
           <Route path="validation" element={<ValidationEngine />} />
           <Route path="diagrams" element={<ProjectDiagrams />} />
