@@ -113,7 +113,12 @@ async function seedValidationRules() {
       : null;
 
     await prisma.validationRule.upsert({
-      where: { ruleCode: rule.ruleCode },
+      where: {
+        profileId_ruleCode: {
+          profileId: profile.id,
+          ruleCode: rule.ruleCode
+        }
+      },
       update: {
         profileId: profile.id,
         templateId: template ? template.id : null,

@@ -1,5 +1,8 @@
 const prisma = require("../utils/prisma");
+const validationChecks = require("./validationChecks");
 const { PROJECT_NOT_FOUND, RUN_NOT_FOUND } = require("../constants/errorCodes");
+
+const FALLBACK_PROFILE_CODE = "STANDARD_SOFTWARE";
 
 const SEVERITY_ORDER = {
   ERROR: 1,
@@ -41,15 +44,42 @@ function calculateReadinessScore(results) {
   return Math.max(0, score);
 }
 
-function createResult(ruleCode, severity, message, suggestedFix, targetType = null, targetId = null) {
-  return {
-    ruleCode,
-    severity,
-    message,
-    suggestedFix,
-    targetType,
-    targetId
-  };
+function interpolateTemplate(template, params) {
+  if (!template) {
+    return template;
+  }
+
+  return template.replace(/\{(\w+)\}/g, (match, key) =>
+    Object.prototype.hasOwnProperty.call(params, key) ? String(params[key]) : match
+  );
+}
+
+function executeRules(rules, context) {
+  const results = [];
+
+  for (const rule of rules) {
+    const check = validationChecks[rule.checkKey];
+
+    if (!check) {
+      console.warn(`[validationService] Unknown checkKey '${rule.checkKey}' for rule ${rule.ruleCode}`);
+      continue;
+    }
+
+    for (const finding of check(context)) {
+      const params = finding.params || {};
+
+      results.push({
+        ruleCode: rule.ruleCode,
+        severity: rule.severity,
+        message: interpolateTemplate(rule.message, params),
+        suggestedFix: interpolateTemplate(rule.suggestedFix, params),
+        targetType: finding.targetType || null,
+        targetId: finding.targetId || null
+      });
+    }
+  }
+
+  return sortResults(results);
 }
 
 async function verifyProjectOwnership(client, ownerId, projectId) {
@@ -58,7 +88,7 @@ async function verifyProjectOwnership(client, ownerId, projectId) {
       id: projectId,
       ownerId
     },
-    select: { id: true }
+    select: { id: true, profileId: true }
   });
 
   if (!project) {
@@ -68,235 +98,111 @@ async function verifyProjectOwnership(client, ownerId, projectId) {
   return project;
 }
 
-function hasTraceabilityLink(traceabilityLinks, criteria) {
-  return traceabilityLinks.some((link) =>
-    Object.entries(criteria).every(([key, value]) => link[key] === value)
-  );
+async function getActiveRules(client, profileId) {
+  let resolvedProfileId = profileId;
+
+  if (!resolvedProfileId) {
+    const fallbackProfile = await client.validationProfile.findUnique({
+      where: { code: FALLBACK_PROFILE_CODE },
+      select: { id: true }
+    });
+
+    resolvedProfileId = fallbackProfile ? fallbackProfile.id : null;
+  }
+
+  if (!resolvedProfileId) {
+    return [];
+  }
+
+  return client.validationRule.findMany({
+    where: {
+      profileId: resolvedProfileId,
+      isActive: true
+    },
+    select: {
+      ruleCode: true,
+      severity: true,
+      checkKey: true,
+      message: true,
+      suggestedFix: true
+    }
+  });
 }
 
-function buildValidationResults(documents, requirements, useCases, traceabilityLinks) {
-  const results = [];
-  const documentSections = documents.flatMap((document) =>
+async function loadProjectContext(tx, projectId) {
+  const documents = await tx.document.findMany({
+    where: { projectId },
+    select: {
+      id: true,
+      title: true,
+      completionPercent: true,
+      sections: {
+        select: {
+          id: true,
+          sectionNumber: true,
+          title: true,
+          content: true,
+          isRequired: true
+        }
+      }
+    }
+  });
+  const requirements = await tx.requirement.findMany({
+    where: { projectId },
+    select: {
+      id: true,
+      code: true,
+      type: true
+    }
+  });
+  const useCases = await tx.useCase.findMany({
+    where: { projectId },
+    select: {
+      id: true,
+      code: true
+    }
+  });
+  const traceabilityLinks = await tx.traceabilityLink.findMany({
+    where: { projectId },
+    select: {
+      sourceType: true,
+      sourceId: true,
+      targetType: true,
+      targetId: true,
+      linkType: true
+    }
+  });
+  const designElements = await tx.designElement.findMany({
+    where: { projectId },
+    select: {
+      id: true,
+      code: true
+    }
+  });
+  const testCases = await tx.testCase.findMany({
+    where: { projectId },
+    select: {
+      id: true,
+      code: true
+    }
+  });
+
+  const sections = documents.flatMap((document) =>
     document.sections.map((section) => ({
       ...section,
       documentTitle: document.title
     }))
   );
-  const documentSectionIds = new Set(documentSections.map((section) => section.id));
-  const requirementIds = new Set(requirements.map((requirement) => requirement.id));
-  const useCaseIds = new Set(useCases.map((useCase) => useCase.id));
-  const linkedRequirementIds = new Set(
-    traceabilityLinks
-      .filter((link) => link.sourceType === "REQUIREMENT")
-      .map((link) => link.sourceId)
-  );
 
-  if (documents.length === 0) {
-    results.push(
-      createResult(
-        "DOC-001",
-        "ERROR",
-        "This project does not have any documents yet.",
-        "Create at least one document from the Template Library."
-      )
-    );
-  }
-
-  if (requirements.length === 0) {
-    results.push(
-      createResult(
-        "REQ-001",
-        "WARNING",
-        "This project does not have any requirements yet.",
-        "Add functional or non-functional requirements in the Requirements Registry."
-      )
-    );
-  }
-
-  if (useCases.length === 0) {
-    results.push(
-      createResult(
-        "UC-001",
-        "WARNING",
-        "This project does not have any use cases yet.",
-        "Add use cases to describe how users interact with the system."
-      )
-    );
-  }
-
-  documentSections
-    .filter((section) => section.isRequired)
-    .filter((section) => section.content === null || section.content.trim() === "")
-    .forEach((section) => {
-      results.push(
-        createResult(
-          "SEC-001",
-          "ERROR",
-          `Required section '${section.sectionNumber} ${section.title}' in document '${section.documentTitle}' is empty.`,
-          "Open the document editor and complete this required section.",
-          "DOCUMENT_SECTION",
-          section.id
-        )
-      );
-    });
-
-  requirements
-    .filter((requirement) => !linkedRequirementIds.has(requirement.id))
-    .forEach((requirement) => {
-      results.push(
-        createResult(
-          "TRC-001",
-          "WARNING",
-          `Requirement ${requirement.code} has no traceability links.`,
-          "Link this requirement to a document section in the Traceability Matrix.",
-          "REQUIREMENT",
-          requirement.id
-        )
-      );
-    });
-
-  useCases.forEach((useCase) => {
-    const coversRequirement = hasTraceabilityLink(traceabilityLinks, {
-      sourceType: "USE_CASE",
-      sourceId: useCase.id,
-      targetType: "REQUIREMENT",
-      linkType: "covers"
-    });
-
-    if (!coversRequirement) {
-      results.push(
-        createResult(
-          "UC-002",
-          "WARNING",
-          `Use case ${useCase.code} is not linked to any requirement.`,
-          "Open the Traceability Matrix and link this use case to at least one requirement.",
-          "USE_CASE",
-          useCase.id
-        )
-      );
-    }
-
-    const describedBySection = hasTraceabilityLink(traceabilityLinks, {
-      sourceType: "USE_CASE",
-      sourceId: useCase.id,
-      targetType: "DOCUMENT_SECTION",
-      linkType: "described_by"
-    });
-
-    if (!describedBySection) {
-      results.push(
-        createResult(
-          "UC-003",
-          "INFO",
-          `Use case ${useCase.code} is not linked to any document section.`,
-          "Link this use case to a document section where the scenario is explained.",
-          "USE_CASE",
-          useCase.id
-        )
-      );
-    }
-  });
-
-  requirements
-    .filter((requirement) => requirement.type === "FR")
-    .filter(
-      (requirement) =>
-        !hasTraceabilityLink(traceabilityLinks, {
-          sourceType: "USE_CASE",
-          targetType: "REQUIREMENT",
-          targetId: requirement.id,
-          linkType: "covers"
-        })
-    )
-    .forEach((requirement) => {
-      results.push(
-        createResult(
-          "REQ-002",
-          "WARNING",
-          `Functional requirement ${requirement.code} is not covered by any use case.`,
-          "Create or link a use case that explains the user scenario behind this requirement.",
-          "REQUIREMENT",
-          requirement.id
-        )
-      );
-    });
-
-  const incompleteDocuments = documents.filter(
-    (document) => document.completionPercent < 100
-  );
-
-  if (incompleteDocuments.length > 0) {
-    const documentList = incompleteDocuments
-      .map((document) => `'${document.title}' (${document.completionPercent}%)`)
-      .join(", ");
-
-    results.push(
-      createResult(
-        "DOC-002",
-        "INFO",
-        `${incompleteDocuments.length} document(s) are not fully complete: ${documentList}.`,
-        "Complete the remaining required sections to improve readiness."
-      )
-    );
-  }
-
-  traceabilityLinks
-    .filter((link) => link.targetType === "DOCUMENT_SECTION")
-    .filter((link) => !documentSectionIds.has(link.targetId))
-    .forEach(() => {
-      results.push(
-        createResult(
-          "TRC-002",
-          "ERROR",
-          "A traceability link points to a missing document section.",
-          "Remove the broken traceability link and create a valid one."
-        )
-      );
-    });
-
-  traceabilityLinks
-    .filter((link) => link.targetType === "REQUIREMENT")
-    .filter((link) => !requirementIds.has(link.targetId))
-    .forEach(() => {
-      results.push(
-        createResult(
-          "TRC-002",
-          "ERROR",
-          "A traceability link points to a missing requirement.",
-          "Remove the broken traceability link and create a valid one."
-        )
-      );
-    });
-
-  traceabilityLinks
-    .filter((link) => link.sourceType === "USE_CASE")
-    .filter((link) => !useCaseIds.has(link.sourceId))
-    .forEach(() => {
-      results.push(
-        createResult(
-          "TRC-002",
-          "ERROR",
-          "A traceability link points from a missing use case.",
-          "Remove the broken traceability link and create a valid one."
-        )
-      );
-    });
-
-  traceabilityLinks
-    .filter((link) => link.sourceType === "REQUIREMENT")
-    .filter((link) => !requirementIds.has(link.sourceId))
-    .forEach(() => {
-      results.push(
-        createResult(
-          "TRC-002",
-          "ERROR",
-          "A traceability link points from a missing requirement.",
-          "Remove the broken traceability link and create a valid one."
-        )
-      );
-    });
-
-  return sortResults(results);
+  return {
+    documents,
+    sections,
+    requirements,
+    useCases,
+    traceabilityLinks,
+    designElements,
+    testCases
+  };
 }
 
 function getValidationResultSelect() {
@@ -341,54 +247,9 @@ async function runProjectValidation(ownerId, projectId) {
 
   try {
     const completedRun = await prisma.$transaction(async (tx) => {
-      const documents = await tx.document.findMany({
-        where: { projectId: project.id },
-        select: {
-          id: true,
-          title: true,
-          completionPercent: true,
-          sections: {
-            select: {
-              id: true,
-              sectionNumber: true,
-              title: true,
-              content: true,
-              isRequired: true
-            }
-          }
-        }
-      });
-      const requirements = await tx.requirement.findMany({
-        where: { projectId: project.id },
-        select: {
-          id: true,
-          code: true,
-          type: true
-        }
-      });
-      const useCases = await tx.useCase.findMany({
-        where: { projectId: project.id },
-        select: {
-          id: true,
-          code: true
-        }
-      });
-      const traceabilityLinks = await tx.traceabilityLink.findMany({
-        where: { projectId: project.id },
-        select: {
-          sourceType: true,
-          sourceId: true,
-          targetType: true,
-          targetId: true,
-          linkType: true
-        }
-      });
-      const results = buildValidationResults(
-        documents,
-        requirements,
-        useCases,
-        traceabilityLinks
-      );
+      const rules = await getActiveRules(tx, project.profileId);
+      const context = await loadProjectContext(tx, project.id);
+      const results = executeRules(rules, context);
       const readinessScore = calculateReadinessScore(results);
 
       if (results.length > 0) {
