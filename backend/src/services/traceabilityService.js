@@ -23,6 +23,7 @@ function getTraceabilityLinkSelect() {
     targetType: true,
     targetId: true,
     linkType: true,
+    lastVerifiedAt: true,
     createdAt: true
   };
 }
@@ -326,6 +327,30 @@ async function createTraceabilityLink(ownerId, projectId, values) {
   });
 }
 
+async function verifyTraceabilityLink(ownerId, projectId, linkId) {
+  return prisma.$transaction(async (tx) => {
+    const project = await verifyProjectOwnership(tx, ownerId, projectId);
+
+    const link = await tx.traceabilityLink.findFirst({
+      where: {
+        id: linkId,
+        projectId: project.id
+      },
+      select: { id: true }
+    });
+
+    if (!link) {
+      throw createTraceabilityError(LINK_NOT_FOUND, "Traceability link not found");
+    }
+
+    return tx.traceabilityLink.update({
+      where: { id: link.id },
+      data: { lastVerifiedAt: new Date() },
+      select: getTraceabilityLinkSelect()
+    });
+  });
+}
+
 async function deleteTraceabilityLink(ownerId, projectId, linkId) {
   return prisma.$transaction(async (tx) => {
     const project = await verifyProjectOwnership(tx, ownerId, projectId);
@@ -360,5 +385,6 @@ module.exports = {
   getTraceabilityLinks,
   getTraceabilityOptions,
   createTraceabilityLink,
+  verifyTraceabilityLink,
   deleteTraceabilityLink
 };

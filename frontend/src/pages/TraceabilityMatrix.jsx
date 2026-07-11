@@ -9,6 +9,7 @@ import { getProject } from "../services/projectService";
 import {
   createTraceabilityLink,
   deleteTraceabilityLink,
+  verifyTraceabilityLink,
   getTraceabilityOptions,
   listTraceabilityLinks,
 } from "../services/traceabilityService";
@@ -123,6 +124,7 @@ function TraceabilityMatrix() {
   const [createError, setCreateError] = useState("");
   const [processingTargetId, setProcessingTargetId] = useState("");
   const [isDeletingId, setIsDeletingId] = useState("");
+  const [isVerifyingId, setIsVerifyingId] = useState("");
 
   const activeMode = TRACEABILITY_MODES[modeKey] || TRACEABILITY_MODES.REQUIREMENT_DOCUMENT_SECTION;
   const options = useMemo(
@@ -215,6 +217,23 @@ function TraceabilityMatrix() {
       return false;
     } finally {
       setIsDeletingId("");
+    }
+  }
+
+  async function handleVerify(linkId) {
+    setIsVerifyingId(linkId);
+    setCreateError("");
+    try {
+      const verifiedLink = await verifyTraceabilityLink(id, linkId);
+      setLinks((currentLinks) =>
+        currentLinks.map((link) => (link.id === linkId ? verifiedLink : link))
+      );
+      notify("Traceability link re-verified.", { tone: "success" });
+    } catch (error) {
+      if (handleRequestError(error)) return;
+      setCreateError(error.message || "Could not re-verify traceability link.");
+    } finally {
+      setIsVerifyingId("");
     }
   }
 
@@ -424,7 +443,9 @@ function TraceabilityMatrix() {
             designElements={designElements}
             testCases={testCases}
             isDeletingId={isDeletingId}
+            isVerifyingId={isVerifyingId}
             onDelete={handleDelete}
+            onVerify={handleVerify}
           />
         </section>
       </div>

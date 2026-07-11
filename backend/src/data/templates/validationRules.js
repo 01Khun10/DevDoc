@@ -116,6 +116,16 @@ const baseRules = [
     checkKey: "links_have_valid_endpoints",
     message: "A traceability link points {description}.",
     suggestedFix: "Remove the broken traceability link and create a valid one."
+  },
+  {
+    ruleCode: "TRC-003",
+    ruleName: "Traceability links are up to date",
+    ruleCategory: "CN",
+    severity: "WARNING",
+    checkKey: "links_are_fresh",
+    message:
+      "Link '{sourceLabel}' {linkType} '{targetLabel}' may be stale: an artefact changed after the link was last verified.",
+    suggestedFix: "Review the link in the Traceability Matrix and click Re-verify if it is still correct."
   }
 ];
 

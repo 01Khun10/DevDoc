@@ -28,20 +28,83 @@ function sortResults(results) {
   });
 }
 
-function calculateReadinessScore(results) {
-  const score = results.reduce((currentScore, result) => {
-    if (result.severity === "ERROR") {
-      return currentScore - 15;
-    }
+function ratio(numerator, denominator) {
+  // Empty denominators contribute 0, not 1.
+  return denominator > 0 ? numerator / denominator : 0;
+}
 
-    if (result.severity === "WARNING") {
-      return currentScore - 5;
-    }
+function calculateReadinessMetrics(context) {
+  const { sections, requirements, traceabilityLinks } = context;
 
-    return currentScore;
-  }, 100);
+  const requiredSections = sections.filter((section) => section.isRequired);
+  const completedRequiredSections = requiredSections.filter(
+    (section) => section.content !== null && section.content.trim() !== ""
+  );
 
-  return Math.max(0, score);
+  const linkedRequirementIds = new Set();
+  for (const link of traceabilityLinks) {
+    if (link.sourceType === "REQUIREMENT") linkedRequirementIds.add(link.sourceId);
+    if (link.targetType === "REQUIREMENT") linkedRequirementIds.add(link.targetId);
+  }
+
+  const functionalRequirements = requirements.filter((requirement) => requirement.type === "FR");
+  const hasLink = (requirementId, criteria) =>
+    traceabilityLinks.some(
+      (link) =>
+        Object.entries(criteria).every(([key, value]) => link[key] === value) &&
+        (criteria.sourceType === "REQUIREMENT"
+          ? link.sourceId === requirementId
+          : link.targetId === requirementId)
+    );
+
+  const metrics = {
+    sectionCompletion: ratio(completedRequiredSections.length, requiredSections.length),
+    reqTraced: ratio(
+      requirements.filter((requirement) => linkedRequirementIds.has(requirement.id)).length,
+      requirements.length
+    ),
+    frCovered: ratio(
+      functionalRequirements.filter((requirement) =>
+        hasLink(requirement.id, {
+          sourceType: "USE_CASE",
+          targetType: "REQUIREMENT",
+          linkType: "covers"
+        })
+      ).length,
+      functionalRequirements.length
+    ),
+    frImplemented: ratio(
+      functionalRequirements.filter((requirement) =>
+        hasLink(requirement.id, {
+          sourceType: "REQUIREMENT",
+          targetType: "DESIGN_ELEMENT",
+          linkType: "implemented_by"
+        })
+      ).length,
+      functionalRequirements.length
+    ),
+    frVerified: ratio(
+      functionalRequirements.filter((requirement) =>
+        hasLink(requirement.id, {
+          sourceType: "REQUIREMENT",
+          targetType: "TEST_CASE",
+          linkType: "verified_by"
+        })
+      ).length,
+      functionalRequirements.length
+    )
+  };
+
+  const readinessScore = Math.round(
+    100 *
+      (0.3 * metrics.sectionCompletion +
+        0.25 * metrics.reqTraced +
+        0.2 * metrics.frCovered +
+        0.15 * metrics.frImplemented +
+        0.1 * metrics.frVerified)
+  );
+
+  return { metrics, readinessScore };
 }
 
 function interpolateTemplate(template, params) {
@@ -142,7 +205,8 @@ async function loadProjectContext(tx, projectId) {
           sectionNumber: true,
           title: true,
           content: true,
-          isRequired: true
+          isRequired: true,
+          updatedAt: true
         }
       }
     }
@@ -152,38 +216,44 @@ async function loadProjectContext(tx, projectId) {
     select: {
       id: true,
       code: true,
-      type: true
+      type: true,
+      updatedAt: true
     }
   });
   const useCases = await tx.useCase.findMany({
     where: { projectId },
     select: {
       id: true,
-      code: true
+      code: true,
+      updatedAt: true
     }
   });
   const traceabilityLinks = await tx.traceabilityLink.findMany({
     where: { projectId },
     select: {
+      id: true,
       sourceType: true,
       sourceId: true,
       targetType: true,
       targetId: true,
-      linkType: true
+      linkType: true,
+      lastVerifiedAt: true
     }
   });
   const designElements = await tx.designElement.findMany({
     where: { projectId },
     select: {
       id: true,
-      code: true
+      code: true,
+      updatedAt: true
     }
   });
   const testCases = await tx.testCase.findMany({
     where: { projectId },
     select: {
       id: true,
-      code: true
+      code: true,
+      updatedAt: true
     }
   });
 
@@ -224,6 +294,7 @@ function getValidationRunSelect() {
     projectId: true,
     status: true,
     readinessScore: true,
+    metrics: true,
     startedAt: true,
     completedAt: true,
     results: {
@@ -250,7 +321,7 @@ async function runProjectValidation(ownerId, projectId) {
       const rules = await getActiveRules(tx, project.profileId);
       const context = await loadProjectContext(tx, project.id);
       const results = executeRules(rules, context);
-      const readinessScore = calculateReadinessScore(results);
+      const { metrics, readinessScore } = calculateReadinessMetrics(context);
 
       if (results.length > 0) {
         await tx.validationResult.createMany({
@@ -266,6 +337,7 @@ async function runProjectValidation(ownerId, projectId) {
         data: {
           status: "COMPLETED",
           readinessScore,
+          metrics,
           completedAt: new Date()
         },
         select: getValidationRunSelect()
@@ -343,6 +415,7 @@ async function getValidationRunById(ownerId, projectId, runId) {
 module.exports = {
   PROJECT_NOT_FOUND,
   RUN_NOT_FOUND,
+  calculateReadinessMetrics,
   runProjectValidation,
   getValidationRuns,
   getValidationRunById

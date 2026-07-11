@@ -9,6 +9,7 @@ const {
   getTraceabilityLinks,
   getTraceabilityOptions,
   createTraceabilityLink,
+  verifyTraceabilityLink,
   deleteTraceabilityLink
 } = require("../services/traceabilityService");
 const { sendError, sendUnexpectedError } = require("../utils/httpErrors");
@@ -83,6 +84,20 @@ async function create(req, res) {
   }
 }
 
+async function verify(req, res) {
+  try {
+    const traceabilityLink = await verifyTraceabilityLink(
+      req.user.id,
+      req.params.projectId,
+      req.params.linkId
+    );
+
+    return res.status(200).json({ traceabilityLink });
+  } catch (error) {
+    return mapServiceError(res, error, "traceabilityController.verify");
+  }
+}
+
 async function remove(req, res) {
   try {
     const result = await deleteTraceabilityLink(
@@ -101,5 +116,6 @@ module.exports = {
   list,
   options,
   create,
+  verify,
   remove
 };

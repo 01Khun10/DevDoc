@@ -24,6 +24,17 @@ async function createTraceabilityLink(projectId, input) {
   return response.traceabilityLink;
 }
 
+async function verifyTraceabilityLink(projectId, linkId) {
+  const response = await apiRequest(
+    `/api/projects/${encodeURIComponent(projectId)}/traceability/${encodeURIComponent(linkId)}/verify`,
+    {
+      method: "PATCH"
+    }
+  );
+
+  return response.traceabilityLink;
+}
+
 async function deleteTraceabilityLink(projectId, linkId) {
   return apiRequest(
     `/api/projects/${encodeURIComponent(projectId)}/traceability/${encodeURIComponent(linkId)}`,
@@ -37,5 +48,6 @@ export {
   listTraceabilityLinks,
   getTraceabilityOptions,
   createTraceabilityLink,
+  verifyTraceabilityLink,
   deleteTraceabilityLink
 };

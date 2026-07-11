@@ -187,6 +187,59 @@ const validationChecks = {
       }));
   },
 
+  links_are_fresh({
+    sections,
+    requirements,
+    useCases,
+    designElements,
+    testCases,
+    traceabilityLinks
+  }) {
+    const artefactsByType = {
+      DOCUMENT_SECTION: sections,
+      REQUIREMENT: requirements,
+      USE_CASE: useCases,
+      DESIGN_ELEMENT: designElements,
+      TEST_CASE: testCases
+    };
+    const byId = {};
+
+    for (const [type, artefacts] of Object.entries(artefactsByType)) {
+      byId[type] = new Map(artefacts.map((artefact) => [artefact.id, artefact]));
+    }
+
+    const label = (artefact) =>
+      artefact.code || `${artefact.sectionNumber || ""} ${artefact.title || ""}`.trim();
+
+    const findings = [];
+
+    for (const link of traceabilityLinks) {
+      const source = byId[link.sourceType]?.get(link.sourceId);
+      const target = byId[link.targetType]?.get(link.targetId);
+
+      if (!source || !target) {
+        continue; // broken endpoints are TRC-002's job
+      }
+
+      if (
+        source.updatedAt > link.lastVerifiedAt ||
+        target.updatedAt > link.lastVerifiedAt
+      ) {
+        findings.push({
+          params: {
+            sourceLabel: label(source),
+            targetLabel: label(target),
+            linkType: link.linkType
+          },
+          targetType: link.sourceType,
+          targetId: link.sourceId
+        });
+      }
+    }
+
+    return findings;
+  },
+
   links_have_valid_endpoints({
     sections,
     requirements,

@@ -82,7 +82,9 @@ function TraceabilityLinkList({
   designElements = [],
   testCases = [],
   onDelete,
+  onVerify,
   isDeletingId,
+  isVerifyingId,
 }) {
   const maps = {
     useCases: buildMap(useCases),
@@ -151,9 +153,25 @@ function TraceabilityLinkList({
                   </span>
                 </div>
                 <p className="mt-2 text-sm leading-6" style={{ color: "var(--devdoc-text)" }}>{target.label}</p>
-                <p className="mt-2 text-xs" style={{ color: "var(--devdoc-muted)" }}>Created {formatDate(link.createdAt)}</p>
+                <p className="mt-2 text-xs" style={{ color: "var(--devdoc-muted)" }}>
+                  Created {formatDate(link.createdAt)} &middot; Verified {formatDate(link.lastVerifiedAt)}
+                </p>
               </div>
 
+              <div className="flex flex-col gap-2">
+              <button
+                className="rounded-lg px-4 py-2 text-sm font-bold transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:translate-y-0"
+                style={{
+                  border: "1px solid color-mix(in srgb, var(--devdoc-success) 35%, var(--devdoc-border))",
+                  backgroundColor: "var(--devdoc-success-soft)",
+                  color: "var(--devdoc-success)",
+                }}
+                disabled={isVerifyingId === link.id}
+                type="button"
+                onClick={() => onVerify(link.id)}
+              >
+                {isVerifyingId === link.id ? "Verifying..." : "Re-verify"}
+              </button>
               <button
                 className="rounded-lg px-4 py-2 text-sm font-bold transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:translate-y-0"
                 style={{
@@ -167,6 +185,7 @@ function TraceabilityLinkList({
               >
                 {isDeletingId === link.id ? "Removing..." : "Remove"}
               </button>
+              </div>
             </div>
           </article>
         );
