@@ -1,6 +1,8 @@
 import { useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import LoadingSpinner from "../components/LoadingSpinner";
+import TraceabilityGrid from "../components/TraceabilityGrid";
+import TraceabilityGraph from "../components/TraceabilityGraph";
 import TraceabilityLinkForm from "../components/TraceabilityLinkForm";
 import TraceabilityLinkList from "../components/TraceabilityLinkList";
 import { useNotify } from "../context/NotificationContext";
@@ -110,6 +112,7 @@ function TraceabilityMatrix() {
   const navigate = useNavigate();
   const { project } = useProject();
   const { notify } = useNotify();
+  const [activeTab, setActiveTab] = useState("grid");
   const [modeKey, setModeKey] = useState("");
   const [selectedSourceId, setSelectedSourceId] = useState("");
   const [createError, setCreateError] = useState("");
@@ -192,6 +195,33 @@ function TraceabilityMatrix() {
       setCreateError(error.message || "Could not re-verify traceability link.");
     } finally {
       setIsVerifyingId("");
+    }
+  }
+
+  // Grid cells toggle without confirmation — the update is optimistic and reversible.
+  async function handleToggleCell(source, target) {
+    const cellKey = `${source.id}:${target.id}`;
+    if (processingTargetId) return;
+    const existingLink =
+      modeLinks.find((link) => link.sourceId === source.id && link.targetId === target.id) || null;
+    setProcessingTargetId(cellKey);
+    setCreateError("");
+    try {
+      if (existingLink) {
+        await deleteMutation.mutateAsync(existingLink.id);
+      } else {
+        await createMutation.mutateAsync({
+          sourceType: activeMode.sourceType,
+          sourceId: source.id,
+          targetType: activeMode.targetType,
+          targetId: target.id,
+          linkType: activeMode.linkType,
+        });
+      }
+    } catch (error) {
+      setCreateError(error.message || "Could not update traceability link.");
+    } finally {
+      setProcessingTargetId("");
     }
   }
 
@@ -309,6 +339,35 @@ function TraceabilityMatrix() {
           <p className="mt-3 text-sm" style={{ color: "var(--devdoc-muted)" }}>{activeMode.explanation}</p>
         </div>
 
+        {/* View tabs */}
+        <div
+          className="mb-5 flex gap-1 rounded-xl border p-1"
+          style={{ borderColor: "var(--devdoc-border)", backgroundColor: "var(--devdoc-surface)" }}
+          role="tablist"
+        >
+          {[
+            ["grid", "Grid"],
+            ["builder", "Builder"],
+            ["graph", "Graph"],
+            ["audit", "Audit"],
+          ].map(([key, label]) => (
+            <button
+              key={key}
+              className="flex-1 rounded-lg px-4 py-2 text-sm font-bold transition"
+              style={{
+                backgroundColor: activeTab === key ? "var(--devdoc-primary)" : "transparent",
+                color: activeTab === key ? "#ffffff" : "var(--devdoc-text-secondary)",
+              }}
+              type="button"
+              role="tab"
+              aria-selected={activeTab === key}
+              onClick={() => setActiveTab(key)}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+
         {/* Stats */}
         <div className="mb-5 grid gap-3 sm:grid-cols-3">
           {[
@@ -346,40 +405,71 @@ function TraceabilityMatrix() {
           </div>
         ) : null}
 
-        {/* Link builder */}
-        <section className="mb-8">
-          {missingSourceMessage ? (
-            <div
-              className="rounded-xl border border-dashed p-6 text-sm"
-              style={{ borderColor: "var(--devdoc-border)", color: "var(--devdoc-muted)" }}
-            >
-              {missingSourceMessage}
-            </div>
-          ) : null}
-          {missingTargetMessage && !missingSourceMessage ? (
-            <div
-              className="mt-4 rounded-xl border border-dashed p-6 text-sm"
-              style={{ borderColor: "var(--devdoc-border)", color: "var(--devdoc-muted)" }}
-            >
-              {missingTargetMessage}
-            </div>
-          ) : null}
-          {canBuildLinks ? (
-            <TraceabilityLinkForm
-              sourceItems={sourceItems}
-              targetItems={targetItems}
-              links={modeLinks}
-              mode={activeMode}
-              selectedSourceId={selectedSourceId}
-              processingTargetId={processingTargetId}
-              error={createError}
-              onSelectSource={setSelectedSourceId}
-              onToggleLink={handleToggleLink}
-            />
-          ) : null}
-        </section>
+        {/* Grid / Builder tabs share the missing-data notices */}
+        {(activeTab === "grid" || activeTab === "builder") ? (
+          <section className="mb-8">
+            {missingSourceMessage ? (
+              <div
+                className="rounded-xl border border-dashed p-6 text-sm"
+                style={{ borderColor: "var(--devdoc-border)", color: "var(--devdoc-muted)" }}
+              >
+                {missingSourceMessage}
+              </div>
+            ) : null}
+            {missingTargetMessage && !missingSourceMessage ? (
+              <div
+                className="mt-4 rounded-xl border border-dashed p-6 text-sm"
+                style={{ borderColor: "var(--devdoc-border)", color: "var(--devdoc-muted)" }}
+              >
+                {missingTargetMessage}
+              </div>
+            ) : null}
+            {createError && activeTab === "grid" ? (
+              <div
+                className="mb-4 rounded-xl border px-4 py-3 text-sm font-semibold"
+                style={{
+                  borderColor: "color-mix(in srgb, var(--devdoc-error) 35%, var(--devdoc-border))",
+                  backgroundColor: "var(--devdoc-error-soft)",
+                  color: "var(--devdoc-error)",
+                }}
+              >
+                {createError}
+              </div>
+            ) : null}
+            {canBuildLinks && activeTab === "grid" ? (
+              <TraceabilityGrid
+                sourceItems={sourceItems}
+                targetItems={targetItems}
+                links={modeLinks}
+                processingTargetId={processingTargetId}
+                onToggleCell={handleToggleCell}
+              />
+            ) : null}
+            {canBuildLinks && activeTab === "builder" ? (
+              <TraceabilityLinkForm
+                sourceItems={sourceItems}
+                targetItems={targetItems}
+                links={modeLinks}
+                mode={activeMode}
+                selectedSourceId={selectedSourceId}
+                processingTargetId={processingTargetId}
+                error={createError}
+                onSelectSource={setSelectedSourceId}
+                onToggleLink={handleToggleLink}
+              />
+            ) : null}
+          </section>
+        ) : null}
+
+        {/* Graph view */}
+        {activeTab === "graph" ? (
+          <section className="mb-8">
+            <TraceabilityGraph projectId={id} options={options} links={links} />
+          </section>
+        ) : null}
 
         {/* Audit log */}
+        {activeTab === "audit" ? (
         <section>
           <div
             className="mb-4 flex items-end justify-between border-b pb-3"
@@ -408,6 +498,7 @@ function TraceabilityMatrix() {
             onVerify={handleVerify}
           />
         </section>
+        ) : null}
       </div>
     </main>
   );

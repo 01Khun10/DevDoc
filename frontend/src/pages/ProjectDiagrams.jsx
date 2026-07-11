@@ -1,4 +1,5 @@
 import { useState } from "react";
+import plantumlEncoder from "plantuml-encoder";
 import { useProject } from "../context/ProjectContext";
 import { getTraceabilityTreePlantUml } from "../services/diagramService";
 
@@ -112,6 +113,18 @@ function ProjectDiagrams() {
                         {label}: {count}
                       </span>
                     ))}
+                  </div>
+
+                  {/* Rendered diagram via the public PlantUML server */}
+                  <div
+                    className="mb-4 overflow-auto rounded-xl border p-4"
+                    style={{ borderColor: "var(--devdoc-border)", backgroundColor: "#ffffff" }}
+                  >
+                    <img
+                      src={`https://www.plantuml.com/plantuml/svg/${plantumlEncoder.encode(diagramResult.plantUml)}`}
+                      alt="Rendered traceability tree diagram"
+                      className="mx-auto max-w-full"
+                    />
                   </div>
 
                   <div className="relative">

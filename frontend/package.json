@@ -14,9 +14,11 @@
   "dependencies": {
     "@tanstack/react-query": "^5.101.2",
     "@vitejs/plugin-react": "^4.3.4",
+    "plantuml-encoder": "^1.4.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "react-router-dom": "^7.15.0",
+    "reactflow": "^11.11.4",
     "vite": "^6.0.7"
   },
   "devDependencies": {
