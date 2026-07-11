@@ -1,30 +1,33 @@
+import { lazy, Suspense } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import useAuth from "./hooks/useAuth";
 import AppShell from "./layouts/AppShell";
 import ProjectShell from "./layouts/ProjectShell";
+import { PageSkeleton } from "./components/ui";
 import AboutPlaceholder from "./pages/AboutPlaceholder";
 import Dashboard from "./pages/Dashboard";
-import DocumentEditor from "./pages/DocumentEditor";
 import DocsPlaceholder from "./pages/DocsPlaceholder";
 import HelpPlaceholder from "./pages/HelpPlaceholder";
 import LandingPage from "./pages/LandingPage";
 import Login from "./pages/Login";
 import ProfilePlaceholder from "./pages/ProfilePlaceholder";
-import ProjectAnalyticsPlaceholder from "./pages/ProjectAnalyticsPlaceholder";
-import ProjectDiagrams from "./pages/ProjectDiagrams";
-import ProjectDocumentsPlaceholder from "./pages/ProjectDocumentsPlaceholder";
-import ProjectSettingsPlaceholder from "./pages/ProjectSettingsPlaceholder";
-import ProjectVersionsPlaceholder from "./pages/ProjectVersionsPlaceholder";
-import ProjectWorkspace from "./pages/ProjectWorkspace";
 import Register from "./pages/Register";
-import RequirementRegistry from "./pages/RequirementRegistry";
-import DesignElementRegistry from "./pages/DesignElementRegistry";
-import TestCaseRegistry from "./pages/TestCaseRegistry";
 import SettingsPlaceholder from "./pages/SettingsPlaceholder";
-import TemplateLibrary from "./pages/TemplateLibrary";
-import TraceabilityMatrix from "./pages/TraceabilityMatrix";
-import UseCaseRegistry from "./pages/UseCaseRegistry";
-import ValidationEngine from "./pages/ValidationEngine";
+
+const DocumentEditor = lazy(() => import("./pages/DocumentEditor"));
+const ProjectAnalyticsPlaceholder = lazy(() => import("./pages/ProjectAnalyticsPlaceholder"));
+const ProjectDiagrams = lazy(() => import("./pages/ProjectDiagrams"));
+const ProjectDocumentsPlaceholder = lazy(() => import("./pages/ProjectDocumentsPlaceholder"));
+const ProjectSettingsPlaceholder = lazy(() => import("./pages/ProjectSettingsPlaceholder"));
+const ProjectVersionsPlaceholder = lazy(() => import("./pages/ProjectVersionsPlaceholder"));
+const ProjectWorkspace = lazy(() => import("./pages/ProjectWorkspace"));
+const RequirementRegistry = lazy(() => import("./pages/RequirementRegistry"));
+const DesignElementRegistry = lazy(() => import("./pages/DesignElementRegistry"));
+const TestCaseRegistry = lazy(() => import("./pages/TestCaseRegistry"));
+const TemplateLibrary = lazy(() => import("./pages/TemplateLibrary"));
+const TraceabilityMatrix = lazy(() => import("./pages/TraceabilityMatrix"));
+const UseCaseRegistry = lazy(() => import("./pages/UseCaseRegistry"));
+const ValidationEngine = lazy(() => import("./pages/ValidationEngine"));
 
 function HomeRedirect() {
   const { user, isLoading } = useAuth();
@@ -42,6 +45,7 @@ function HomeRedirect() {
 
 function App() {
   return (
+    <Suspense fallback={<PageSkeleton />}>
     <Routes>
       <Route path="/" element={<HomeRedirect />} />
       <Route path="/login" element={<Login />} />
@@ -72,6 +76,7 @@ function App() {
       </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
+    </Suspense>
   );
 }
 

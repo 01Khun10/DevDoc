@@ -1,6 +1,5 @@
-import { useCallback, useEffect, useState } from "react";
 import { useProject } from "../context/ProjectContext";
-import { getProjectOverview } from "../services/projectService";
+import { useProjectOverview } from "../api/projects";
 
 function MetricCard({ label, value }) {
   return (
@@ -13,24 +12,7 @@ function MetricCard({ label, value }) {
 
 function ProjectAnalyticsPlaceholder() {
   const { projectId, project } = useProject();
-  const [overview, setOverview] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
-
-  const loadOverview = useCallback(async () => {
-    setIsLoading(true);
-    try {
-      const data = await getProjectOverview(projectId);
-      setOverview(data);
-    } catch (error) {
-      console.error("Failed to load project overview", error);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [projectId]);
-
-  useEffect(() => {
-    loadOverview();
-  }, [loadOverview]);
+  const { data: overview, isLoading } = useProjectOverview(projectId);
 
   return (
     <main className="min-h-screen bg-[var(--devdoc-bg)] px-6 py-10 text-[var(--devdoc-text)]">

@@ -1,64 +1,31 @@
-import { useCallback, useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import LoadingSpinner from "../components/LoadingSpinner";
 import { useNotify } from "../context/NotificationContext";
-import useAuth from "../hooks/useAuth";
-import { getProject } from "../services/projectService";
+import { useProject } from "../context/ProjectContext";
 import {
-  createDesignElement,
-  deleteDesignElement,
-  listDesignElements
-} from "../services/designElementService";
+  useCreateDesignElement,
+  useDeleteDesignElement,
+  useDesignElements
+} from "../api/designElements";
+import useAuthGuard from "../api/useAuthGuard";
 
 const ELEMENT_TYPES = ["MODULE", "COMPONENT", "SERVICE", "DATABASE", "INTERFACE", "OTHER"];
 
 function DesignElementRegistry() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { logout } = useAuth();
+  const { project } = useProject();
   const { notify } = useNotify();
-  const [project, setProject] = useState(null);
-  const [designElements, setDesignElements] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [errorType, setErrorType] = useState("");
   const [form, setForm] = useState({ title: "", description: "", elementType: "" });
   const [formError, setFormError] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDeletingId, setIsDeletingId] = useState("");
-
-  const handleRequestError = useCallback(
-    (error) => {
-      if (error.status === 401) {
-        logout();
-        navigate("/login", { replace: true });
-        return true;
-      }
-      return false;
-    },
-    [logout, navigate]
-  );
-
-  const loadPage = useCallback(async () => {
-    setIsLoading(true);
-    setErrorType("");
-    try {
-      const [loadedProject, loadedElements] = await Promise.all([
-        getProject(id),
-        listDesignElements(id)
-      ]);
-      setProject(loadedProject);
-      setDesignElements(loadedElements);
-    } catch (error) {
-      if (handleRequestError(error)) return;
-      setErrorType(error.status === 404 ? "not-found" : "load-error");
-    } finally {
-      setIsLoading(false);
-    }
-  }, [handleRequestError, id]);
-
-  useEffect(() => {
-    loadPage();
-  }, [loadPage]);
+  const { data: designElements = [], isLoading, error, refetch } = useDesignElements(id);
+  const createMutation = useCreateDesignElement(id);
+  const deleteMutation = useDeleteDesignElement(id);
+  useAuthGuard(error, createMutation.error, deleteMutation.error);
+  const errorType = error ? (error.status === 404 ? "not-found" : "load-error") : "";
+  const isSubmitting = createMutation.isPending;
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -68,23 +35,16 @@ function DesignElementRegistry() {
       setFormError("Title is required.");
       return;
     }
-    setIsSubmitting(true);
     try {
-      const created = await createDesignElement(id, {
+      const created = await createMutation.mutateAsync({
         title: form.title,
         description: form.description || null,
         elementType: form.elementType || null
       });
-      setDesignElements((cur) =>
-        [...cur, created].sort((a, b) => a.code.localeCompare(b.code))
-      );
       setForm({ title: "", description: "", elementType: "" });
       notify(`Design element ${created.code} created.`, { tone: "success" });
-    } catch (error) {
-      if (handleRequestError(error)) return;
-      setFormError(error.message || "Could not create design element.");
-    } finally {
-      setIsSubmitting(false);
+    } catch (mutationError) {
+      setFormError(mutationError.message || "Could not create design element.");
     }
   }
 
@@ -92,12 +52,10 @@ function DesignElementRegistry() {
     if (!window.confirm(`Delete design element ${element.code}?`)) return;
     setIsDeletingId(element.id);
     try {
-      await deleteDesignElement(id, element.id);
-      setDesignElements((cur) => cur.filter((item) => item.id !== element.id));
+      await deleteMutation.mutateAsync(element.id);
       notify("Design element removed.", { tone: "success" });
-    } catch (error) {
-      if (handleRequestError(error)) return;
-      notify(error.message || "Could not remove design element.", { tone: "error" });
+    } catch (mutationError) {
+      notify(mutationError.message || "Could not remove design element.", { tone: "error" });
     } finally {
       setIsDeletingId("");
     }
@@ -122,7 +80,7 @@ function DesignElementRegistry() {
         <div className="devdoc-card-border max-w-md p-8 text-center">
           <p className="font-headline text-xl font-extrabold">Could not load design elements</p>
           <p className="mt-2 text-sm" style={{ color: "var(--devdoc-muted)" }}>Check your connection and try again.</p>
-          <button className="devdoc-gradient-button mt-6" onClick={loadPage}>Retry</button>
+          <button className="devdoc-gradient-button mt-6" onClick={() => refetch()}>Retry</button>
         </div>
       </main>
     );

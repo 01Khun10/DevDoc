@@ -1,70 +1,29 @@
-import { useCallback, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import CreateUseCaseForm from "../components/CreateUseCaseForm";
 import LoadingSpinner from "../components/LoadingSpinner";
 import UseCaseCard from "../components/UseCaseCard";
-import useAuth from "../hooks/useAuth";
-import { getProject } from "../services/projectService";
-import { createUseCase, listUseCases, updateUseCase } from "../services/useCaseService";
+import { useProject } from "../context/ProjectContext";
+import { useCreateUseCase, useUpdateUseCase, useUseCases } from "../api/useCases";
+import useAuthGuard from "../api/useAuthGuard";
 
 function UseCaseRegistry() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { logout } = useAuth();
-  const [project, setProject] = useState(null);
-  const [useCases, setUseCases] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [errorType, setErrorType] = useState("");
-
-  const handleRequestError = useCallback(
-    (error) => {
-      if (error.status === 401) {
-        logout();
-        navigate("/login", { replace: true });
-        return true;
-      }
-      return false;
-    },
-    [logout, navigate]
-  );
-
-  const loadPage = useCallback(async () => {
-    setIsLoading(true);
-    setErrorType("");
-    try {
-      const [loadedProject, loadedUseCases] = await Promise.all([
-        getProject(id),
-        listUseCases(id)
-      ]);
-      setProject(loadedProject);
-      setUseCases(loadedUseCases);
-    } catch (error) {
-      if (handleRequestError(error)) return;
-      setErrorType(error.status === 404 ? "not-found" : "load-error");
-    } finally {
-      setIsLoading(false);
-    }
-  }, [handleRequestError, id]);
-
-  useEffect(() => {
-    loadPage();
-  }, [loadPage]);
+  const { project } = useProject();
+  const { data: useCases = [], isLoading, error, refetch } = useUseCases(id);
+  useAuthGuard(error);
+  const createMutation = useCreateUseCase(id);
+  const updateMutation = useUpdateUseCase(id);
+  const errorType = error ? (error.status === 404 ? "not-found" : "load-error") : "";
 
   async function handleCreateUseCase(input) {
-    return createUseCase(id, input);
+    return createMutation.mutateAsync(input);
   }
 
-  async function handleUseCaseCreated() {
-    const loadedUseCases = await listUseCases(id);
-    setUseCases(loadedUseCases);
-  }
+  function handleUseCaseCreated() {}
 
   async function handleUpdateUseCase(useCaseId, input) {
-    const updatedUseCase = await updateUseCase(id, useCaseId, input);
-    setUseCases((currentUseCases) =>
-      currentUseCases.map((uc) => (uc.id === updatedUseCase.id ? updatedUseCase : uc))
-    );
-    return updatedUseCase;
+    return updateMutation.mutateAsync({ useCaseId, ...input });
   }
 
   if (isLoading) return <LoadingSpinner fullScreen label="Loading use cases..." />;
@@ -86,7 +45,7 @@ function UseCaseRegistry() {
         <div className="devdoc-card-border max-w-md p-8 text-center">
           <p className="font-headline text-xl font-extrabold">Could not load use cases</p>
           <p className="mt-2 text-sm" style={{ color: "var(--devdoc-muted)" }}>Check your connection and try again.</p>
-          <button className="devdoc-gradient-button mt-6" onClick={loadPage}>Retry</button>
+          <button className="devdoc-gradient-button mt-6" onClick={() => refetch()}>Retry</button>
         </div>
       </main>
     );

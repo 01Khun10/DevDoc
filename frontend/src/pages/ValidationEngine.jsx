@@ -1,14 +1,11 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import LoadingSpinner from "../components/LoadingSpinner";
 import ValidationResultCard from "../components/ValidationResultCard";
-import useAuth from "../hooks/useAuth";
-import { getProject } from "../services/projectService";
-import {
-  getValidationRun,
-  listValidationRuns,
-  runValidation
-} from "../services/validationService";
+import { useProject } from "../context/ProjectContext";
+import { getValidationRun } from "../services/validationService";
+import { useRunValidation, useValidationRuns } from "../api/validation";
+import useAuthGuard from "../api/useAuthGuard";
 
 const severityOrder = ["ERROR", "WARNING", "INFO"];
 
@@ -28,66 +25,28 @@ function getScoreColor(score) {
 function ValidationEngine() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { logout } = useAuth();
-  const [project, setProject] = useState(null);
-  const [validationRuns, setValidationRuns] = useState([]);
+  const { project } = useProject();
   const [activeRun, setActiveRun] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isRunning, setIsRunning] = useState(false);
   const [isLoadingRunId, setIsLoadingRunId] = useState("");
-  const [errorType, setErrorType] = useState("");
   const [runError, setRunError] = useState("");
 
-  const handleRequestError = useCallback(
-    (error) => {
-      if (error.status === 401) {
-        logout();
-        navigate("/login", { replace: true });
-        return true;
-      }
-      return false;
-    },
-    [logout, navigate]
-  );
-
-  const loadHistory = useCallback(async () => {
-    const runs = await listValidationRuns(id);
-    setValidationRuns(runs);
-    return runs;
-  }, [id]);
-
-  const loadPage = useCallback(async () => {
-    setIsLoading(true);
-    setErrorType("");
-    setRunError("");
-    try {
-      const [loadedProject, runs] = await Promise.all([getProject(id), listValidationRuns(id)]);
-      setProject(loadedProject);
-      setValidationRuns(runs);
-    } catch (error) {
-      if (handleRequestError(error)) return;
-      setErrorType(error.status === 404 ? "not-found" : "load-error");
-    } finally {
-      setIsLoading(false);
-    }
-  }, [handleRequestError, id]);
-
-  useEffect(() => {
-    loadPage();
-  }, [loadPage]);
+  const runsQuery = useValidationRuns(id);
+  const runMutation = useRunValidation(id);
+  useAuthGuard(runsQuery.error, runMutation.error);
+  const validationRuns = runsQuery.data || [];
+  const isLoading = runsQuery.isLoading;
+  const isRunning = runMutation.isPending;
+  const errorType = runsQuery.error
+    ? (runsQuery.error.status === 404 ? "not-found" : "load-error")
+    : "";
 
   async function handleRunValidation() {
-    setIsRunning(true);
     setRunError("");
     try {
-      const validationRun = await runValidation(id);
+      const validationRun = await runMutation.mutateAsync();
       setActiveRun(validationRun);
-      await loadHistory();
     } catch (error) {
-      if (handleRequestError(error)) return;
       setRunError(error.message || "Could not run validation.");
-    } finally {
-      setIsRunning(false);
     }
   }
 
@@ -98,7 +57,6 @@ function ValidationEngine() {
       const validationRun = await getValidationRun(id, runId);
       setActiveRun(validationRun);
     } catch (error) {
-      if (handleRequestError(error)) return;
       setRunError(error.message || "Could not load validation run.");
     } finally {
       setIsLoadingRunId("");
@@ -132,7 +90,7 @@ function ValidationEngine() {
         <div className="devdoc-card-border max-w-md p-8 text-center">
           <p className="font-headline text-xl font-extrabold" style={{ color: "var(--devdoc-text)" }}>Could not load validation</p>
           <p className="mt-2 text-sm" style={{ color: "var(--devdoc-muted)" }}>Check your connection and try again.</p>
-          <button className="devdoc-gradient-button mt-6" onClick={loadPage}>Retry</button>
+          <button className="devdoc-gradient-button mt-6" onClick={() => runsQuery.refetch()}>Retry</button>
         </div>
       </main>
     );

@@ -1,18 +1,18 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import LoadingSpinner from "../components/LoadingSpinner";
 import TraceabilityLinkForm from "../components/TraceabilityLinkForm";
 import TraceabilityLinkList from "../components/TraceabilityLinkList";
 import { useNotify } from "../context/NotificationContext";
-import useAuth from "../hooks/useAuth";
-import { getProject } from "../services/projectService";
+import { useProject } from "../context/ProjectContext";
 import {
-  createTraceabilityLink,
-  deleteTraceabilityLink,
-  verifyTraceabilityLink,
-  getTraceabilityOptions,
-  listTraceabilityLinks,
-} from "../services/traceabilityService";
+  useCreateTraceabilityLink,
+  useDeleteTraceabilityLink,
+  useTraceabilityLinks,
+  useTraceabilityOptions,
+  useVerifyTraceabilityLink,
+} from "../api/traceability";
+import useAuthGuard from "../api/useAuthGuard";
 
 const TRACEABILITY_MODES = {
   USE_CASE_REQUIREMENT: {
@@ -108,25 +108,35 @@ function getMissingMessage(kind) {
 function TraceabilityMatrix() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { logout } = useAuth();
+  const { project } = useProject();
   const { notify } = useNotify();
-  const [project, setProject] = useState(null);
-  const [useCases, setUseCases] = useState([]);
-  const [requirements, setRequirements] = useState([]);
-  const [documentSections, setDocumentSections] = useState([]);
-  const [designElements, setDesignElements] = useState([]);
-  const [testCases, setTestCases] = useState([]);
-  const [links, setLinks] = useState([]);
   const [modeKey, setModeKey] = useState("");
   const [selectedSourceId, setSelectedSourceId] = useState("");
-  const [isLoading, setIsLoading] = useState(true);
-  const [errorType, setErrorType] = useState("");
   const [createError, setCreateError] = useState("");
   const [processingTargetId, setProcessingTargetId] = useState("");
   const [isDeletingId, setIsDeletingId] = useState("");
   const [isVerifyingId, setIsVerifyingId] = useState("");
 
-  const activeMode = TRACEABILITY_MODES[modeKey] || TRACEABILITY_MODES.REQUIREMENT_DOCUMENT_SECTION;
+  const optionsQuery = useTraceabilityOptions(id);
+  const linksQuery = useTraceabilityLinks(id);
+  useAuthGuard(optionsQuery.error, linksQuery.error);
+  const createMutation = useCreateTraceabilityLink(id);
+  const deleteMutation = useDeleteTraceabilityLink(id);
+  const verifyMutation = useVerifyTraceabilityLink(id);
+
+  const isLoading = optionsQuery.isLoading || linksQuery.isLoading;
+  const loadError = optionsQuery.error || linksQuery.error;
+  const errorType = loadError ? (loadError.status === 404 ? "not-found" : "load-error") : "";
+  const useCases = optionsQuery.data?.useCases || [];
+  const requirements = optionsQuery.data?.requirements || [];
+  const documentSections = optionsQuery.data?.documentSections || [];
+  const designElements = optionsQuery.data?.designElements || [];
+  const testCases = optionsQuery.data?.testCases || [];
+  const links = linksQuery.data || [];
+
+  const activeMode =
+    TRACEABILITY_MODES[modeKey || getDefaultModeKey(useCases)] ||
+    TRACEABILITY_MODES.REQUIREMENT_DOCUMENT_SECTION;
   const options = useMemo(
     () => ({ useCases, requirements, documentSections, designElements, testCases }),
     [designElements, documentSections, requirements, testCases, useCases]
@@ -150,52 +160,6 @@ function TraceabilityMatrix() {
   const linkedSourceCount = sourceItems.filter((source) => linkedSourceIds.has(source.id)).length;
   const unlinkedSourceCount = sourceItems.length - linkedSourceCount;
 
-  const handleRequestError = useCallback(
-    (error) => {
-      if (error.status === 401) {
-        logout();
-        navigate("/login", { replace: true });
-        return true;
-      }
-      return false;
-    },
-    [logout, navigate]
-  );
-
-  const loadPage = useCallback(async () => {
-    setIsLoading(true);
-    setErrorType("");
-    setCreateError("");
-    try {
-      const [loadedProject, loadedOptions, traceabilityLinks] = await Promise.all([
-        getProject(id),
-        getTraceabilityOptions(id),
-        listTraceabilityLinks(id),
-      ]);
-      const loadedUseCases = loadedOptions.useCases || [];
-      const loadedRequirements = loadedOptions.requirements || [];
-      const loadedDocumentSections = loadedOptions.documentSections || [];
-      setProject(loadedProject);
-      setUseCases(loadedUseCases);
-      setRequirements(loadedRequirements);
-      setDocumentSections(loadedDocumentSections);
-      setDesignElements(loadedOptions.designElements || []);
-      setTestCases(loadedOptions.testCases || []);
-      setLinks(traceabilityLinks);
-      setModeKey((currentMode) => currentMode || getDefaultModeKey(loadedUseCases));
-      setSelectedSourceId("");
-    } catch (error) {
-      if (handleRequestError(error)) return;
-      setErrorType(error.status === 404 ? "not-found" : "load-error");
-    } finally {
-      setIsLoading(false);
-    }
-  }, [handleRequestError, id]);
-
-  useEffect(() => {
-    loadPage();
-  }, [loadPage]);
-
   function handleModeChange(nextModeKey) {
     setModeKey(nextModeKey);
     setSelectedSourceId("");
@@ -207,12 +171,10 @@ function TraceabilityMatrix() {
     setIsDeletingId(linkId);
     setCreateError("");
     try {
-      await deleteTraceabilityLink(id, linkId);
-      setLinks((currentLinks) => currentLinks.filter((link) => link.id !== linkId));
+      await deleteMutation.mutateAsync(linkId);
       notify("Traceability link removed.", { tone: "success" });
       return true;
     } catch (error) {
-      if (handleRequestError(error)) return false;
       setCreateError(error.message || "Could not remove traceability link.");
       return false;
     } finally {
@@ -224,13 +186,9 @@ function TraceabilityMatrix() {
     setIsVerifyingId(linkId);
     setCreateError("");
     try {
-      const verifiedLink = await verifyTraceabilityLink(id, linkId);
-      setLinks((currentLinks) =>
-        currentLinks.map((link) => (link.id === linkId ? verifiedLink : link))
-      );
+      await verifyMutation.mutateAsync(linkId);
       notify("Traceability link re-verified.", { tone: "success" });
     } catch (error) {
-      if (handleRequestError(error)) return;
       setCreateError(error.message || "Could not re-verify traceability link.");
     } finally {
       setIsVerifyingId("");
@@ -246,25 +204,19 @@ function TraceabilityMatrix() {
     try {
       if (existingLink) {
         if (!window.confirm("Remove this traceability link?")) return;
-        await deleteTraceabilityLink(id, existingLink.id);
-        setLinks((currentLinks) => currentLinks.filter((link) => link.id !== existingLink.id));
+        await deleteMutation.mutateAsync(existingLink.id);
         notify("Traceability link removed.", { tone: "success" });
         return;
       }
-      const createdLink = await createTraceabilityLink(id, {
+      await createMutation.mutateAsync({
         sourceType: activeMode.sourceType,
         sourceId: selectedSourceId,
         targetType: activeMode.targetType,
         targetId: target.id,
         linkType: activeMode.linkType,
       });
-      setLinks((currentLinks) => {
-        const alreadyExists = currentLinks.some((link) => link.id === createdLink.id);
-        return alreadyExists ? currentLinks : [createdLink, ...currentLinks];
-      });
       notify("Traceability link added.", { tone: "success" });
     } catch (error) {
-      if (handleRequestError(error)) return;
       setCreateError(error.message || "Could not update traceability link.");
     } finally {
       setProcessingTargetId("");
@@ -290,7 +242,15 @@ function TraceabilityMatrix() {
         <div className="devdoc-card-border max-w-md p-8 text-center">
           <p className="font-headline text-xl font-extrabold" style={{ color: "var(--devdoc-text)" }}>Could not load traceability</p>
           <p className="mt-2 text-sm" style={{ color: "var(--devdoc-muted)" }}>Check your connection and try again.</p>
-          <button className="devdoc-gradient-button mt-6" onClick={loadPage}>Retry</button>
+          <button
+            className="devdoc-gradient-button mt-6"
+            onClick={() => {
+              optionsQuery.refetch();
+              linksQuery.refetch();
+            }}
+          >
+            Retry
+          </button>
         </div>
       </main>
     );

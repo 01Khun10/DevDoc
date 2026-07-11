@@ -1,11 +1,15 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { useEffect, useMemo, useState } from "react";
+import { Link, useParams } from "react-router-dom";
 import DocumentEditorPanel from "../components/DocumentEditorPanel";
 import DocumentGuidancePanel from "../components/DocumentGuidancePanel";
 import DocumentSectionSidebar from "../components/DocumentSectionSidebar";
 import { useNotify } from "../context/NotificationContext";
-import useAuth from "../hooks/useAuth";
-import { getDocument, updateDocumentSection, getSectionLinkedArtefacts } from "../services/documentService";
+import {
+  useDocument,
+  useSectionLinkedArtefacts,
+  useUpdateDocumentSection
+} from "../api/documents";
+import useAuthGuard from "../api/useAuthGuard";
 
 function Badge({ children, tone = "slate" }) {
   const colorMap = {
@@ -55,16 +59,9 @@ function DocumentEditor() {
   const params = useParams();
   const projectId = params.id || params.projectId;
   const documentId = params.documentId;
-  const navigate = useNavigate();
-  const { logout } = useAuth();
   const { notify } = useNotify();
-  const [document, setDocument] = useState(null);
-  const [sections, setSections] = useState([]);
   const [selectedSectionId, setSelectedSectionId] = useState("");
   const [editorContent, setEditorContent] = useState("");
-  const [isLoading, setIsLoading] = useState(true);
-  const [loadError, setLoadError] = useState("");
-  const [isSaving, setIsSaving] = useState(false);
   const [saveError, setSaveError] = useState("");
   const [saveSuccess, setSaveSuccess] = useState("");
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
@@ -77,9 +74,31 @@ function DocumentEditor() {
   const [showGuidancePanel, setShowGuidancePanel] = useState(true);
   const [writingIssues, setWritingIssues] = useState(null);
 
-  const [linkedArtefacts, setLinkedArtefacts] = useState(null);
-  const [isLoadingLinkedArtefacts, setIsLoadingLinkedArtefacts] = useState(false);
-  const [linkedArtefactsError, setLinkedArtefactsError] = useState("");
+  const documentQuery = useDocument(projectId, documentId);
+  const linkedArtefactsQuery = useSectionLinkedArtefacts(projectId, documentId, selectedSectionId);
+  const saveMutation = useUpdateDocumentSection(projectId, documentId);
+  useAuthGuard(documentQuery.error, linkedArtefactsQuery.error, saveMutation.error);
+
+  const document = documentQuery.data || null;
+  const sections = useMemo(() => document?.sections || [], [document]);
+  const isLoading = documentQuery.isLoading;
+  const loadError = documentQuery.error
+    ? (documentQuery.error.status === 404 ? "not-found" : "general")
+    : "";
+  const isSaving = saveMutation.isPending;
+  const linkedArtefacts = linkedArtefactsQuery.data || null;
+  const isLoadingLinkedArtefacts = linkedArtefactsQuery.isLoading && Boolean(selectedSectionId);
+  const linkedArtefactsError = linkedArtefactsQuery.error ? "Could not load linked artefacts." : "";
+
+  // Select the first section once the document arrives.
+  useEffect(() => {
+    if (document && !selectedSectionId) {
+      const firstSection = document.sections?.[0] || null;
+      setSelectedSectionId(firstSection?.id || "");
+      setEditorContent(firstSection?.content || "");
+      setHasUnsavedChanges(false);
+    }
+  }, [document, selectedSectionId]);
 
   const getGridClasses = () => {
     if (isFocusMode) return "xl:grid-cols-1 max-w-5xl mx-auto";
@@ -123,97 +142,6 @@ function DocumentEditor() {
   const canGoPrevious = selectedSectionIndex > 0;
   const canGoNext = selectedSectionIndex >= 0 && selectedSectionIndex < sections.length - 1;
 
-  const handleRequestError = useCallback(
-    (error) => {
-      if (error.status === 401) {
-        logout();
-        navigate("/login", { replace: true });
-        return true;
-      }
-
-      return false;
-    },
-    [logout, navigate]
-  );
-
-  useEffect(() => {
-    let isCancelled = false;
-
-    async function loadDocument() {
-      setIsLoading(true);
-      setLoadError("");
-      setSaveError("");
-      setSaveSuccess("");
-
-      try {
-        const loadedDocument = await getDocument(projectId, documentId);
-        const loadedSections = loadedDocument.sections || [];
-        const firstSection = loadedSections[0] || null;
-
-        if (!isCancelled) {
-          setDocument(loadedDocument);
-          setSections(loadedSections);
-          setSelectedSectionId(firstSection?.id || "");
-          setEditorContent(firstSection?.content || "");
-          setHasUnsavedChanges(false);
-        }
-      } catch (error) {
-        if (handleRequestError(error)) {
-          return;
-        }
-
-        if (!isCancelled) {
-          setLoadError(error.status === 404 ? "not-found" : "general");
-        }
-      } finally {
-        if (!isCancelled) {
-          setIsLoading(false);
-        }
-      }
-    }
-
-    loadDocument();
-
-    return () => {
-      isCancelled = true;
-    };
-  }, [documentId, handleRequestError, projectId]);
-
-  useEffect(() => {
-    let isCancelled = false;
-
-    async function loadLinkedArtefacts() {
-      if (!selectedSectionId) return;
-
-      setIsLoadingLinkedArtefacts(true);
-      setLinkedArtefactsError("");
-
-      try {
-        const artefacts = await getSectionLinkedArtefacts(projectId, documentId, selectedSectionId);
-        if (!isCancelled) {
-          setLinkedArtefacts(artefacts);
-        }
-      } catch (error) {
-        if (handleRequestError(error)) {
-          return;
-        }
-        if (!isCancelled) {
-          setLinkedArtefactsError("Could not load linked artefacts.");
-        }
-      } finally {
-        if (!isCancelled) {
-          setIsLoadingLinkedArtefacts(false);
-        }
-      }
-    }
-
-    loadLinkedArtefacts();
-
-    return () => {
-      isCancelled = true;
-    };
-  }, [selectedSectionId, projectId, documentId, handleRequestError]);
-
   function switchToSection(section, options = {}) {
     if (!section || section.id === selectedSectionId) {
       return false;
@@ -232,7 +160,6 @@ function DocumentEditor() {
     setHasUnsavedChanges(false);
     setSaveError("");
     setSaveSuccess("");
-    setLinkedArtefacts(null);
     return true;
   }
 
@@ -260,42 +187,25 @@ function DocumentEditor() {
       return false;
     }
 
-    setIsSaving(true);
     setSaveError("");
     setSaveSuccess("");
 
     try {
-      const result = await updateDocumentSection(
-        projectId,
-        documentId,
-        selectedSection.id,
-        editorContent
-      );
+      const result = await saveMutation.mutateAsync({
+        sectionId: selectedSection.id,
+        content: editorContent
+      });
 
-      setSections((currentSections) =>
-        currentSections.map((section) =>
-          section.id === result.section.id ? { ...section, ...result.section } : section
-        )
-      );
-      setDocument((currentDocument) =>
-        currentDocument ? { ...currentDocument, ...result.document } : currentDocument
-      );
       setEditorContent(result.section.content || "");
       setHasUnsavedChanges(false);
       setSaveSuccess(successMessage);
       notify("Section saved.", { tone: "success" });
       return true;
     } catch (error) {
-      if (handleRequestError(error)) {
-        return false;
-      }
-
       setSaveError(
         error.status === 404 ? "Document or section not found." : getSaveErrorMessage(error)
       );
       return false;
-    } finally {
-      setIsSaving(false);
     }
   }
 

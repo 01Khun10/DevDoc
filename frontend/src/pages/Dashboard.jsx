@@ -1,45 +1,24 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useMemo, useState } from "react";
 import CreateProjectForm from "../components/CreateProjectForm";
 import LoadingSpinner from "../components/LoadingSpinner";
 import ProjectCard from "../components/ProjectCard";
 import useAuth from "../hooks/useAuth";
-import { listProjects } from "../services/projectService";
+import { useProjects } from "../api/projects";
+import useAuthGuard from "../api/useAuthGuard";
 
 function Dashboard() {
-  const { user, logout } = useAuth();
-  const navigate = useNavigate();
-  const [projects, setProjects] = useState([]);
-  const [isLoadingProjects, setIsLoadingProjects] = useState(true);
-  const [loadError, setLoadError] = useState("");
+  const { user } = useAuth();
   const [isCreateFormOpen, setIsCreateFormOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
-
-  const loadProjects = useCallback(async () => {
-    setIsLoadingProjects(true);
-    setLoadError("");
-    try {
-      const loadedProjects = await listProjects();
-      setProjects(loadedProjects);
-    } catch (error) {
-      if (error.status === 401) {
-        logout();
-        navigate("/login", { replace: true });
-        return;
-      }
-      setLoadError("Could not load projects. Check your connection and try again.");
-    } finally {
-      setIsLoadingProjects(false);
-    }
-  }, [logout, navigate]);
-
-  useEffect(() => {
-    loadProjects();
-  }, [loadProjects]);
+  const { data: projects = [], isLoading: isLoadingProjects, error, refetch } = useProjects();
+  useAuthGuard(error);
+  const loadError = error
+    ? "Could not load projects. Check your connection and try again."
+    : "";
 
   async function handleProjectCreated() {
     setIsCreateFormOpen(false);
-    await loadProjects();
+    await refetch();
   }
 
   const filteredProjects = useMemo(() => {
@@ -197,7 +176,7 @@ function Dashboard() {
             style={{ borderColor: "rgba(220,38,38,0.25)", backgroundColor: "var(--devdoc-error-soft)" }}
           >
             <p className="text-sm font-medium" style={{ color: "var(--devdoc-error)" }}>{loadError}</p>
-            <button className="devdoc-gradient-button mt-4" type="button" onClick={loadProjects}>
+            <button className="devdoc-gradient-button mt-4" type="button" onClick={() => refetch()}>
               Retry
             </button>
           </div>

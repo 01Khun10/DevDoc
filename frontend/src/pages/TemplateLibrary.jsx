@@ -1,230 +1,43 @@
-import { useCallback, useEffect, useState } from "react";
+import { useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import ProfileSelector from "../components/ProfileSelector";
 import TemplateCard from "../components/TemplateCard";
 import TemplatePreview from "../components/TemplatePreview";
-import useAuth from "../hooks/useAuth";
-import { createDocumentFromTemplate } from "../services/documentService";
-import { getProject } from "../services/projectService";
-import {
-  getTemplateSections,
-  listProfiles,
-  listTemplatesByProfile
-} from "../services/templateService";
+import { useProject } from "../context/ProjectContext";
+import { useCreateDocumentFromTemplate } from "../api/documents";
+import { useProfiles, useTemplateSections, useTemplatesByProfile } from "../api/templates";
+import useAuthGuard from "../api/useAuthGuard";
 
 function TemplateLibrary() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { logout } = useAuth();
-  const [project, setProject] = useState(null);
-  const [projectStatus, setProjectStatus] = useState("loading");
-  const [profiles, setProfiles] = useState([]);
-  const [profilesLoading, setProfilesLoading] = useState(false);
-  const [profilesError, setProfilesError] = useState("");
+  const { project } = useProject();
   const [selectedProfile, setSelectedProfile] = useState(null);
-  const [templates, setTemplates] = useState([]);
-  const [templatesLoading, setTemplatesLoading] = useState(false);
-  const [templatesError, setTemplatesError] = useState("");
   const [selectedTemplate, setSelectedTemplate] = useState(null);
-  const [previewTemplate, setPreviewTemplate] = useState(null);
-  const [previewSections, setPreviewSections] = useState([]);
-  const [previewLoading, setPreviewLoading] = useState(false);
-  const [previewError, setPreviewError] = useState("");
-  const [isCreatingDocument, setIsCreatingDocument] = useState(false);
   const [createDocumentError, setCreateDocumentError] = useState("");
 
-  const handleRequestError = useCallback(
-    (error) => {
-      if (error.status === 401) {
-        logout();
-        navigate("/login", { replace: true });
-        return true;
-      }
-
-      return false;
-    },
-    [logout, navigate]
+  const profilesQuery = useProfiles();
+  const templatesQuery = useTemplatesByProfile(selectedProfile?.code);
+  const previewQuery = useTemplateSections(selectedTemplate?.code);
+  const createDocumentMutation = useCreateDocumentFromTemplate(id);
+  useAuthGuard(
+    profilesQuery.error,
+    templatesQuery.error,
+    previewQuery.error,
+    createDocumentMutation.error
   );
 
-  const loadProfiles = useCallback(async () => {
-    setProfilesLoading(true);
-    setProfilesError("");
-
-    try {
-      const loadedProfiles = await listProfiles();
-      setProfiles(loadedProfiles);
-    } catch (error) {
-      if (handleRequestError(error)) {
-        return;
-      }
-
-      setProfilesError("Could not load profiles. Check your connection and try again.");
-    } finally {
-      setProfilesLoading(false);
-    }
-  }, [handleRequestError]);
-
-  useEffect(() => {
-    let isCancelled = false;
-
-    async function loadProject() {
-      setProjectStatus("loading");
-
-      try {
-        const loadedProject = await getProject(id);
-        if (!isCancelled) {
-          setProject(loadedProject);
-          setProjectStatus("loaded");
-        }
-      } catch (error) {
-        if (handleRequestError(error)) {
-          return;
-        }
-
-        if (!isCancelled) {
-          setProjectStatus(error.status === 404 ? "not-found" : "error");
-        }
-      }
-    }
-
-    loadProject();
-
-    return () => {
-      isCancelled = true;
-    };
-  }, [id, handleRequestError]);
-
-  useEffect(() => {
-    if (projectStatus !== "loaded") {
-      return undefined;
-    }
-
-    let isCancelled = false;
-
-    async function loadInitialProfiles() {
-      setProfilesLoading(true);
-      setProfilesError("");
-
-      try {
-        const loadedProfiles = await listProfiles();
-        if (!isCancelled) {
-          setProfiles(loadedProfiles);
-        }
-      } catch (error) {
-        if (handleRequestError(error)) {
-          return;
-        }
-
-        if (!isCancelled) {
-          setProfilesError("Could not load profiles. Check your connection and try again.");
-        }
-      } finally {
-        if (!isCancelled) {
-          setProfilesLoading(false);
-        }
-      }
-    }
-
-    loadInitialProfiles();
-
-    return () => {
-      isCancelled = true;
-    };
-  }, [projectStatus, handleRequestError]);
-
-  useEffect(() => {
-    if (!selectedProfile) {
-      setTemplates([]);
-      setTemplatesError("");
-      setTemplatesLoading(false);
-      return undefined;
-    }
-
-    let isCancelled = false;
-
-    async function loadTemplates() {
-      setTemplatesLoading(true);
-      setTemplatesError("");
-
-      try {
-        const response = await listTemplatesByProfile(selectedProfile.code);
-        if (!isCancelled) {
-          setTemplates(response.templates || []);
-        }
-      } catch (error) {
-        if (handleRequestError(error)) {
-          return;
-        }
-
-        if (!isCancelled) {
-          setTemplatesError("Could not load templates. Check your connection and try again.");
-        }
-      } finally {
-        if (!isCancelled) {
-          setTemplatesLoading(false);
-        }
-      }
-    }
-
-    loadTemplates();
-
-    return () => {
-      isCancelled = true;
-    };
-  }, [selectedProfile, handleRequestError]);
-
-  useEffect(() => {
-    if (!selectedTemplate) {
-      setPreviewTemplate(null);
-      setPreviewSections([]);
-      setPreviewError("");
-      setPreviewLoading(false);
-      return undefined;
-    }
-
-    let isCancelled = false;
-
-    async function loadPreview() {
-      setPreviewLoading(true);
-      setPreviewError("");
-
-      try {
-        const response = await getTemplateSections(selectedTemplate.code);
-        if (!isCancelled) {
-          setPreviewTemplate({
-            ...selectedTemplate,
-            ...response.template
-          });
-          setPreviewSections(response.sections || []);
-        }
-      } catch (error) {
-        if (handleRequestError(error)) {
-          return;
-        }
-
-        if (!isCancelled) {
-          setPreviewError("Could not load template preview. Check your connection and try again.");
-        }
-      } finally {
-        if (!isCancelled) {
-          setPreviewLoading(false);
-        }
-      }
-    }
-
-    loadPreview();
-
-    return () => {
-      isCancelled = true;
-    };
-  }, [selectedTemplate, handleRequestError]);
+  const profiles = profilesQuery.data || [];
+  const templates = templatesQuery.data?.templates || [];
+  const previewTemplate =
+    selectedTemplate && previewQuery.data
+      ? { ...selectedTemplate, ...previewQuery.data.template }
+      : null;
+  const previewSections = previewQuery.data?.sections || [];
 
   function handleProfileSelect(profile) {
     setSelectedProfile(profile);
     setSelectedTemplate(null);
-    setPreviewTemplate(null);
-    setPreviewSections([]);
-    setPreviewError("");
   }
 
   function handleTemplateSelect(template) {
@@ -232,21 +45,15 @@ function TemplateLibrary() {
     setCreateDocumentError("");
   }
 
-  function handleLogout() {
-    logout();
-    navigate("/login", { replace: true });
-  }
-
   async function handleCreateDocument() {
     if (!selectedTemplate) {
       return;
     }
 
-    setIsCreatingDocument(true);
     setCreateDocumentError("");
 
     try {
-      const document = await createDocumentFromTemplate(id, {
+      const document = await createDocumentMutation.mutateAsync({
         templateCode: selectedTemplate.code
       });
 
@@ -254,56 +61,8 @@ function TemplateLibrary() {
         state: { document }
       });
     } catch (error) {
-      if (handleRequestError(error)) {
-        return;
-      }
-
       setCreateDocumentError(error.message || "Could not create document.");
-    } finally {
-      setIsCreatingDocument(false);
     }
-  }
-
-  if (projectStatus === "loading") {
-    return (
-      <main className="flex min-h-screen items-center justify-center bg-[var(--devdoc-bg)] px-6 text-[var(--devdoc-text)]">
-        <p className="text-sm font-semibold text-[var(--devdoc-muted)]">Loading project...</p>
-      </main>
-    );
-  }
-
-  if (projectStatus === "not-found") {
-    return (
-      <main className="min-h-screen bg-[var(--devdoc-bg)] px-6 py-10 text-[var(--devdoc-text)]">
-        <section className="devdoc-card-border mx-auto max-w-3xl p-8">
-          <p className="text-lg font-bold text-[var(--devdoc-text)]">Project not found.</p>
-          <Link
-            className="mt-5 inline-flex text-sm font-bold text-[var(--devdoc-primary)] hover:underline"
-            to="/dashboard"
-          >
-            Back to dashboard
-          </Link>
-        </section>
-      </main>
-    );
-  }
-
-  if (projectStatus === "error") {
-    return (
-      <main className="min-h-screen bg-[var(--devdoc-bg)] px-6 py-10 text-[var(--devdoc-text)]">
-        <section className="devdoc-card-border mx-auto max-w-3xl p-8">
-          <p className="text-lg font-bold text-[var(--devdoc-text)]">
-            Could not load project. Check your connection and try again.
-          </p>
-          <Link
-            className="mt-5 inline-flex text-sm font-bold text-[var(--devdoc-primary)] hover:underline"
-            to="/dashboard"
-          >
-            Back to dashboard
-          </Link>
-        </section>
-      </main>
-    );
   }
 
   return (
@@ -331,9 +90,9 @@ function TemplateLibrary() {
             <ProfileSelector
               profiles={profiles}
               selectedCode={selectedProfile?.code || ""}
-              isLoading={profilesLoading}
-              error={profilesError}
-              onRetry={loadProfiles}
+              isLoading={profilesQuery.isLoading}
+              error={profilesQuery.error ? "Could not load profiles. Check your connection and try again." : ""}
+              onRetry={() => profilesQuery.refetch()}
               onSelect={handleProfileSelect}
             />
           </div>
@@ -349,13 +108,13 @@ function TemplateLibrary() {
               </div>
               ) : null}
 
-              {selectedProfile && templatesLoading ? (
+              {selectedProfile && templatesQuery.isLoading ? (
                 <div className="devdoc-card-border p-6 text-sm text-[var(--devdoc-muted)]">
                   Loading templates...
                 </div>
               ) : null}
 
-              {selectedProfile && !templatesLoading && templatesError ? (
+              {selectedProfile && !templatesQuery.isLoading && templatesQuery.error ? (
                 <div
                   className="rounded-xl border p-6 text-sm font-medium"
                   style={{
@@ -364,11 +123,11 @@ function TemplateLibrary() {
                     color: "var(--devdoc-error)"
                   }}
                 >
-                  {templatesError}
+                  Could not load templates. Check your connection and try again.
                 </div>
               ) : null}
 
-              {selectedProfile && !templatesLoading && !templatesError
+              {selectedProfile && !templatesQuery.isLoading && !templatesQuery.error
                 ? templates.map((template) => (
                     <TemplateCard
                       key={template.id}
@@ -387,10 +146,14 @@ function TemplateLibrary() {
               <TemplatePreview
                 template={previewTemplate}
                 sections={previewSections}
-                isLoading={previewLoading}
-                error={previewError}
+                isLoading={previewQuery.isLoading && Boolean(selectedTemplate)}
+                error={
+                  previewQuery.error
+                    ? "Could not load template preview. Check your connection and try again."
+                    : ""
+                }
                 onCreateDocument={handleCreateDocument}
-                isCreating={isCreatingDocument}
+                isCreating={createDocumentMutation.isPending}
                 createError={createDocumentError}
               />
             </div>

@@ -1,8 +1,5 @@
-import { useCallback, useEffect, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
-import LoadingSpinner from "../components/LoadingSpinner";
-import useAuth from "../hooks/useAuth";
-import { getProject } from "../services/projectService";
+import { Link } from "react-router-dom";
+import { useProject } from "../context/ProjectContext";
 
 function formatDateTime(value) {
   if (!value) return "Unknown";
@@ -87,61 +84,7 @@ const TOOLS = [
 ];
 
 function ProjectWorkspace() {
-  const { id } = useParams();
-  const navigate = useNavigate();
-  const { logout } = useAuth();
-  const [project, setProject] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [errorType, setErrorType] = useState("");
-
-  const loadProject = useCallback(async () => {
-    setIsLoading(true);
-    setErrorType("");
-    try {
-      const loadedProject = await getProject(id);
-      setProject(loadedProject);
-    } catch (error) {
-      if (error.status === 401) {
-        logout();
-        navigate("/login", { replace: true });
-        return;
-      }
-      setErrorType(error.status === 404 ? "not-found" : "load-error");
-    } finally {
-      setIsLoading(false);
-    }
-  }, [id, logout, navigate]);
-
-  useEffect(() => {
-    loadProject();
-  }, [loadProject]);
-
-  if (isLoading) return <LoadingSpinner fullScreen label="Loading project..." />;
-
-  if (errorType === "not-found") {
-    return (
-      <main className="flex min-h-screen items-center justify-center px-6" style={{ backgroundColor: "var(--devdoc-bg)" }}>
-        <div className="devdoc-card-border max-w-md p-8 text-center">
-          <p className="font-headline text-xl font-extrabold">Project not found</p>
-          <button className="devdoc-gradient-button mt-6" onClick={() => navigate("/dashboard")}>
-            Back to dashboard
-          </button>
-        </div>
-      </main>
-    );
-  }
-
-  if (errorType === "load-error") {
-    return (
-      <main className="flex min-h-screen items-center justify-center px-6" style={{ backgroundColor: "var(--devdoc-bg)" }}>
-        <div className="devdoc-card-border max-w-md p-8 text-center">
-          <p className="font-headline text-xl font-extrabold">Could not load project</p>
-          <p className="mt-2 text-sm" style={{ color: "var(--devdoc-muted)" }}>Check your connection and try again.</p>
-          <button className="devdoc-gradient-button mt-6" onClick={loadProject}>Retry</button>
-        </div>
-      </main>
-    );
-  }
+  const { project } = useProject();
 
   return (
     <main

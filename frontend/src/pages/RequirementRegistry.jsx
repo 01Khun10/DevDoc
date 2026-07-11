@@ -1,15 +1,15 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import CreateRequirementForm from "../components/CreateRequirementForm";
 import LoadingSpinner from "../components/LoadingSpinner";
 import RequirementCard from "../components/RequirementCard";
-import useAuth from "../hooks/useAuth";
-import { getProject } from "../services/projectService";
+import { useProject } from "../context/ProjectContext";
 import {
-  createRequirement,
-  listRequirements,
-  updateRequirement
-} from "../services/requirementService";
+  useCreateRequirement,
+  useRequirements,
+  useUpdateRequirement
+} from "../api/requirements";
+import useAuthGuard from "../api/useAuthGuard";
 
 const FILTERS = [
   ["ALL", "All"],
@@ -22,12 +22,13 @@ const FILTERS = [
 function RequirementRegistry() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { logout } = useAuth();
-  const [project, setProject] = useState(null);
-  const [requirements, setRequirements] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [errorType, setErrorType] = useState("");
+  const { project } = useProject();
   const [activeFilter, setActiveFilter] = useState("ALL");
+  const { data: requirements = [], isLoading, error, refetch } = useRequirements(id);
+  useAuthGuard(error);
+  const createMutation = useCreateRequirement(id);
+  const updateMutation = useUpdateRequirement(id);
+  const errorType = error ? (error.status === 404 ? "not-found" : "load-error") : "";
 
   const summary = useMemo(
     () => ({
@@ -49,54 +50,16 @@ function RequirementRegistry() {
     return requirements;
   }, [activeFilter, requirements]);
 
-  const handleRequestError = useCallback(
-    (error) => {
-      if (error.status === 401) {
-        logout();
-        navigate("/login", { replace: true });
-        return true;
-      }
-      return false;
-    },
-    [logout, navigate]
-  );
-
-  const loadPage = useCallback(async () => {
-    setIsLoading(true);
-    setErrorType("");
-    try {
-      const [loadedProject, loadedRequirements] = await Promise.all([
-        getProject(id),
-        listRequirements(id)
-      ]);
-      setProject(loadedProject);
-      setRequirements(loadedRequirements);
-    } catch (error) {
-      if (handleRequestError(error)) return;
-      setErrorType(error.status === 404 ? "not-found" : "load-error");
-    } finally {
-      setIsLoading(false);
-    }
-  }, [handleRequestError, id]);
-
-  useEffect(() => {
-    loadPage();
-  }, [loadPage]);
-
   async function handleCreateRequirement(input) {
-    return createRequirement(id, input);
+    return createMutation.mutateAsync(input);
   }
 
-  async function handleRequirementCreated() {
-    const loaded = await listRequirements(id);
-    setRequirements(loaded);
+  function handleRequirementCreated() {
     setActiveFilter("ALL");
   }
 
   async function handleUpdateRequirement(requirementId, input) {
-    const updated = await updateRequirement(id, requirementId, input);
-    setRequirements((cur) => cur.map((r) => (r.id === updated.id ? updated : r)));
-    return updated;
+    return updateMutation.mutateAsync({ requirementId, ...input });
   }
 
   if (isLoading) return <LoadingSpinner fullScreen label="Loading requirements..." />;
@@ -118,7 +81,7 @@ function RequirementRegistry() {
         <div className="devdoc-card-border max-w-md p-8 text-center">
           <p className="font-headline text-xl font-extrabold">Could not load requirements</p>
           <p className="mt-2 text-sm" style={{ color: "var(--devdoc-muted)" }}>Check your connection and try again.</p>
-          <button className="devdoc-gradient-button mt-6" onClick={loadPage}>Retry</button>
+          <button className="devdoc-gradient-button mt-6" onClick={() => refetch()}>Retry</button>
         </div>
       </main>
     );

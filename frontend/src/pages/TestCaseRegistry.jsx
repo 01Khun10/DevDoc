@@ -1,15 +1,15 @@
-import { useCallback, useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import LoadingSpinner from "../components/LoadingSpinner";
 import { useNotify } from "../context/NotificationContext";
-import useAuth from "../hooks/useAuth";
-import { getProject } from "../services/projectService";
+import { useProject } from "../context/ProjectContext";
 import {
-  createTestCase,
-  deleteTestCase,
-  listTestCases,
-  updateTestCase
-} from "../services/testCaseService";
+  useCreateTestCase,
+  useDeleteTestCase,
+  useTestCases,
+  useUpdateTestCase
+} from "../api/testCases";
+import useAuthGuard from "../api/useAuthGuard";
 
 const STATUSES = ["DRAFT", "READY", "PASSED", "FAILED", "BLOCKED"];
 
@@ -24,50 +24,18 @@ const STATUS_COLORS = {
 function TestCaseRegistry() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { logout } = useAuth();
+  const { project } = useProject();
   const { notify } = useNotify();
-  const [project, setProject] = useState(null);
-  const [testCases, setTestCases] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [errorType, setErrorType] = useState("");
   const [form, setForm] = useState({ title: "", description: "", expectedResult: "" });
   const [formError, setFormError] = useState("");
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [isDeletingId, setIsDeletingId] = useState("");
-
-  const handleRequestError = useCallback(
-    (error) => {
-      if (error.status === 401) {
-        logout();
-        navigate("/login", { replace: true });
-        return true;
-      }
-      return false;
-    },
-    [logout, navigate]
-  );
-
-  const loadPage = useCallback(async () => {
-    setIsLoading(true);
-    setErrorType("");
-    try {
-      const [loadedProject, loadedTestCases] = await Promise.all([
-        getProject(id),
-        listTestCases(id)
-      ]);
-      setProject(loadedProject);
-      setTestCases(loadedTestCases);
-    } catch (error) {
-      if (handleRequestError(error)) return;
-      setErrorType(error.status === 404 ? "not-found" : "load-error");
-    } finally {
-      setIsLoading(false);
-    }
-  }, [handleRequestError, id]);
-
-  useEffect(() => {
-    loadPage();
-  }, [loadPage]);
+  const { data: testCases = [], isLoading, error, refetch } = useTestCases(id);
+  const createMutation = useCreateTestCase(id);
+  const updateMutation = useUpdateTestCase(id);
+  const deleteMutation = useDeleteTestCase(id);
+  useAuthGuard(error, createMutation.error, updateMutation.error, deleteMutation.error);
+  const errorType = error ? (error.status === 404 ? "not-found" : "load-error") : "";
+  const isSubmitting = createMutation.isPending;
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -77,32 +45,25 @@ function TestCaseRegistry() {
       setFormError("Title is required.");
       return;
     }
-    setIsSubmitting(true);
     try {
-      const created = await createTestCase(id, {
+      const created = await createMutation.mutateAsync({
         title: form.title,
         description: form.description || null,
         expectedResult: form.expectedResult || null,
         status: "DRAFT"
       });
-      setTestCases((cur) => [...cur, created].sort((a, b) => a.code.localeCompare(b.code)));
       setForm({ title: "", description: "", expectedResult: "" });
       notify(`Test case ${created.code} created.`, { tone: "success" });
-    } catch (error) {
-      if (handleRequestError(error)) return;
-      setFormError(error.message || "Could not create test case.");
-    } finally {
-      setIsSubmitting(false);
+    } catch (mutationError) {
+      setFormError(mutationError.message || "Could not create test case.");
     }
   }
 
   async function handleStatusChange(testCase, status) {
     try {
-      const updated = await updateTestCase(id, testCase.id, { status });
-      setTestCases((cur) => cur.map((item) => (item.id === updated.id ? updated : item)));
-    } catch (error) {
-      if (handleRequestError(error)) return;
-      notify(error.message || "Could not update test case.", { tone: "error" });
+      await updateMutation.mutateAsync({ testCaseId: testCase.id, status });
+    } catch (mutationError) {
+      notify(mutationError.message || "Could not update test case.", { tone: "error" });
     }
   }
 
@@ -110,12 +71,10 @@ function TestCaseRegistry() {
     if (!window.confirm(`Delete test case ${testCase.code}?`)) return;
     setIsDeletingId(testCase.id);
     try {
-      await deleteTestCase(id, testCase.id);
-      setTestCases((cur) => cur.filter((item) => item.id !== testCase.id));
+      await deleteMutation.mutateAsync(testCase.id);
       notify("Test case removed.", { tone: "success" });
-    } catch (error) {
-      if (handleRequestError(error)) return;
-      notify(error.message || "Could not remove test case.", { tone: "error" });
+    } catch (mutationError) {
+      notify(mutationError.message || "Could not remove test case.", { tone: "error" });
     } finally {
       setIsDeletingId("");
     }
@@ -140,7 +99,7 @@ function TestCaseRegistry() {
         <div className="devdoc-card-border max-w-md p-8 text-center">
           <p className="font-headline text-xl font-extrabold">Could not load test cases</p>
           <p className="mt-2 text-sm" style={{ color: "var(--devdoc-muted)" }}>Check your connection and try again.</p>
-          <button className="devdoc-gradient-button mt-6" onClick={loadPage}>Retry</button>
+          <button className="devdoc-gradient-button mt-6" onClick={() => refetch()}>Retry</button>
         </div>
       </main>
     );
