@@ -1,5 +1,39 @@
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { EditorContent, useEditor } from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
+import { Table, TableCell, TableHeader, TableRow } from "@tiptap/extension-table";
+import RequirementBlock from "./RequirementBlockExtension";
+import { Modal } from "./ui";
+import { useCreateRequirementFromSection } from "../api/requirements";
+import { useNotify } from "../context/NotificationContext";
+
+const EDITOR_EXTENSIONS = [
+  StarterKit,
+  Table.configure({ resizable: false }),
+  TableRow,
+  TableHeader,
+  TableCell,
+  RequirementBlock
+];
+
+// Sections saved before Phase 9 hold plain text; wrap each line in a
+// paragraph so TipTap renders it. Already-HTML content passes through.
+function toEditorHtml(content) {
+  if (!content) return "";
+  if (/^\s*</.test(content)) return content;
+
+  const escaped = content
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+
+  return escaped
+    .split(/\n+/)
+    .filter((line) => line.trim())
+    .map((line) => `<p>${line}</p>`)
+    .join("");
+}
 
 function Badge({ children, tone = "slate" }) {
   const colorMap = {
@@ -37,6 +71,17 @@ function RibbonButton({ children, wide = false, onClick, disabled, isActive }) {
   );
 }
 
+const fieldStyle = {
+  border: "1px solid var(--devdoc-border)",
+  backgroundColor: "var(--devdoc-surface-inset)",
+  color: "var(--devdoc-text)",
+  borderRadius: "8px",
+  padding: "0.5rem 0.75rem",
+  fontSize: "0.875rem",
+  width: "100%",
+  outline: "none",
+};
+
 function DocumentEditorPanel({
   section,
   editorContent,
@@ -67,7 +112,63 @@ function DocumentEditorPanel({
   projectId
 }) {
   const navigate = useNavigate();
-  const textareaRef = useRef(null);
+  const { notify } = useNotify();
+  const editorWrapperRef = useRef(null);
+  const [captureButton, setCaptureButton] = useState(null);
+  const [captureForm, setCaptureForm] = useState(null);
+  const [captureError, setCaptureError] = useState("");
+  const createFromSection = useCreateRequirementFromSection(projectId);
+
+  const editor = useEditor({
+    extensions: EDITOR_EXTENSIONS,
+    content: "",
+    shouldRerenderOnTransaction: true,
+    onUpdate: ({ editor: instance }) => {
+      onChangeContent(instance.getHTML());
+    }
+  });
+
+  const sectionId = section?.id || "";
+
+  // Load the selected section into the editor (emitUpdate: false so switching
+  // sections does not count as an unsaved change).
+  useEffect(() => {
+    if (!editor || !sectionId) return;
+    editor.commands.setContent(toEditorHtml(section?.content || ""), { emitUpdate: false });
+    setCaptureButton(null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [editor, sectionId]);
+
+  // Show a floating "Register as requirement" button above non-empty selections.
+  useEffect(() => {
+    if (!editor) return;
+
+    function handleSelectionUpdate() {
+      const { from, to, empty } = editor.state.selection;
+      const text = empty ? "" : editor.state.doc.textBetween(from, to, " ").trim();
+
+      if (!text) {
+        setCaptureButton(null);
+        return;
+      }
+
+      const wrapper = editorWrapperRef.current?.getBoundingClientRect();
+      if (!wrapper) return;
+
+      const coords = editor.view.coordsAtPos(from);
+      setCaptureButton({
+        top: coords.top - wrapper.top - 38,
+        left: Math.max(0, coords.left - wrapper.left),
+        text,
+        to
+      });
+    }
+
+    editor.on("selectionUpdate", handleSelectionUpdate);
+    return () => {
+      editor.off("selectionUpdate", handleSelectionUpdate);
+    };
+  }, [editor]);
 
   if (!section) {
     return (
@@ -81,68 +182,71 @@ function DocumentEditorPanel({
     );
   }
 
-  function insertTextAtCursor(prefix, suffix = "") {
-    const textarea = textareaRef.current;
-    if (!textarea) return;
-    const start = textarea.selectionStart;
-    const end = textarea.selectionEnd;
-    const text = editorContent;
-    const selectedText = text.substring(start, end);
-    const newText = text.substring(0, start) + prefix + selectedText + suffix + text.substring(end);
-    onChangeContent(newText);
-    setTimeout(() => {
-      textarea.focus();
-      textarea.setSelectionRange(start + prefix.length, end + prefix.length);
-    }, 0);
+  function openCaptureModal() {
+    if (!captureButton) return;
+    setCaptureError("");
+    setCaptureForm({
+      title: captureButton.text.slice(0, 200),
+      type: "FR",
+      priority: "MEDIUM",
+      insertAt: captureButton.to
+    });
   }
 
-  function handleInsertPrefix(prefixText) {
-    const textarea = textareaRef.current;
-    if (!textarea) return;
-    const start = textarea.selectionStart;
-    const text = editorContent;
-    const lineStart = text.lastIndexOf("\n", start - 1) + 1;
-    const newText = text.substring(0, lineStart) + prefixText + text.substring(lineStart);
-    onChangeContent(newText);
-    setTimeout(() => {
-      textarea.focus();
-      textarea.setSelectionRange(start + prefixText.length, start + prefixText.length);
-    }, 0);
-  }
+  async function handleConfirmCapture() {
+    if (!captureForm || !captureForm.title.trim()) {
+      setCaptureError("Title is required.");
+      return;
+    }
 
-  function clearCurrentLine() {
-    const textarea = textareaRef.current;
-    if (!textarea) return;
-    const start = textarea.selectionStart;
-    const end = textarea.selectionEnd;
-    const text = editorContent;
-    if (start !== end) {
-      const newText = text.substring(0, start) + text.substring(end);
-      onChangeContent(newText);
-      setTimeout(() => { textarea.focus(); textarea.setSelectionRange(start, start); }, 0);
-    } else {
-      const lineStart = text.lastIndexOf("\n", start - 1) + 1;
-      let lineEnd = text.indexOf("\n", start);
-      if (lineEnd === -1) lineEnd = text.length;
-      const newText = text.substring(0, lineStart) + text.substring(lineEnd);
-      onChangeContent(newText);
-      setTimeout(() => { textarea.focus(); textarea.setSelectionRange(lineStart, lineStart); }, 0);
+    try {
+      const requirement = await createFromSection.mutateAsync({
+        sectionId: section.id,
+        title: captureForm.title.trim(),
+        type: captureForm.type,
+        priority: captureForm.priority
+      });
+
+      editor
+        .chain()
+        .focus()
+        .insertContentAt(captureForm.insertAt, {
+          type: "requirementBlock",
+          attrs: {
+            code: requirement.code,
+            title: requirement.title,
+            reqType: requirement.type
+          }
+        })
+        .run();
+
+      setCaptureForm(null);
+      setCaptureButton(null);
+      notify(`${requirement.code} registered from this section.`, { tone: "success" });
+    } catch (error) {
+      setCaptureError(
+        (error.fields && Object.values(error.fields)[0]) ||
+          error.message ||
+          "Could not register requirement."
+      );
     }
   }
 
   const templates = {
-    acceptanceCriteria: "Acceptance Criteria:\n- Given ...\n- When ...\n- Then ...\n",
-    userStory: "As a [user],\nI want to [action],\nso that [benefit].\n",
-    checklist: "- [ ] Item 1\n- [ ] Item 2\n- [ ] Item 3\n",
-    table: "| Column 1 | Column 2 | Column 3 |\n| --- | --- | --- |\n| Value | Value | Value |\n",
-    note: "Note:\n...\n"
+    acceptanceCriteria:
+      "<p><strong>Acceptance Criteria:</strong></p><ul><li>Given ...</li><li>When ...</li><li>Then ...</li></ul>",
+    userStory: "<p>As a [user], I want to [action], so that [benefit].</p>",
+    checklist: "<ul><li>Item 1</li><li>Item 2</li><li>Item 3</li></ul>",
+    note: "<blockquote><p>Note: ...</p></blockquote>"
   };
 
-  function insertTemplate(templateKey) { insertTextAtCursor(templates[templateKey]); }
+  function insertTemplate(templateKey) {
+    editor?.chain().focus().insertContent(templates[templateKey]).run();
+  }
 
   function runWritingCheck() {
     const issues = [];
-    const text = editorContent.trim();
+    const text = (editor?.getText() || "").trim();
     if (!text) issues.push("Section is completely empty.");
     else if (text.length < 50) issues.push("Content is very short. Expand on your ideas.");
     if (text && !/[.!?]$/.test(text)) issues.push("Missing punctuation at the end of the section.");
@@ -197,28 +301,37 @@ function DocumentEditorPanel({
               </select>
             </div>
             <div className="flex flex-wrap gap-1 pr-4" style={{ borderRight: `1px solid var(--devdoc-border)` }}>
-              <RibbonButton onClick={() => insertTextAtCursor("**", "**")}>B</RibbonButton>
-              <RibbonButton onClick={() => insertTextAtCursor("*", "*")}>I</RibbonButton>
-              <RibbonButton onClick={() => insertTextAtCursor("__", "__")}>U</RibbonButton>
+              <RibbonButton isActive={editor?.isActive("bold")} onClick={() => editor?.chain().focus().toggleBold().run()}>B</RibbonButton>
+              <RibbonButton isActive={editor?.isActive("italic")} onClick={() => editor?.chain().focus().toggleItalic().run()}>I</RibbonButton>
+              <RibbonButton isActive={editor?.isActive("underline")} onClick={() => editor?.chain().focus().toggleUnderline().run()}>U</RibbonButton>
             </div>
             <div className="flex flex-wrap gap-1 pr-4" style={{ borderRight: `1px solid var(--devdoc-border)` }}>
-              <RibbonButton wide onClick={() => handleInsertPrefix("## ")}>Heading</RibbonButton>
-              <RibbonButton wide onClick={() => handleInsertPrefix("- ")}>Bullet</RibbonButton>
-              <RibbonButton wide onClick={() => handleInsertPrefix("1. ")}>Numbered</RibbonButton>
-              <RibbonButton wide onClick={() => handleInsertPrefix("> ")}>Quote</RibbonButton>
+              <RibbonButton wide isActive={editor?.isActive("heading", { level: 2 })} onClick={() => editor?.chain().focus().toggleHeading({ level: 2 }).run()}>Heading</RibbonButton>
+              <RibbonButton wide isActive={editor?.isActive("bulletList")} onClick={() => editor?.chain().focus().toggleBulletList().run()}>Bullet</RibbonButton>
+              <RibbonButton wide isActive={editor?.isActive("orderedList")} onClick={() => editor?.chain().focus().toggleOrderedList().run()}>Numbered</RibbonButton>
+              <RibbonButton wide isActive={editor?.isActive("blockquote")} onClick={() => editor?.chain().focus().toggleBlockquote().run()}>Quote</RibbonButton>
             </div>
             <div className="flex flex-wrap gap-1">
-              <RibbonButton wide onClick={clearCurrentLine}>Clear Line</RibbonButton>
+              <RibbonButton wide disabled={!editor?.can().undo()} onClick={() => editor?.chain().focus().undo().run()}>Undo</RibbonButton>
+              <RibbonButton wide disabled={!editor?.can().redo()} onClick={() => editor?.chain().focus().redo().run()}>Redo</RibbonButton>
             </div>
           </div>
         );
       case "Insert":
         return (
           <div className="flex flex-wrap gap-2">
+            <RibbonButton
+              wide
+              onClick={() => editor?.chain().focus().insertTable({ rows: 3, cols: 3, withHeaderRow: true }).run()}
+            >
+              Insert Table
+            </RibbonButton>
+            <RibbonButton wide disabled={!editor?.isActive("table")} onClick={() => editor?.chain().focus().addRowAfter().run()}>Add Row</RibbonButton>
+            <RibbonButton wide disabled={!editor?.isActive("table")} onClick={() => editor?.chain().focus().addColumnAfter().run()}>Add Column</RibbonButton>
+            <RibbonButton wide disabled={!editor?.isActive("table")} onClick={() => editor?.chain().focus().deleteTable().run()}>Delete Table</RibbonButton>
             <RibbonButton wide onClick={() => insertTemplate('acceptanceCriteria')}>Acceptance Criteria</RibbonButton>
             <RibbonButton wide onClick={() => insertTemplate('userStory')}>User Story</RibbonButton>
             <RibbonButton wide onClick={() => insertTemplate('checklist')}>Checklist</RibbonButton>
-            <RibbonButton wide onClick={() => insertTemplate('table')}>Table Template</RibbonButton>
             <RibbonButton wide onClick={() => insertTemplate('note')}>Note</RibbonButton>
           </div>
         );
@@ -241,7 +354,7 @@ function DocumentEditorPanel({
     }
   }
 
-  const textAreaStyle = {
+  const editorStyle = {
     fontFamily: editorFontFamily === "Inter" ? "Inter, ui-sans-serif, system-ui, sans-serif" :
                 editorFontFamily === "Manrope" ? "Manrope, ui-sans-serif, system-ui, sans-serif" :
                 editorFontFamily === "Arial" ? "Arial, Helvetica, sans-serif" :
@@ -249,6 +362,8 @@ function DocumentEditorPanel({
                 editorFontFamily === "Times New Roman" ? "'Times New Roman', Times, serif" :
                 editorFontFamily === "Courier New" ? "'Courier New', Courier, monospace" : "inherit",
     fontSize: `${editorFontSize}px`,
+    backgroundColor: "var(--devdoc-paper, #ffffff)",
+    color: "var(--devdoc-paper-text, #24292f)",
   };
 
   return (
@@ -341,21 +456,28 @@ function DocumentEditorPanel({
           </div>
         </div>
 
-        {/* Textarea keeps a readable paper feel. */}
+        {/* Rich text editor with a readable paper feel. */}
         <div className="px-6 py-6 sm:px-12 sm:py-8" style={{ backgroundColor: "var(--devdoc-paper, #ffffff)" }}>
-          <textarea
-            ref={textareaRef}
-            className="min-h-[580px] w-full resize-y border-0 px-0 py-0 outline-none focus:ring-0"
-            style={{
-              ...textAreaStyle,
-              backgroundColor: "var(--devdoc-paper, #ffffff)",
-              color: "var(--devdoc-paper-text, #24292f)",
-            }}
-            maxLength={20000}
-            placeholder={section.placeholderText || "Write this section here."}
-            value={editorContent}
-            onChange={(event) => onChangeContent(event.target.value)}
-          />
+          <div ref={editorWrapperRef} className="relative">
+            {captureButton ? (
+              <button
+                className="absolute z-10 rounded-lg px-3 py-1.5 text-xs font-bold shadow-[var(--devdoc-shadow)]"
+                style={{
+                  top: `${captureButton.top}px`,
+                  left: `${captureButton.left}px`,
+                  border: "1px solid var(--devdoc-primary)",
+                  backgroundColor: "var(--devdoc-surface)",
+                  color: "var(--devdoc-primary)",
+                }}
+                type="button"
+                onMouseDown={(event) => event.preventDefault()}
+                onClick={openCaptureModal}
+              >
+                Register as requirement
+              </button>
+            ) : null}
+            <EditorContent editor={editor} className="devdoc-tiptap" style={editorStyle} />
+          </div>
           <div className="mt-4 flex justify-end border-t pt-3 text-xs" style={{ borderColor: "var(--devdoc-border)", color: "var(--devdoc-muted)" }}>
             {editorContent.length} / 20000
           </div>
@@ -403,6 +525,82 @@ function DocumentEditorPanel({
           </div>
         </div>
       </div>
+
+      {/* Inline requirement capture */}
+      <Modal
+        isOpen={Boolean(captureForm)}
+        title="Register as requirement"
+        onClose={() => setCaptureForm(null)}
+        footer={
+          <div className="flex justify-end gap-2">
+            <button
+              className="devdoc-button-secondary"
+              style={{
+                border: "1px solid var(--devdoc-border)",
+                backgroundColor: "var(--devdoc-surface)",
+                color: "var(--devdoc-text)",
+              }}
+              type="button"
+              onClick={() => setCaptureForm(null)}
+            >
+              Cancel
+            </button>
+            <button
+              className="devdoc-gradient-button"
+              type="button"
+              disabled={createFromSection.isPending}
+              onClick={handleConfirmCapture}
+            >
+              {createFromSection.isPending ? "Creating..." : "Create Requirement"}
+            </button>
+          </div>
+        }
+      >
+        {captureForm ? (
+          <div className="flex flex-col gap-4">
+            <p className="text-sm" style={{ color: "var(--devdoc-muted)" }}>
+              Creates the requirement and links it to this section in one step.
+            </p>
+            <label className="flex flex-col gap-1 text-sm font-semibold" style={{ color: "var(--devdoc-text)" }}>
+              Title
+              <input
+                style={fieldStyle}
+                value={captureForm.title}
+                maxLength={200}
+                onChange={(event) => setCaptureForm({ ...captureForm, title: event.target.value })}
+              />
+            </label>
+            <div className="grid grid-cols-2 gap-3">
+              <label className="flex flex-col gap-1 text-sm font-semibold" style={{ color: "var(--devdoc-text)" }}>
+                Type
+                <select
+                  style={fieldStyle}
+                  value={captureForm.type}
+                  onChange={(event) => setCaptureForm({ ...captureForm, type: event.target.value })}
+                >
+                  <option value="FR">Functional (FR)</option>
+                  <option value="NFR">Non-Functional (NFR)</option>
+                </select>
+              </label>
+              <label className="flex flex-col gap-1 text-sm font-semibold" style={{ color: "var(--devdoc-text)" }}>
+                Priority
+                <select
+                  style={fieldStyle}
+                  value={captureForm.priority}
+                  onChange={(event) => setCaptureForm({ ...captureForm, priority: event.target.value })}
+                >
+                  <option value="HIGH">High</option>
+                  <option value="MEDIUM">Medium</option>
+                  <option value="LOW">Low</option>
+                </select>
+              </label>
+            </div>
+            {captureError ? (
+              <p className="text-sm font-medium" style={{ color: "var(--devdoc-error)" }}>{captureError}</p>
+            ) : null}
+          </div>
+        ) : null}
+      </Modal>
     </section>
   );
 }

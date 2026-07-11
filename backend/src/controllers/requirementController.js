@@ -1,11 +1,14 @@
 const {
   validateCreateRequirementInput,
-  validateUpdateRequirementInput
+  validateUpdateRequirementInput,
+  validateCreateFromSectionInput
 } = require("../validators/requirementValidator");
 const {
   PROJECT_NOT_FOUND,
   REQUIREMENT_NOT_FOUND,
+  SECTION_NOT_FOUND,
   createRequirement,
+  createRequirementFromSection,
   getRequirements,
   getRequirementById,
   updateRequirement
@@ -46,6 +49,34 @@ async function create(req, res) {
     }
 
     return sendUnexpectedError(res, error, "requirementController.create");
+  }
+}
+
+async function createFromSection(req, res) {
+  const validation = validateCreateFromSectionInput(req.body);
+
+  if (!validation.isValid) {
+    return sendError(res, 400, "Validation failed", validation.fields);
+  }
+
+  try {
+    const requirement = await createRequirementFromSection(
+      req.user.id,
+      req.params.projectId,
+      validation.values
+    );
+
+    return res.status(201).json({ requirement });
+  } catch (error) {
+    if (error.code === PROJECT_NOT_FOUND) {
+      return sendError(res, 404, "Project not found");
+    }
+
+    if (error.code === SECTION_NOT_FOUND) {
+      return sendError(res, 404, "Document section not found");
+    }
+
+    return sendUnexpectedError(res, error, "requirementController.createFromSection");
   }
 }
 
@@ -95,6 +126,7 @@ async function update(req, res) {
 module.exports = {
   list,
   create,
+  createFromSection,
   get,
   update
 };

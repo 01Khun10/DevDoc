@@ -8,6 +8,7 @@ router.use(authMiddleware);
 
 router.get("/", requirementController.list);
 router.post("/", requirementController.create);
+router.post("/from-section", requirementController.createFromSection);
 router.get("/:requirementId", requirementController.get);
 router.put("/:requirementId", requirementController.update);
 

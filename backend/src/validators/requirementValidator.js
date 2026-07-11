@@ -160,7 +160,25 @@ function validateUpdateRequirementInput(body) {
   };
 }
 
+function validateCreateFromSectionInput(body) {
+  const base = validateCreateRequirementInput(body);
+  const { fields, values } = base;
+
+  if (!body || typeof body !== "object" || typeof body.sectionId !== "string" || !body.sectionId.trim()) {
+    fields.sectionId = "sectionId is required";
+  } else {
+    values.sectionId = body.sectionId.trim();
+  }
+
+  return {
+    isValid: Object.keys(fields).length === 0,
+    fields,
+    values
+  };
+}
+
 module.exports = {
   validateCreateRequirementInput,
-  validateUpdateRequirementInput
+  validateUpdateRequirementInput,
+  validateCreateFromSectionInput
 };

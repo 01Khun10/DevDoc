@@ -19,7 +19,7 @@ import useAuthGuard from "../api/useAuthGuard";
 const TRACEABILITY_MODES = {
   USE_CASE_REQUIREMENT: {
     key: "USE_CASE_REQUIREMENT",
-    label: "Use Cases → Requirements",
+    label: "Use Cases to Requirements",
     sourceType: "USE_CASE",
     targetType: "REQUIREMENT",
     linkType: "covers",
@@ -31,7 +31,7 @@ const TRACEABILITY_MODES = {
   },
   USE_CASE_DOCUMENT_SECTION: {
     key: "USE_CASE_DOCUMENT_SECTION",
-    label: "Use Cases → Sections",
+    label: "Use Cases to Sections",
     sourceType: "USE_CASE",
     targetType: "DOCUMENT_SECTION",
     linkType: "described_by",
@@ -43,7 +43,7 @@ const TRACEABILITY_MODES = {
   },
   REQUIREMENT_DOCUMENT_SECTION: {
     key: "REQUIREMENT_DOCUMENT_SECTION",
-    label: "Requirements → Sections",
+    label: "Requirements to Sections",
     sourceType: "REQUIREMENT",
     targetType: "DOCUMENT_SECTION",
     linkType: "described_by",
@@ -55,7 +55,7 @@ const TRACEABILITY_MODES = {
   },
   REQUIREMENT_DESIGN_ELEMENT: {
     key: "REQUIREMENT_DESIGN_ELEMENT",
-    label: "Requirements → Design Elements",
+    label: "Requirements to Design Elements",
     sourceType: "REQUIREMENT",
     targetType: "DESIGN_ELEMENT",
     linkType: "implemented_by",
@@ -67,7 +67,7 @@ const TRACEABILITY_MODES = {
   },
   REQUIREMENT_TEST_CASE: {
     key: "REQUIREMENT_TEST_CASE",
-    label: "Requirements → Test Cases",
+    label: "Requirements to Test Cases",
     sourceType: "REQUIREMENT",
     targetType: "TEST_CASE",
     linkType: "verified_by",
@@ -198,7 +198,7 @@ function TraceabilityMatrix() {
     }
   }
 
-  // Grid cells toggle without confirmation — the update is optimistic and reversible.
+  // Grid cells toggle without confirmation; the update is optimistic and reversible.
   async function handleToggleCell(source, target) {
     const cellKey = `${source.id}:${target.id}`;
     if (processingTargetId) return;

@@ -5,7 +5,7 @@ function itemLabel(item) {
 }
 
 function itemTitle(item) {
-  return item.title ? `${itemLabel(item)} — ${item.title}` : itemLabel(item);
+  return item.title ? `${itemLabel(item)} - ${item.title}` : itemLabel(item);
 }
 
 // Matrix grid: rows = sources, columns = targets for the active mode.
@@ -95,10 +95,10 @@ function TraceabilityGrid({ sourceItems, targetItems, links, processingTargetId,
                         disabled={isProcessing}
                         aria-pressed={isLinked}
                         aria-label={`${isLinked ? "Unlink" : "Link"} ${itemLabel(source)} to ${itemLabel(target)}`}
-                        title={`${itemTitle(source)} → ${itemTitle(target)}`}
+                        title={`${itemTitle(source)} to ${itemTitle(target)}`}
                         onClick={() => onToggleCell(source, target)}
                       >
-                        {isLinked ? "✓" : "·"}
+                        {isLinked ? "Yes" : "-"}
                       </button>
                     </td>
                   );

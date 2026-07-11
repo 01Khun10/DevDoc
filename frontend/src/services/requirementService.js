@@ -20,6 +20,18 @@ async function createRequirement(projectId, input) {
   return response.requirement;
 }
 
+async function createRequirementFromSection(projectId, input) {
+  const response = await apiRequest(
+    `/api/projects/${encodeURIComponent(projectId)}/requirements/from-section`,
+    {
+      method: "POST",
+      body: input
+    }
+  );
+
+  return response.requirement;
+}
+
 async function getRequirement(projectId, requirementId) {
   const response = await apiRequest(
     `/api/projects/${encodeURIComponent(projectId)}/requirements/${encodeURIComponent(
@@ -44,4 +56,10 @@ async function updateRequirement(projectId, requirementId, input) {
   return response.requirement;
 }
 
-export { listRequirements, createRequirement, getRequirement, updateRequirement };
+export {
+  listRequirements,
+  createRequirement,
+  createRequirementFromSection,
+  getRequirement,
+  updateRequirement
+};

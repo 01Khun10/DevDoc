@@ -1,6 +1,10 @@
 const prisma = require("../utils/prisma");
 const { getNextCode, createWithCodeRetry } = require("../utils/nextCode");
-const { PROJECT_NOT_FOUND, REQUIREMENT_NOT_FOUND } = require("../constants/errorCodes");
+const {
+  PROJECT_NOT_FOUND,
+  REQUIREMENT_NOT_FOUND,
+  SECTION_NOT_FOUND
+} = require("../constants/errorCodes");
 
 function createRequirementError(code, message) {
   const error = new Error(message);
@@ -69,6 +73,64 @@ async function createRequirement(ownerId, projectId, values) {
         },
         select: getRequirementSelect()
       });
+    })
+  );
+}
+
+// Creates a requirement AND a REQUIREMENT -> DOCUMENT_SECTION described_by
+// link in one transaction (inline capture from the document editor).
+async function createRequirementFromSection(ownerId, projectId, values) {
+  return createWithCodeRetry(() =>
+    prisma.$transaction(async (tx) => {
+      const project = await verifyProjectOwnership(tx, ownerId, projectId);
+
+      const section = await tx.documentSection.findFirst({
+        where: {
+          id: values.sectionId,
+          document: { projectId: project.id }
+        },
+        select: { id: true }
+      });
+
+      if (!section) {
+        throw createRequirementError(SECTION_NOT_FOUND, "Document section not found");
+      }
+
+      const existingRequirements = await tx.requirement.findMany({
+        where: {
+          projectId: project.id,
+          type: values.type
+        },
+        select: { code: true }
+      });
+      const code = getNextCode(
+        values.type,
+        existingRequirements.map((requirement) => requirement.code)
+      );
+
+      const requirement = await tx.requirement.create({
+        data: {
+          projectId: project.id,
+          code,
+          type: values.type,
+          title: values.title,
+          priority: values.priority
+        },
+        select: getRequirementSelect()
+      });
+
+      await tx.traceabilityLink.create({
+        data: {
+          projectId: project.id,
+          sourceType: "REQUIREMENT",
+          sourceId: requirement.id,
+          targetType: "DOCUMENT_SECTION",
+          targetId: section.id,
+          linkType: "described_by"
+        }
+      });
+
+      return requirement;
     })
   );
 }
@@ -142,7 +204,9 @@ async function updateRequirement(ownerId, projectId, requirementId, values) {
 module.exports = {
   PROJECT_NOT_FOUND,
   REQUIREMENT_NOT_FOUND,
+  SECTION_NOT_FOUND,
   createRequirement,
+  createRequirementFromSection,
   getRequirements,
   getRequirementById,
   updateRequirement

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import DocumentEditorPanel from "../components/DocumentEditorPanel";
 import DocumentGuidancePanel from "../components/DocumentGuidancePanel";
@@ -65,6 +65,8 @@ function DocumentEditor() {
   const [saveError, setSaveError] = useState("");
   const [saveSuccess, setSaveSuccess] = useState("");
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [lastSavedAt, setLastSavedAt] = useState(null);
+  const editorContentRef = useRef("");
 
   const [activeRibbonTab, setActiveRibbonTab] = useState("Home");
   const [editorFontFamily, setEditorFontFamily] = useState("Inter");
@@ -96,6 +98,7 @@ function DocumentEditor() {
       const firstSection = document.sections?.[0] || null;
       setSelectedSectionId(firstSection?.id || "");
       setEditorContent(firstSection?.content || "");
+      editorContentRef.current = firstSection?.content || "";
       setHasUnsavedChanges(false);
     }
   }, [document, selectedSectionId]);
@@ -157,6 +160,7 @@ function DocumentEditor() {
 
     setSelectedSectionId(section.id);
     setEditorContent(section.content || "");
+    editorContentRef.current = section.content || "";
     setHasUnsavedChanges(false);
     setSaveError("");
     setSaveSuccess("");
@@ -177,29 +181,42 @@ function DocumentEditor() {
 
   function handleChangeContent(value) {
     setEditorContent(value);
+    editorContentRef.current = value;
     setHasUnsavedChanges(true);
     setSaveError("");
     setSaveSuccess("");
   }
 
-  async function saveCurrentSection(successMessage = "Section saved.") {
+  async function saveCurrentSection(successMessage = "Section saved.", options = {}) {
     if (!selectedSection) {
       return false;
     }
 
     setSaveError("");
-    setSaveSuccess("");
+    if (!options.silent) {
+      setSaveSuccess("");
+    }
+
+    // The TipTap editor owns the document after mount, so do not write the
+    // saved content back into state; just record what was persisted.
+    const contentToSave = editorContent;
 
     try {
-      const result = await saveMutation.mutateAsync({
+      await saveMutation.mutateAsync({
         sectionId: selectedSection.id,
-        content: editorContent
+        content: contentToSave
       });
 
-      setEditorContent(result.section.content || "");
-      setHasUnsavedChanges(false);
-      setSaveSuccess(successMessage);
-      notify("Section saved.", { tone: "success" });
+      // Only clear the dirty flag if nothing was typed while saving.
+      if (editorContentRef.current === contentToSave) {
+        setHasUnsavedChanges(false);
+      }
+      setLastSavedAt(new Date());
+
+      if (!options.silent) {
+        setSaveSuccess(successMessage);
+        notify("Section saved.", { tone: "success" });
+      }
       return true;
     } catch (error) {
       setSaveError(
@@ -208,6 +225,20 @@ function DocumentEditor() {
       return false;
     }
   }
+
+  // Debounced autosave: persist quietly after 3s of idle typing.
+  useEffect(() => {
+    if (!hasUnsavedChanges || isSaving || !selectedSection) {
+      return undefined;
+    }
+
+    const timer = setTimeout(() => {
+      saveCurrentSection("", { silent: true });
+    }, 3000);
+
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [editorContent, hasUnsavedChanges, isSaving, selectedSection]);
 
   async function handleSaveSection() {
     await saveCurrentSection();
@@ -222,6 +253,7 @@ function DocumentEditor() {
     if (didSave && nextSection) {
       setSelectedSectionId(nextSection.id);
       setEditorContent(nextSection.content || "");
+      editorContentRef.current = nextSection.content || "";
       setHasUnsavedChanges(false);
       setSaveError("");
     }
@@ -312,7 +344,11 @@ function DocumentEditor() {
                 color: hasUnsavedChanges ? "var(--devdoc-warning)" : "var(--devdoc-success)",
               }}
             >
-              Save status: {hasUnsavedChanges ? "Unsaved changes" : "Saved"}
+              {hasUnsavedChanges
+                ? "Unsaved changes"
+                : lastSavedAt
+                  ? `Saved - ${lastSavedAt.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`
+                  : "Saved"}
             </span>
           </div>
         </div>

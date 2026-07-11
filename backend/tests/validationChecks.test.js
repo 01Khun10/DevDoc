@@ -62,11 +62,11 @@ describe("QUA-003 frs_use_shall_statements", () => {
 });
 
 describe("TRC-001 requirements_have_links", () => {
-  test("flags requirements with no outgoing links", () => {
+  test("flags requirements with no traceability links", () => {
     const findings = checks.requirements_have_links({
       requirements: [requirement(), requirement({ id: "r2", code: "FR-002" })],
       traceabilityLinks: [
-        { sourceType: "REQUIREMENT", sourceId: "r1", targetType: "DOCUMENT_SECTION", targetId: "s1", linkType: "described_by" }
+        { sourceType: "USE_CASE", sourceId: "u1", targetType: "REQUIREMENT", targetId: "r1", linkType: "covers" }
       ]
     });
     expect(findings.map((finding) => finding.params.code)).toEqual(["FR-002"]);

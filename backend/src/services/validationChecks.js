@@ -115,11 +115,12 @@ const validationChecks = {
   },
 
   requirements_have_links({ requirements, traceabilityLinks }) {
-    const linkedRequirementIds = new Set(
-      traceabilityLinks
-        .filter((link) => link.sourceType === "REQUIREMENT")
-        .map((link) => link.sourceId)
-    );
+    const linkedRequirementIds = new Set();
+
+    for (const link of traceabilityLinks) {
+      if (link.sourceType === "REQUIREMENT") linkedRequirementIds.add(link.sourceId);
+      if (link.targetType === "REQUIREMENT") linkedRequirementIds.add(link.targetId);
+    }
 
     return requirements
       .filter((requirement) => !linkedRequirementIds.has(requirement.id))

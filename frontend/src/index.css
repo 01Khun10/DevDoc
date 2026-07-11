@@ -535,3 +535,59 @@ body {
 .dark .text-amber-700, .dark .text-amber-800 { color: #fcd34d; }
 .dark .text-sky-700, .dark .text-sky-800 { color: #93c5fd; }
 .dark .text-emerald-700, .dark .text-emerald-800 { color: #6ee7b7; }
+
+/* Phase 9: TipTap document editor */
+.devdoc-tiptap .ProseMirror {
+  min-height: 580px;
+  outline: none;
+}
+.devdoc-tiptap .ProseMirror p { margin: 0 0 0.75em; }
+.devdoc-tiptap .ProseMirror h2 { font-size: 1.35em; font-weight: 700; margin: 1em 0 0.5em; }
+.devdoc-tiptap .ProseMirror h3 { font-size: 1.15em; font-weight: 700; margin: 1em 0 0.5em; }
+.devdoc-tiptap .ProseMirror ul { list-style: disc; padding-left: 1.5em; margin: 0 0 0.75em; }
+.devdoc-tiptap .ProseMirror ol { list-style: decimal; padding-left: 1.5em; margin: 0 0 0.75em; }
+.devdoc-tiptap .ProseMirror blockquote {
+  border-left: 3px solid var(--devdoc-border);
+  padding-left: 1em;
+  color: var(--devdoc-muted);
+  margin: 0 0 0.75em;
+}
+.devdoc-tiptap .ProseMirror table {
+  border-collapse: collapse;
+  width: 100%;
+  margin: 0 0 0.75em;
+  table-layout: fixed;
+}
+.devdoc-tiptap .ProseMirror th,
+.devdoc-tiptap .ProseMirror td {
+  border: 1px solid var(--devdoc-border);
+  padding: 0.4em 0.6em;
+  vertical-align: top;
+}
+.devdoc-tiptap .ProseMirror th {
+  background-color: var(--devdoc-surface-muted);
+  font-weight: 700;
+}
+.devdoc-tiptap .ProseMirror .selectedCell { background-color: var(--devdoc-primary-soft); }
+
+.devdoc-requirement-block {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border: 1px solid var(--devdoc-primary);
+  background-color: var(--devdoc-primary-soft);
+  border-radius: 0.5rem;
+  padding: 0.4rem 0.75rem;
+  margin: 0 0 0.75em;
+  font-size: 0.85em;
+}
+.devdoc-requirement-block-code { font-weight: 700; color: var(--devdoc-primary); white-space: nowrap; }
+.devdoc-requirement-block-title { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.devdoc-requirement-block-type {
+  border: 1px solid var(--devdoc-border);
+  border-radius: 9999px;
+  padding: 0 0.5em;
+  font-weight: 700;
+  color: var(--devdoc-muted);
+  white-space: nowrap;
+}

@@ -1,6 +1,6 @@
 # DevDoc
 
-DevDoc is a documentation consistency assistant for software projects. It helps users create structured documents from templates, write sections, manage requirements, link requirements to document sections, and run basic validation checks.
+DevDoc is a documentation consistency assistant for software projects. It helps users create structured documents from templates, write sections, manage use cases, requirements, design elements, and test cases, link artefacts, and run validation checks.
 
 ## Tech Stack
 
@@ -92,8 +92,9 @@ Expected health response:
 - Create document from template
 - Structured document editor
 - Requirements registry
-- Traceability links between requirements and document sections
-- Basic Doc-Linter validation engine
+- Design element and test case registries
+- Traceability links between use cases, requirements, document sections, design elements, and test cases
+- Config-driven Doc-Linter validation engine
 - Readiness score and validation results
 
 ## Demo Workflow
@@ -109,19 +110,18 @@ Step 6: Open the document editor.
 Step 7: Write content in at least one required section and save it.
 Step 8: Open Requirements Registry.
 Step 9: Create one FR, for example "User Authentication".
-Step 10: Open Traceability Matrix.
-Step 11: Link FR-001 to a document section.
-Step 12: Open Doc-Linter Validation.
-Step 13: Run validation.
-Step 14: Review readiness score and validation issues.
+Step 10: Create one use case, one design element, and one test case.
+Step 11: Open Traceability Matrix.
+Step 12: Link the use case to FR-001, FR-001 to a design element, FR-001 to a test case, and FR-001 to a document section.
+Step 13: Open Doc-Linter Validation.
+Step 14: Run validation.
+Step 15: Review readiness score and validation issues.
 
 ## Important Current Limitations
 
 - No AI assistant yet.
 - No export yet.
 - No advanced validation rule builder yet.
-- No full rich text editor yet.
-- No design/test-case modules yet.
 - No real-time collaboration yet.
 
 ## Git And Phase Note
