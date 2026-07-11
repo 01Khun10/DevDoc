@@ -382,6 +382,7 @@ module.exports = {
   LINK_NOT_FOUND,
   DUPLICATE_LINK,
   UNSUPPORTED_LINK_TYPE,
+  getSupportedLinkType,
   getTraceabilityLinks,
   getTraceabilityOptions,
   createTraceabilityLink,

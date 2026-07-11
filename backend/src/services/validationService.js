@@ -419,6 +419,7 @@ module.exports = {
   PROJECT_NOT_FOUND,
   RUN_NOT_FOUND,
   calculateReadinessMetrics,
+  sortResults,
   runProjectValidation,
   getValidationRuns,
   getValidationRunById

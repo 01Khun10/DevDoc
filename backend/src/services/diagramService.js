@@ -217,5 +217,7 @@ async function generateTraceabilityTreePlantUml(ownerId, projectId) {
 
 module.exports = {
   PROJECT_NOT_FOUND,
+  generateSafeAlias,
+  escapeLabel,
   generateTraceabilityTreePlantUml
 };
