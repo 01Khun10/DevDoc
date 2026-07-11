@@ -217,6 +217,9 @@ async function loadProjectContext(tx, projectId) {
       id: true,
       code: true,
       type: true,
+      title: true,
+      description: true,
+      acceptanceCriteria: true,
       updatedAt: true
     }
   });

@@ -15,7 +15,43 @@ function hasTraceabilityLink(traceabilityLinks, criteria) {
   );
 }
 
+const { findVagueTerms } = require("../constants/vagueTerms");
+
 const validationChecks = {
+  requirements_avoid_vague_terms({ requirements }) {
+    return requirements.flatMap((requirement) =>
+      findVagueTerms(`${requirement.title || ""} ${requirement.description || ""}`).map((term) => ({
+        params: { code: requirement.code, term },
+        targetType: "REQUIREMENT",
+        targetId: requirement.id
+      }))
+    );
+  },
+
+  requirements_have_acceptance_criteria({ requirements }) {
+    return requirements
+      .filter(
+        (requirement) =>
+          !requirement.acceptanceCriteria || requirement.acceptanceCriteria.trim() === ""
+      )
+      .map((requirement) => ({
+        params: { code: requirement.code },
+        targetType: "REQUIREMENT",
+        targetId: requirement.id
+      }));
+  },
+
+  frs_use_shall_statements({ requirements }) {
+    return requirements
+      .filter((requirement) => requirement.type === "FR")
+      .filter((requirement) => !/\bshall\b/i.test(requirement.description || ""))
+      .map((requirement) => ({
+        params: { code: requirement.code },
+        targetType: "REQUIREMENT",
+        targetId: requirement.id
+      }));
+  },
+
   project_has_documents({ documents }) {
     if (documents.length > 0) {
       return [];

@@ -126,6 +126,33 @@ const baseRules = [
     message:
       "Link '{sourceLabel}' {linkType} '{targetLabel}' may be stale: an artefact changed after the link was last verified.",
     suggestedFix: "Review the link in the Traceability Matrix and click Re-verify if it is still correct."
+  },
+  {
+    ruleCode: "QUA-001",
+    ruleName: "Requirements avoid vague terms",
+    ruleCategory: "Q",
+    severity: "WARNING",
+    checkKey: "requirements_avoid_vague_terms",
+    message: "Requirement {code} uses the vague term '{term}'.",
+    suggestedFix: "Replace '{term}' with a measurable, testable criterion (e.g. a number, limit, or standard)."
+  },
+  {
+    ruleCode: "QUA-002",
+    ruleName: "Requirements have acceptance criteria",
+    ruleCategory: "Q",
+    severity: "INFO",
+    checkKey: "requirements_have_acceptance_criteria",
+    message: "Requirement {code} has no acceptance criteria.",
+    suggestedFix: "Add acceptance criteria describing how this requirement will be verified."
+  },
+  {
+    ruleCode: "QUA-003",
+    ruleName: "Functional requirements use shall statements",
+    ruleCategory: "Q",
+    severity: "INFO",
+    checkKey: "frs_use_shall_statements",
+    message: "Functional requirement {code} does not use a 'shall' statement.",
+    suggestedFix: "Rephrase the description in the form 'The system shall ...'."
   }
 ];
 
