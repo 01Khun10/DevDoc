@@ -5,8 +5,8 @@
 // row in the database, not from this file.
 //
 // Context shape:
-//   { documents, sections, requirements, useCases, traceabilityLinks,
-//     designElements, testCases }
+//   { documents, sections, requirements, useCases, businessObjectives,
+//     traceabilityLinks, designElements, testCases }
 // where sections are all document sections flattened with documentTitle.
 
 function hasTraceabilityLink(traceabilityLinks, criteria) {
@@ -66,6 +66,32 @@ const validationChecks = {
     }
 
     return [{ params: {} }];
+  },
+
+  project_has_business_objectives({ businessObjectives }) {
+    if (businessObjectives.length > 0) {
+      return [];
+    }
+
+    return [{ params: {} }];
+  },
+
+  bos_linked_to_use_cases({ businessObjectives, traceabilityLinks }) {
+    return businessObjectives
+      .filter(
+        (objective) =>
+          !hasTraceabilityLink(traceabilityLinks, {
+            sourceType: "BUSINESS_OBJECTIVE",
+            sourceId: objective.id,
+            targetType: "USE_CASE",
+            linkType: "initiates"
+          })
+      )
+      .map((objective) => ({
+        params: { code: objective.code },
+        targetType: "BUSINESS_OBJECTIVE",
+        targetId: objective.id
+      }));
   },
 
   project_has_use_cases({ useCases }) {
@@ -228,11 +254,13 @@ const validationChecks = {
     sections,
     requirements,
     useCases,
+    businessObjectives,
     designElements,
     testCases,
     traceabilityLinks
   }) {
     const artefactsByType = {
+      BUSINESS_OBJECTIVE: businessObjectives,
       DOCUMENT_SECTION: sections,
       REQUIREMENT: requirements,
       USE_CASE: useCases,

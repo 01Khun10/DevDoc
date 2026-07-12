@@ -18,6 +18,18 @@ import {
 import useAuthGuard from "../api/useAuthGuard";
 
 const TRACEABILITY_MODES = {
+  BUSINESS_OBJECTIVE_USE_CASE: {
+    key: "BUSINESS_OBJECTIVE_USE_CASE",
+    label: "Objectives to Use Cases",
+    sourceType: "BUSINESS_OBJECTIVE",
+    targetType: "USE_CASE",
+    linkType: "initiates",
+    sourceLabel: "Business Objectives",
+    targetLabel: "Use Cases",
+    sourceKind: "businessObjective",
+    targetKind: "useCase",
+    explanation: "Link business objectives to the use cases they initiate.",
+  },
   USE_CASE_REQUIREMENT: {
     key: "USE_CASE_REQUIREMENT",
     label: "Use Cases to Requirements",
@@ -81,6 +93,7 @@ const TRACEABILITY_MODES = {
 };
 
 const MODE_ORDER = [
+  "BUSINESS_OBJECTIVE_USE_CASE",
   "USE_CASE_REQUIREMENT",
   "USE_CASE_DOCUMENT_SECTION",
   "REQUIREMENT_DOCUMENT_SECTION",
@@ -93,6 +106,7 @@ function getDefaultModeKey(useCases) {
 }
 
 function getItemsByKind(kind, options) {
+  if (kind === "businessObjective") return options.businessObjectives;
   if (kind === "useCase") return options.useCases;
   if (kind === "requirement") return options.requirements;
   if (kind === "designElement") return options.designElements;
@@ -101,6 +115,7 @@ function getItemsByKind(kind, options) {
 }
 
 function getMissingMessage(kind) {
+  if (kind === "businessObjective") return "Create business objectives before linking this traceability view.";
   if (kind === "useCase") return "Create use cases before linking this traceability view.";
   if (kind === "requirement") return "Create requirements before linking this traceability view.";
   if (kind === "designElement") return "Create design elements before linking this traceability view.";
@@ -138,6 +153,7 @@ function TraceabilityMatrix() {
   const isLoading = optionsQuery.isLoading || linksQuery.isLoading;
   const loadError = optionsQuery.error || linksQuery.error;
   const errorType = loadError ? (loadError.status === 404 ? "not-found" : "load-error") : "";
+  const businessObjectives = optionsQuery.data?.businessObjectives || [];
   const useCases = optionsQuery.data?.useCases || [];
   const requirements = optionsQuery.data?.requirements || [];
   const documentSections = optionsQuery.data?.documentSections || [];
@@ -149,8 +165,8 @@ function TraceabilityMatrix() {
     TRACEABILITY_MODES[modeKey || getDefaultModeKey(useCases)] ||
     TRACEABILITY_MODES.REQUIREMENT_DOCUMENT_SECTION;
   const options = useMemo(
-    () => ({ useCases, requirements, documentSections, designElements, testCases }),
-    [designElements, documentSections, requirements, testCases, useCases]
+    () => ({ businessObjectives, useCases, requirements, documentSections, designElements, testCases }),
+    [businessObjectives, designElements, documentSections, requirements, testCases, useCases]
   );
   const sourceItems = getItemsByKind(activeMode.sourceKind, options);
   const targetItems = getItemsByKind(activeMode.targetKind, options);

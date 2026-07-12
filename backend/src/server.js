@@ -8,6 +8,7 @@ const authRoutes = require("./routes/authRoutes");
 const documentRoutes = require("./routes/documentRoutes");
 const projectRoutes = require("./routes/projectRoutes");
 const requirementRoutes = require("./routes/requirementRoutes");
+const businessObjectiveRoutes = require("./routes/businessObjectiveRoutes");
 const templateRoutes = require("./routes/templateRoutes");
 const traceabilityRoutes = require("./routes/traceabilityRoutes");
 const useCaseRoutes = require("./routes/useCaseRoutes");
@@ -47,6 +48,7 @@ app.use("/api/auth", authRateLimiter, authRoutes);
 app.use("/api/projects", projectRoutes);
 app.use("/api/projects/:projectId/documents", documentRoutes);
 app.use("/api/projects/:projectId/requirements", requirementRoutes);
+app.use("/api/projects/:projectId/business-objectives", businessObjectiveRoutes);
 app.use("/api/projects/:projectId/use-cases", useCaseRoutes);
 app.use("/api/projects/:projectId/design-elements", designElementRoutes);
 app.use("/api/projects/:projectId/test-cases", testCaseRoutes);
@@ -80,6 +82,7 @@ const ERROR_STATUS_BY_CODE = {
   DOCUMENT_NOT_FOUND: 404,
   SECTION_NOT_FOUND: 404,
   REQUIREMENT_NOT_FOUND: 404,
+  BUSINESS_OBJECTIVE_NOT_FOUND: 404,
   USE_CASE_NOT_FOUND: 404,
   DESIGN_ELEMENT_NOT_FOUND: 404,
   TEST_CASE_NOT_FOUND: 404,

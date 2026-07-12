@@ -231,6 +231,14 @@ async function loadProjectContext(tx, projectId) {
       updatedAt: true
     }
   });
+  const businessObjectives = await tx.businessObjective.findMany({
+    where: { projectId },
+    select: {
+      id: true,
+      code: true,
+      updatedAt: true
+    }
+  });
   const traceabilityLinks = await tx.traceabilityLink.findMany({
     where: { projectId },
     select: {
@@ -272,6 +280,7 @@ async function loadProjectContext(tx, projectId) {
     sections,
     requirements,
     useCases,
+    businessObjectives,
     traceabilityLinks,
     designElements,
     testCases

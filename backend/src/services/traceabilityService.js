@@ -29,6 +29,10 @@ function getTraceabilityLinkSelect() {
 }
 
 function getSupportedLinkType(sourceType, targetType) {
+  if (sourceType === "BUSINESS_OBJECTIVE" && targetType === "USE_CASE") {
+    return "initiates";
+  }
+
   if (sourceType === "USE_CASE" && targetType === "REQUIREMENT") {
     return "covers";
   }
@@ -69,6 +73,22 @@ async function verifyProjectOwnership(tx, ownerId, projectId) {
 }
 
 async function verifySourceArtefact(tx, projectId, values) {
+  if (values.sourceType === "BUSINESS_OBJECTIVE") {
+    const businessObjective = await tx.businessObjective.findFirst({
+      where: {
+        id: values.sourceId,
+        projectId
+      },
+      select: { id: true }
+    });
+
+    if (!businessObjective) {
+      throw createTraceabilityError(SOURCE_NOT_FOUND, "Source artefact not found");
+    }
+
+    return businessObjective;
+  }
+
   if (values.sourceType === "USE_CASE") {
     const useCase = await tx.useCase.findFirst({
       where: {
@@ -105,6 +125,22 @@ async function verifySourceArtefact(tx, projectId, values) {
 }
 
 async function verifyTargetArtefact(tx, projectId, values) {
+  if (values.targetType === "USE_CASE") {
+    const useCase = await tx.useCase.findFirst({
+      where: {
+        id: values.targetId,
+        projectId
+      },
+      select: { id: true }
+    });
+
+    if (!useCase) {
+      throw createTraceabilityError(TARGET_NOT_FOUND, "Target artefact not found");
+    }
+
+    return useCase;
+  }
+
   if (values.targetType === "REQUIREMENT") {
     const requirement = await tx.requirement.findFirst({
       where: {
@@ -190,6 +226,17 @@ async function getTraceabilityOptions(ownerId, projectId) {
   return prisma.$transaction(async (tx) => {
     const project = await verifyProjectOwnership(tx, ownerId, projectId);
 
+    const businessObjectives = await tx.businessObjective.findMany({
+      where: { projectId: project.id },
+      orderBy: { code: "asc" },
+      select: {
+        id: true,
+        code: true,
+        title: true,
+        description: true
+      }
+    });
+
     const useCases = await tx.useCase.findMany({
       where: { projectId: project.id },
       orderBy: { code: "asc" },
@@ -265,6 +312,7 @@ async function getTraceabilityOptions(ownerId, projectId) {
     });
 
     return {
+      businessObjectives,
       useCases,
       requirements,
       documentSections,

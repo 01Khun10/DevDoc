@@ -22,6 +22,7 @@ const ProjectSettingsPlaceholder = lazy(() => import("./pages/ProjectSettingsPla
 const ProjectVersionsPlaceholder = lazy(() => import("./pages/ProjectVersionsPlaceholder"));
 const ProjectWorkspace = lazy(() => import("./pages/ProjectWorkspace"));
 const RequirementRegistry = lazy(() => import("./pages/RequirementRegistry"));
+const BusinessObjectiveRegistry = lazy(() => import("./pages/BusinessObjectiveRegistry"));
 const DesignElementRegistry = lazy(() => import("./pages/DesignElementRegistry"));
 const TestCaseRegistry = lazy(() => import("./pages/TestCaseRegistry"));
 const TemplateLibrary = lazy(() => import("./pages/TemplateLibrary"));
@@ -57,6 +58,7 @@ function App() {
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/projects/:id" element={<ProjectShell />}>
           <Route index element={<ProjectWorkspace />} />
+          <Route path="business-objectives" element={<BusinessObjectiveRegistry />} />
           <Route path="documents" element={<ProjectDocumentsPlaceholder />} />
           <Route path="documents/:documentId" element={<DocumentEditor />} />
           <Route path="documents/:documentId/print" element={<DocumentPrint />} />

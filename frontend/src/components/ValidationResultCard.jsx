@@ -29,6 +29,8 @@ const ruleLabels = {
   "TRC-001": "Requirement traceability",
   "TRC-002": "Broken traceability",
   "TRC-003": "Stale traceability link",
+  "TRC-004": "Objective to use case",
+  "BO-001":  "Business objectives",
   "UC-001":  "Use case coverage",
   "UC-002":  "Use case to requirement",
   "UC-003":  "Use case documentation",
@@ -45,7 +47,8 @@ const matrixModeByRule = {
   "TRC-001": "REQUIREMENT_DOCUMENT_SECTION",
   "UC-001": "USE_CASE_REQUIREMENT",
   "UC-002": "USE_CASE_REQUIREMENT",
-  "UC-003": "USE_CASE_DOCUMENT_SECTION"
+  "UC-003": "USE_CASE_DOCUMENT_SECTION",
+  "TRC-004": "BUSINESS_OBJECTIVE_USE_CASE"
 };
 
 function formatTargetType(targetType) {
@@ -87,6 +90,13 @@ function getTargetAction(result, projectId, sectionDocumentMap) {
       return { label: "Open in matrix", to: `${base}/traceability?mode=${matrixMode}&source=${targetId}` };
     }
     return { label: "View use case", to: `${base}/use-cases?highlight=${targetId}` };
+  }
+
+  if (targetType === "BUSINESS_OBJECTIVE") {
+    if (matrixMode) {
+      return { label: "Open in matrix", to: `${base}/traceability?mode=${matrixMode}&source=${targetId}` };
+    }
+    return { label: "View objective", to: `${base}/business-objectives?highlight=${targetId}` };
   }
 
   if (targetType === "DESIGN_ELEMENT") {

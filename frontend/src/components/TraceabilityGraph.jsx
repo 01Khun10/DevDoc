@@ -4,6 +4,7 @@ import ReactFlow, { Background, Controls, MarkerType } from "reactflow";
 import "reactflow/dist/style.css";
 
 const TYPE_STYLES = {
+  BUSINESS_OBJECTIVE: { color: "#0d9488", label: "Objective", route: "business-objectives" },
   USE_CASE: { color: "#8b5cf6", label: "Use Case", route: "use-cases" },
   FR: { color: "#06b6d4", label: "FR", route: "requirements" },
   NFR: { color: "#0ea5e9", label: "NFR", route: "requirements" },
@@ -12,7 +13,7 @@ const TYPE_STYLES = {
   TEST_CASE: { color: "#ec4899", label: "Test", route: "test-cases" },
 };
 
-const COLUMN_ORDER = ["USE_CASE", "FR", "NFR", "DOCUMENT_SECTION", "DESIGN_ELEMENT", "TEST_CASE"];
+const COLUMN_ORDER = ["BUSINESS_OBJECTIVE", "USE_CASE", "FR", "NFR", "DOCUMENT_SECTION", "DESIGN_ELEMENT", "TEST_CASE"];
 const COLUMN_WIDTH = 240;
 const ROW_HEIGHT = 70;
 
@@ -20,8 +21,9 @@ function sectionLabel(section) {
   return `${section.document?.documentType || "DOC"} ${section.sectionNumber}`;
 }
 
-function buildNodes({ useCases, requirements, documentSections, designElements, testCases }, linkedIds) {
+function buildNodes({ businessObjectives = [], useCases, requirements, documentSections, designElements, testCases }, linkedIds) {
   const groups = {
+    BUSINESS_OBJECTIVE: businessObjectives.map((item) => ({ id: item.id, label: item.code, title: item.title })),
     USE_CASE: useCases.map((item) => ({ id: item.id, label: item.code, title: item.title })),
     FR: requirements
       .filter((item) => item.type === "FR")

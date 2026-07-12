@@ -7,6 +7,12 @@ const OverviewIcon = () => (
   </svg>
 );
 
+const BusinessObjectivesIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" className="h-[17px] w-[17px] shrink-0">
+    <circle cx="12" cy="12" r="10" /><circle cx="12" cy="12" r="6" /><circle cx="12" cy="12" r="2" />
+  </svg>
+);
+
 const DocumentsIcon = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" className="h-[17px] w-[17px] shrink-0">
     <path d="M9 12h6m-6 4h6m2 5H7a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5.586a1 1 0 0 1 .707.293l5.414 5.414A1 1 0 0 1 19 9.414V19a2 2 0 0 1-2 2z" />
@@ -81,6 +87,7 @@ const SettingsIcon = () => (
 
 const navigationItems = [
   { Icon: OverviewIcon, label: "Overview", path: "", exact: true },
+  { Icon: BusinessObjectivesIcon, label: "Objectives", path: "business-objectives" },
   { Icon: DocumentsIcon, label: "Documents", path: "documents" },
   { Icon: TemplatesIcon, label: "Templates", path: "templates" },
   { Icon: UseCasesIcon, label: "Use Cases", path: "use-cases" },

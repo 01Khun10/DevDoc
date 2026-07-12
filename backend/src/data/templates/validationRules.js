@@ -70,6 +70,24 @@ const baseRules = [
       "Create a test case and link it to this requirement with a verified_by link."
   },
   {
+    ruleCode: "BO-001",
+    ruleName: "Project has business objectives",
+    ruleCategory: "C",
+    severity: "WARNING",
+    checkKey: "project_has_business_objectives",
+    message: "This project does not have any business objectives yet.",
+    suggestedFix: "Add a business objective to anchor your use cases to a measurable goal."
+  },
+  {
+    ruleCode: "TRC-004",
+    ruleName: "Business objectives initiate use cases",
+    ruleCategory: "T",
+    severity: "INFO",
+    checkKey: "bos_linked_to_use_cases",
+    message: "Business objective {code} does not initiate any use case.",
+    suggestedFix: "Open the Traceability Matrix and link this objective to the use cases it initiates."
+  },
+  {
     ruleCode: "UC-001",
     ruleName: "Project has use cases",
     ruleCategory: "C",

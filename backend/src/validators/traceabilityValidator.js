@@ -1,4 +1,5 @@
 const SUPPORTED_LINKS = {
+  "BUSINESS_OBJECTIVE->USE_CASE": "initiates",
   "USE_CASE->REQUIREMENT": "covers",
   "USE_CASE->DOCUMENT_SECTION": "described_by",
   "REQUIREMENT->DOCUMENT_SECTION": "described_by",

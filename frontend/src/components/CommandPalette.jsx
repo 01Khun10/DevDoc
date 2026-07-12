@@ -6,6 +6,7 @@ import { useTraceabilityOptions } from "../api/traceability";
 
 const SCREENS = [
   ["Overview", ""],
+  ["Business Objectives", "business-objectives"],
   ["Templates", "templates"],
   ["Use Cases", "use-cases"],
   ["Requirements", "requirements"],
