@@ -3,6 +3,7 @@ import {
   createTraceabilityLink,
   deleteTraceabilityLink,
   getTraceabilityOptions,
+  getTraceabilitySuggestions,
   listTraceabilityLinks,
   verifyTraceabilityLink
 } from "../services/traceabilityService";
@@ -22,6 +23,15 @@ export function useTraceabilityOptions(projectId, options = {}) {
   return useQuery({
     queryKey: ["projects", projectId, "traceability", "options"],
     queryFn: () => getTraceabilityOptions(projectId),
+    enabled: Boolean(projectId),
+    ...options
+  });
+}
+
+export function useTraceabilitySuggestions(projectId, options = {}) {
+  return useQuery({
+    queryKey: ["projects", projectId, "traceability", "suggestions"],
+    queryFn: () => getTraceabilitySuggestions(projectId),
     enabled: Boolean(projectId),
     ...options
   });
@@ -56,6 +66,7 @@ export function useCreateTraceabilityLink(projectId, options = {}) {
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: linksKey(projectId), exact: true });
+      queryClient.invalidateQueries({ queryKey: [...linksKey(projectId), "suggestions"], exact: true });
     }
   });
 }
@@ -84,6 +95,7 @@ export function useDeleteTraceabilityLink(projectId, options = {}) {
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: linksKey(projectId), exact: true });
+      queryClient.invalidateQueries({ queryKey: [...linksKey(projectId), "suggestions"], exact: true });
     }
   });
 }

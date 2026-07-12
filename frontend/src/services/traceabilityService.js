@@ -12,6 +12,14 @@ async function getTraceabilityOptions(projectId) {
   return apiRequest(`/api/projects/${encodeURIComponent(projectId)}/traceability/options`);
 }
 
+async function getTraceabilitySuggestions(projectId) {
+  const response = await apiRequest(
+    `/api/projects/${encodeURIComponent(projectId)}/traceability/suggestions`
+  );
+
+  return response.suggestions || [];
+}
+
 async function createTraceabilityLink(projectId, input) {
   const response = await apiRequest(
     `/api/projects/${encodeURIComponent(projectId)}/traceability`,
@@ -47,6 +55,7 @@ async function deleteTraceabilityLink(projectId, linkId) {
 export {
   listTraceabilityLinks,
   getTraceabilityOptions,
+  getTraceabilitySuggestions,
   createTraceabilityLink,
   verifyTraceabilityLink,
   deleteTraceabilityLink

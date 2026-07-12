@@ -12,6 +12,7 @@ const {
   verifyTraceabilityLink,
   deleteTraceabilityLink
 } = require("../services/traceabilityService");
+const { getSuggestions } = require("../services/suggestionService");
 const { sendError, sendUnexpectedError } = require("../utils/httpErrors");
 
 function mapServiceError(res, error, context) {
@@ -57,6 +58,15 @@ async function options(req, res) {
     return res.status(200).json(traceabilityOptions);
   } catch (error) {
     return mapServiceError(res, error, "traceabilityController.options");
+  }
+}
+
+async function suggestions(req, res) {
+  try {
+    const linkSuggestions = await getSuggestions(req.user.id, req.params.projectId);
+    return res.status(200).json({ suggestions: linkSuggestions });
+  } catch (error) {
+    return mapServiceError(res, error, "traceabilityController.suggestions");
   }
 }
 
@@ -115,6 +125,7 @@ async function remove(req, res) {
 module.exports = {
   list,
   options,
+  suggestions,
   create,
   verify,
   remove

@@ -5,6 +5,7 @@ import TraceabilityGrid from "../components/TraceabilityGrid";
 import TraceabilityGraph from "../components/TraceabilityGraph";
 import TraceabilityLinkForm from "../components/TraceabilityLinkForm";
 import TraceabilityLinkList from "../components/TraceabilityLinkList";
+import SuggestedLinksPanel from "../components/SuggestedLinksPanel";
 import { useNotify } from "../context/NotificationContext";
 import { useProject } from "../context/ProjectContext";
 import {
@@ -394,6 +395,9 @@ function TraceabilityMatrix() {
             </div>
           ))}
         </div>
+
+        {/* Suggested links (phase 11) */}
+        <SuggestedLinksPanel projectId={id} options={options} />
 
         {/* Unlinked warning */}
         {unlinkedSourceCount > 0 ? (
