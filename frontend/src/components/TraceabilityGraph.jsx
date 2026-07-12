@@ -84,6 +84,7 @@ function TraceabilityGraph({ projectId, options, links }) {
   }, [links, options]);
 
   function handleNodeClick(event, node) {
+    if (!projectId) return; // read-only shared view
     const route = TYPE_STYLES[node.data.type]?.route;
     if (route && route !== "documents") {
       navigate(`/projects/${projectId}/${route}`);

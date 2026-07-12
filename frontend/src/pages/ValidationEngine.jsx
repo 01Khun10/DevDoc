@@ -6,6 +6,7 @@ import ValidationResultCard from "../components/ValidationResultCard";
 import { Modal } from "../components/ui";
 import { useProject } from "../context/ProjectContext";
 import { useNotify } from "../context/NotificationContext";
+import apiRequest from "../services/api";
 import { getValidationRun } from "../services/validationService";
 import { useRunValidation, useValidationRuns } from "../api/validation";
 import { useProjectOverview } from "../api/projects";
@@ -83,6 +84,20 @@ function ValidationEngine() {
       setRunError(error.message || "Could not load validation run.");
     } finally {
       setIsLoadingRunId("");
+    }
+  }
+
+  // Mint (or reuse) a public read-only link and copy it to the clipboard.
+  async function handleShare() {
+    try {
+      const { url } = await apiRequest(`/api/projects/${encodeURIComponent(id)}/share`, {
+        method: "POST"
+      });
+      const shareUrl = `${window.location.origin}${url}`;
+      await navigator.clipboard.writeText(shareUrl);
+      notify("Read-only share link copied to clipboard.", { tone: "success" });
+    } catch (error) {
+      notify(error.message || "Could not create share link.", { tone: "error" });
     }
   }
 
@@ -193,6 +208,18 @@ function ValidationEngine() {
                 Score: {readinessScore}/100
               </div>
             )}
+            <button
+              className="rounded-lg border px-4 py-2 text-sm font-bold transition"
+              style={{
+                borderColor: "var(--devdoc-border)",
+                backgroundColor: "var(--devdoc-surface)",
+                color: "var(--devdoc-text-secondary)"
+              }}
+              type="button"
+              onClick={handleShare}
+            >
+              Share
+            </button>
             <button
               className="devdoc-gradient-button gap-2"
               type="button"

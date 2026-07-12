@@ -10,6 +10,7 @@ import {
   useUpdateDocumentSection
 } from "../api/documents";
 import useAuthGuard from "../api/useAuthGuard";
+import { useProjectOverview } from "../api/projects";
 
 function Badge({ children, tone = "slate" }) {
   const colorMap = {
@@ -78,6 +79,7 @@ function DocumentEditor() {
   const [writingIssues, setWritingIssues] = useState(null);
 
   const documentQuery = useDocument(projectId, documentId);
+  const overviewQuery = useProjectOverview(projectId);
   const linkedArtefactsQuery = useSectionLinkedArtefacts(projectId, documentId, selectedSectionId);
   const saveMutation = useUpdateDocumentSection(projectId, documentId);
   useAuthGuard(documentQuery.error, linkedArtefactsQuery.error, saveMutation.error);
@@ -89,6 +91,11 @@ function DocumentEditor() {
     ? (documentQuery.error.status === 404 ? "not-found" : "general")
     : "";
   const isSaving = saveMutation.isPending;
+  // Export gate: latest validation run completed with zero ERROR findings.
+  const latestValidation = overviewQuery.data?.latestValidation || null;
+  const canExport = Boolean(
+    latestValidation && latestValidation.status === "COMPLETED" && latestValidation.errorCount === 0
+  );
   const linkedArtefacts = linkedArtefactsQuery.data || null;
   const isLoadingLinkedArtefacts = linkedArtefactsQuery.isLoading && Boolean(selectedSectionId);
   const linkedArtefactsError = linkedArtefactsQuery.error ? "Could not load linked artefacts." : "";
@@ -356,6 +363,31 @@ function DocumentEditor() {
                   ? `Saved - ${lastSavedAt.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`
                   : "Saved"}
             </span>
+            {canExport ? (
+              <Link
+                className="rounded-lg border px-3 py-1.5 text-xs font-bold transition"
+                style={{
+                  borderColor: "var(--devdoc-border)",
+                  backgroundColor: "var(--devdoc-surface)",
+                  color: "var(--devdoc-primary)",
+                }}
+                to={`/projects/${projectId}/documents/${documentId}/print`}
+              >
+                Export / Print
+              </Link>
+            ) : (
+              <span
+                className="rounded-lg border px-3 py-1.5 text-xs font-bold opacity-50"
+                style={{
+                  borderColor: "var(--devdoc-border)",
+                  backgroundColor: "var(--devdoc-surface)",
+                  color: "var(--devdoc-muted)",
+                }}
+                title="Export unlocks when the latest validation run has zero errors."
+              >
+                Export / Print
+              </span>
+            )}
           </div>
         </div>
       </header>

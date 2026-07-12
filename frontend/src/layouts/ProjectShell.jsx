@@ -1,5 +1,6 @@
 import { useMemo } from "react";
 import { Outlet, useLocation, useParams } from "react-router-dom";
+import CommandPalette from "../components/CommandPalette";
 import LoadingSpinner from "../components/LoadingSpinner";
 import ProjectErrorState from "../components/project/ProjectErrorState";
 import ProjectSidebar from "../components/project/ProjectSidebar";
@@ -30,6 +31,7 @@ function ProjectShell() {
 
   return (
     <ProjectProvider projectId={projectId} project={project}>
+      <CommandPalette projectId={projectId} />
       {isEditorRoute ? (
         <Outlet />
       ) : (

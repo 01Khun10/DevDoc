@@ -208,6 +208,28 @@ body {
     padding: 0.75rem;
   }
 
+  /* --- Command palette (cmdk) --- */
+  .devdoc-cmdk-group [cmdk-group-heading] {
+    padding: 0.5rem 0.75rem 0.25rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--devdoc-muted);
+  }
+
+  .devdoc-cmdk-item {
+    display: block;
+    border-radius: var(--devdoc-radius);
+    padding: 0.5rem 0.75rem;
+    cursor: pointer;
+  }
+
+  .devdoc-cmdk-item[data-selected="true"] {
+    background: var(--devdoc-primary-soft);
+    color: var(--devdoc-primary);
+  }
+
   /* --- Inputs --- */
   .devdoc-soft-input,
   .devdoc-input,

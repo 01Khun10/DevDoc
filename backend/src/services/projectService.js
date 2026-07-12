@@ -159,7 +159,8 @@ async function getProjectOverview(ownerId, projectId) {
         id: true,
         status: true,
         readinessScore: true,
-        completedAt: true
+        completedAt: true,
+        _count: { select: { results: { where: { severity: "ERROR" } } } }
       }
     })
   ]);
@@ -227,7 +228,15 @@ async function getProjectOverview(ownerId, projectId) {
       validationRuns: validationRunsCount
     },
     documents: documentSummaries,
-    latestValidation: latestValidationRun || null,
+    latestValidation: latestValidationRun
+      ? {
+          id: latestValidationRun.id,
+          status: latestValidationRun.status,
+          readinessScore: latestValidationRun.readinessScore,
+          completedAt: latestValidationRun.completedAt,
+          errorCount: latestValidationRun._count.results
+        }
+      : null,
     coverage: {
       linkedRequirements,
       unlinkedRequirements,

@@ -28,6 +28,8 @@ const TemplateLibrary = lazy(() => import("./pages/TemplateLibrary"));
 const TraceabilityMatrix = lazy(() => import("./pages/TraceabilityMatrix"));
 const UseCaseRegistry = lazy(() => import("./pages/UseCaseRegistry"));
 const ValidationEngine = lazy(() => import("./pages/ValidationEngine"));
+const SharedReport = lazy(() => import("./pages/SharedReport"));
+const DocumentPrint = lazy(() => import("./pages/DocumentPrint"));
 
 function HomeRedirect() {
   const { user, isLoading } = useAuth();
@@ -50,12 +52,14 @@ function App() {
       <Route path="/" element={<HomeRedirect />} />
       <Route path="/login" element={<Login />} />
       <Route path="/register" element={<Register />} />
+      <Route path="/shared/:token" element={<SharedReport />} />
       <Route element={<AppShell />}>
         <Route path="/dashboard" element={<Dashboard />} />
         <Route path="/projects/:id" element={<ProjectShell />}>
           <Route index element={<ProjectWorkspace />} />
           <Route path="documents" element={<ProjectDocumentsPlaceholder />} />
           <Route path="documents/:documentId" element={<DocumentEditor />} />
+          <Route path="documents/:documentId/print" element={<DocumentPrint />} />
           <Route path="templates" element={<TemplateLibrary />} />
           <Route path="use-cases" element={<UseCaseRegistry />} />
           <Route path="requirements" element={<RequirementRegistry />} />

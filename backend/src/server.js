@@ -15,6 +15,7 @@ const designElementRoutes = require("./routes/designElementRoutes");
 const testCaseRoutes = require("./routes/testCaseRoutes");
 const validationRoutes = require("./routes/validationRoutes");
 const diagramRoutes = require("./routes/diagramRoutes");
+const shareController = require("./controllers/shareController");
 const { sendError, sendUnexpectedError } = require("./utils/httpErrors");
 
 dotenv.config();
@@ -53,6 +54,16 @@ app.use("/api/projects/:projectId/traceability", traceabilityRoutes);
 app.use("/api/projects/:projectId/validation", validationRoutes);
 app.use("/api/projects/:projectId/diagrams", diagramRoutes);
 app.use("/api/templates", templateRoutes);
+
+// Public read-only share report (no auth) — rate limited.
+const sharedRateLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 60,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: { message: "Too many requests, please try again later" } }
+});
+app.get("/api/shared/:token", sharedRateLimiter, shareController.getReport);
 
 app.get("/", (req, res) => {
   res.json({ message: "DevDoc API running" });

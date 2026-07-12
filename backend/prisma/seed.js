@@ -1,7 +1,12 @@
 const { PrismaClient } = require("@prisma/client");
+const bcrypt = require("bcryptjs");
 const { profiles, templates, validationRules } = require("../src/data/templates");
 
 const prisma = new PrismaClient();
+
+const DEMO_EMAIL = "demo@devdoc.local";
+const DEMO_PASSWORD = "demo1234";
+const DEMO_PROJECT_NAME = "Demo — Library Portal";
 
 async function seedProfiles() {
   for (const profile of profiles) {
@@ -146,6 +151,177 @@ async function seedValidationRules() {
   }
 }
 
+// Optional SEED_DEMO=true path: a small fully-linked sample project owned by
+// the demo user, hitting 100 readiness (all required sections complete, every
+// requirement traced, every FR covered + implemented + verified).
+async function seedDemoProject() {
+  const passwordHash = await bcrypt.hash(DEMO_PASSWORD, 12);
+  const demoUser = await prisma.user.upsert({
+    where: { email: DEMO_EMAIL },
+    update: {},
+    create: { name: "Demo User", email: DEMO_EMAIL, passwordHash }
+  });
+
+  // Recreate for a deterministic state on every seed run.
+  await prisma.project.deleteMany({
+    where: { ownerId: demoUser.id, name: DEMO_PROJECT_NAME }
+  });
+
+  const template = await prisma.template.findFirst({
+    where: { isActive: true, documentType: "SRS" },
+    orderBy: { displayOrder: "asc" },
+    include: { sections: { orderBy: { displayOrder: "asc" } } }
+  });
+  if (!template) throw new Error("Demo seed requires a seeded SRS template");
+
+  const project = await prisma.project.create({
+    data: {
+      ownerId: demoUser.id,
+      profileId: template.profileId,
+      name: DEMO_PROJECT_NAME,
+      description:
+        "Sample project showing a fully documented and traced library portal at 100 readiness."
+    }
+  });
+
+  const document = await prisma.document.create({
+    data: {
+      projectId: project.id,
+      templateId: template.id,
+      title: `${DEMO_PROJECT_NAME} — SRS`,
+      documentType: template.documentType,
+      status: "COMPLETE",
+      completionPercent: 100,
+      sections: {
+        create: template.sections.map((section) => ({
+          sectionNumber: section.sectionNumber,
+          title: section.title,
+          description: section.description,
+          guidanceText: section.guidanceText,
+          exampleText: section.exampleText,
+          placeholderText: section.placeholderText,
+          isRequired: section.isRequired,
+          validationTag: section.validationTag,
+          displayOrder: section.displayOrder,
+          status: "COMPLETE",
+          content: `The library portal ${section.title.toLowerCase()} covers member registration, catalog search, and book loans. Members search the catalog, borrow available books, and receive return reminders by email.`
+        }))
+      }
+    },
+    include: { sections: { orderBy: { displayOrder: "asc" } } }
+  });
+  const firstSection = document.sections[0];
+
+  const [ucSearch, ucBorrow] = await Promise.all([
+    prisma.useCase.create({
+      data: {
+        projectId: project.id,
+        code: "UC-001",
+        title: "Search the catalog",
+        description: "A member searches the book catalog by title, author, or ISBN and views availability."
+      }
+    }),
+    prisma.useCase.create({
+      data: {
+        projectId: project.id,
+        code: "UC-002",
+        title: "Borrow a book",
+        description: "A member borrows an available book; the loan is recorded and a due date is assigned."
+      }
+    })
+  ]);
+
+  const [frSearch, frBorrow, nfrPerformance] = await Promise.all([
+    prisma.requirement.create({
+      data: {
+        projectId: project.id,
+        code: "FR-001",
+        type: "FR",
+        title: "Catalog search",
+        description: "The system shall let members search the catalog by title, author, or ISBN.",
+        priority: "HIGH",
+        status: "VERIFIED",
+        acceptanceCriteria: "Given a catalog with 1000 books, a title search returns matching results with availability status."
+      }
+    }),
+    prisma.requirement.create({
+      data: {
+        projectId: project.id,
+        code: "FR-002",
+        type: "FR",
+        title: "Book loan checkout",
+        description: "The system shall record a loan with a 14-day due date when a member borrows an available book.",
+        priority: "HIGH",
+        status: "VERIFIED",
+        acceptanceCriteria: "Given an available book, checkout creates a loan record and sets the due date 14 days ahead."
+      }
+    }),
+    prisma.requirement.create({
+      data: {
+        projectId: project.id,
+        code: "NFR-001",
+        type: "NFR",
+        title: "Search response time",
+        description: "Catalog search results shall be returned within 2 seconds at the 95th percentile.",
+        priority: "MEDIUM",
+        status: "APPROVED",
+        acceptanceCriteria: "Load test with 100 concurrent members keeps p95 search latency under 2 seconds."
+      }
+    })
+  ]);
+
+  const designElement = await prisma.designElement.create({
+    data: {
+      projectId: project.id,
+      code: "DE-001",
+      title: "Catalog and loan service",
+      description: "Backend service handling catalog search queries and loan checkout transactions.",
+      elementType: "SERVICE"
+    }
+  });
+
+  const testCase = await prisma.testCase.create({
+    data: {
+      projectId: project.id,
+      code: "TC-001",
+      title: "Search and borrow flow",
+      description: "Search for a book by title, open it, and complete a checkout as a member.",
+      expectedResult: "The book appears in search results and the loan is recorded with a 14-day due date.",
+      status: "PASSED"
+    }
+  });
+
+  const link = (sourceType, sourceId, targetType, targetId, linkType) => ({
+    projectId: project.id,
+    sourceType,
+    sourceId,
+    targetType,
+    targetId,
+    linkType
+  });
+
+  await prisma.traceabilityLink.createMany({
+    data: [
+      // Every requirement traced to the document.
+      link("REQUIREMENT", frSearch.id, "DOCUMENT_SECTION", firstSection.id, "described_by"),
+      link("REQUIREMENT", frBorrow.id, "DOCUMENT_SECTION", firstSection.id, "described_by"),
+      link("REQUIREMENT", nfrPerformance.id, "DOCUMENT_SECTION", firstSection.id, "described_by"),
+      // Every FR covered, implemented, and verified.
+      link("USE_CASE", ucSearch.id, "REQUIREMENT", frSearch.id, "covers"),
+      link("USE_CASE", ucBorrow.id, "REQUIREMENT", frBorrow.id, "covers"),
+      link("REQUIREMENT", frSearch.id, "DESIGN_ELEMENT", designElement.id, "implemented_by"),
+      link("REQUIREMENT", frBorrow.id, "DESIGN_ELEMENT", designElement.id, "implemented_by"),
+      link("REQUIREMENT", frSearch.id, "TEST_CASE", testCase.id, "verified_by"),
+      link("REQUIREMENT", frBorrow.id, "TEST_CASE", testCase.id, "verified_by"),
+      // Use cases described in the document.
+      link("USE_CASE", ucSearch.id, "DOCUMENT_SECTION", firstSection.id, "described_by"),
+      link("USE_CASE", ucBorrow.id, "DOCUMENT_SECTION", firstSection.id, "described_by")
+    ]
+  });
+
+  console.log(`Demo project seeded: ${DEMO_PROJECT_NAME} (login ${DEMO_EMAIL} / ${DEMO_PASSWORD})`);
+}
+
 async function printSummary() {
   const profileCount = await prisma.validationProfile.count();
   const templateCount = await prisma.template.count();
@@ -182,6 +358,9 @@ async function main() {
   await seedProfiles();
   await seedTemplatesAndSections();
   await seedValidationRules();
+  if (process.env.SEED_DEMO === "true") {
+    await seedDemoProject();
+  }
   await printSummary();
 }
 

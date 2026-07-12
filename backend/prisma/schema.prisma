@@ -103,6 +103,7 @@ model Project {
   traceabilityLinks  TraceabilityLink[]
   validationRuns     ValidationRun[]
   activityLogs       ActivityLog[]
+  shareTokens        ShareToken[]
   createdAt          DateTime            @default(now())
   updatedAt          DateTime            @updatedAt
 }
@@ -329,6 +330,15 @@ model ValidationResult {
   targetId        String?
   validationRun   ValidationRun      @relation(fields: [validationRunId], references: [id], onDelete: Cascade)
   createdAt       DateTime           @default(now())
+}
+
+model ShareToken {
+  id        String    @id @default(cuid())
+  token     String    @unique
+  projectId String
+  expiresAt DateTime?
+  project   Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  createdAt DateTime  @default(now())
 }
 
 model ActivityLog {
