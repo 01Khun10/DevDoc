@@ -28,10 +28,19 @@ function RequirementRegistry() {
   const [activeFilter, setActiveFilter] = useState("ALL");
   const { data: requirements = [], isLoading, error, refetch } = useRequirements(id);
 
-  // Validation deep link: scroll the highlighted requirement into view.
+  // Validation deep link: scroll the highlighted requirement into view with a 2.5s glow.
   useEffect(() => {
     if (!highlightId || isLoading) return;
-    document.getElementById(`artifact-${highlightId}`)?.scrollIntoView({ behavior: "smooth", block: "center" });
+    const element = document.getElementById(`artifact-${highlightId}`);
+    if (!element) return;
+    element.scrollIntoView({ behavior: "smooth", block: "center" });
+    element.style.outline = "2px solid var(--devdoc-primary)";
+    element.style.outlineOffset = "3px";
+    const timer = setTimeout(() => {
+      element.style.outline = "";
+      element.style.outlineOffset = "";
+    }, 2500);
+    return () => clearTimeout(timer);
   }, [highlightId, isLoading]);
   useAuthGuard(error);
   const createMutation = useCreateRequirement(id);
@@ -229,11 +238,6 @@ function RequirementRegistry() {
                   key={requirement.id}
                   id={`artifact-${requirement.id}`}
                   className="rounded-xl"
-                  style={
-                    requirement.id === highlightId
-                      ? { outline: "2px solid var(--devdoc-primary)", outlineOffset: "2px" }
-                      : undefined
-                  }
                 >
                   <RequirementCard
                     requirement={requirement}

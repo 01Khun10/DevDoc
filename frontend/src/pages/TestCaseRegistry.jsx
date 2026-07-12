@@ -39,10 +39,19 @@ function TestCaseRegistry() {
   const errorType = error ? (error.status === 404 ? "not-found" : "load-error") : "";
   const isSubmitting = createMutation.isPending;
 
-  // Validation deep link: scroll the highlighted test case into view.
+  // Validation deep link: scroll the highlighted test case into view with a 2.5s glow.
   useEffect(() => {
     if (!highlightId || isLoading) return;
-    document.getElementById(`artifact-${highlightId}`)?.scrollIntoView({ behavior: "smooth", block: "center" });
+    const element = document.getElementById(`artifact-${highlightId}`);
+    if (!element) return;
+    element.scrollIntoView({ behavior: "smooth", block: "center" });
+    element.style.outline = "2px solid var(--devdoc-primary)";
+    element.style.outlineOffset = "3px";
+    const timer = setTimeout(() => {
+      element.style.outline = "";
+      element.style.outlineOffset = "";
+    }, 2500);
+    return () => clearTimeout(timer);
   }, [highlightId, isLoading]);
 
   async function handleSubmit(event) {
@@ -195,10 +204,7 @@ function TestCaseRegistry() {
                   className="rounded-xl border p-4"
                   style={{
                     borderColor: "var(--devdoc-border)",
-                    backgroundColor: "var(--devdoc-surface)",
-                    ...(testCase.id === highlightId
-                      ? { outline: "2px solid var(--devdoc-primary)", outlineOffset: "2px" }
-                      : null)
+                    backgroundColor: "var(--devdoc-surface)"
                   }}
                 >
                   <div className="flex items-start justify-between gap-4">

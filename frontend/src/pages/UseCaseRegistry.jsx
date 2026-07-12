@@ -16,10 +16,19 @@ function UseCaseRegistry() {
   const { data: useCases = [], isLoading, error, refetch } = useUseCases(id);
   useAuthGuard(error);
 
-  // Validation deep link: scroll the highlighted use case into view.
+  // Validation deep link: scroll the highlighted use case into view with a 2.5s glow.
   useEffect(() => {
     if (!highlightId || isLoading) return;
-    document.getElementById(`artifact-${highlightId}`)?.scrollIntoView({ behavior: "smooth", block: "center" });
+    const element = document.getElementById(`artifact-${highlightId}`);
+    if (!element) return;
+    element.scrollIntoView({ behavior: "smooth", block: "center" });
+    element.style.outline = "2px solid var(--devdoc-primary)";
+    element.style.outlineOffset = "3px";
+    const timer = setTimeout(() => {
+      element.style.outline = "";
+      element.style.outlineOffset = "";
+    }, 2500);
+    return () => clearTimeout(timer);
   }, [highlightId, isLoading]);
   const createMutation = useCreateUseCase(id);
   const updateMutation = useUpdateUseCase(id);
@@ -158,11 +167,6 @@ function UseCaseRegistry() {
                   key={useCase.id}
                   id={`artifact-${useCase.id}`}
                   className="rounded-xl"
-                  style={
-                    useCase.id === highlightId
-                      ? { outline: "2px solid var(--devdoc-primary)", outlineOffset: "2px" }
-                      : undefined
-                  }
                 >
                   <UseCaseCard useCase={useCase} onUpdate={handleUpdateUseCase} />
                 </div>
