@@ -399,6 +399,7 @@ module.exports = {
   PROFILE_MISMATCH,
   DOCUMENT_NOT_FOUND,
   SECTION_NOT_FOUND,
+  calculateCompletionPercent,
   createDocumentFromTemplate,
   getDocumentById,
   updateDocumentSection,

@@ -1,5 +1,5 @@
-import { useMemo, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useEffect, useMemo, useState } from "react";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import CreateRequirementForm from "../components/CreateRequirementForm";
 import LoadingSpinner from "../components/LoadingSpinner";
 import RequirementCard from "../components/RequirementCard";
@@ -23,8 +23,16 @@ function RequirementRegistry() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { project } = useProject();
+  const [searchParams] = useSearchParams();
+  const highlightId = searchParams.get("highlight") || "";
   const [activeFilter, setActiveFilter] = useState("ALL");
   const { data: requirements = [], isLoading, error, refetch } = useRequirements(id);
+
+  // Validation deep link: scroll the highlighted requirement into view.
+  useEffect(() => {
+    if (!highlightId || isLoading) return;
+    document.getElementById(`artifact-${highlightId}`)?.scrollIntoView({ behavior: "smooth", block: "center" });
+  }, [highlightId, isLoading]);
   useAuthGuard(error);
   const createMutation = useCreateRequirement(id);
   const updateMutation = useUpdateRequirement(id);
@@ -217,11 +225,21 @@ function RequirementRegistry() {
           ) : (
             <div className="grid gap-3">
               {filteredRequirements.map((requirement) => (
-                <RequirementCard
+                <div
                   key={requirement.id}
-                  requirement={requirement}
-                  onUpdate={handleUpdateRequirement}
-                />
+                  id={`artifact-${requirement.id}`}
+                  className="rounded-xl"
+                  style={
+                    requirement.id === highlightId
+                      ? { outline: "2px solid var(--devdoc-primary)", outlineOffset: "2px" }
+                      : undefined
+                  }
+                >
+                  <RequirementCard
+                    requirement={requirement}
+                    onUpdate={handleUpdateRequirement}
+                  />
+                </div>
               ))}
             </div>
           )}

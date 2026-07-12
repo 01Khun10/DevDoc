@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import LoadingSpinner from "../components/LoadingSpinner";
 import TraceabilityGrid from "../components/TraceabilityGrid";
 import TraceabilityGraph from "../components/TraceabilityGraph";
@@ -112,9 +112,16 @@ function TraceabilityMatrix() {
   const navigate = useNavigate();
   const { project } = useProject();
   const { notify } = useNotify();
-  const [activeTab, setActiveTab] = useState("grid");
-  const [modeKey, setModeKey] = useState("");
-  const [selectedSourceId, setSelectedSourceId] = useState("");
+  const [searchParams] = useSearchParams();
+  // Validation deep link: ?mode=<MODE_KEY>&source=<id> lands in the builder
+  // with the offending source preselected.
+  const paramMode = searchParams.get("mode");
+  const paramSource = searchParams.get("source") || "";
+  const [activeTab, setActiveTab] = useState(paramSource ? "builder" : "grid");
+  const [modeKey, setModeKey] = useState(
+    paramMode && TRACEABILITY_MODES[paramMode] ? paramMode : ""
+  );
+  const [selectedSourceId, setSelectedSourceId] = useState(paramSource);
   const [createError, setCreateError] = useState("");
   const [processingTargetId, setProcessingTargetId] = useState("");
   const [isDeletingId, setIsDeletingId] = useState("");

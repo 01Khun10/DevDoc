@@ -15,7 +15,7 @@ import Register from "./pages/Register";
 import SettingsPlaceholder from "./pages/SettingsPlaceholder";
 
 const DocumentEditor = lazy(() => import("./pages/DocumentEditor"));
-const ProjectAnalyticsPlaceholder = lazy(() => import("./pages/ProjectAnalyticsPlaceholder"));
+const ProjectAnalytics = lazy(() => import("./pages/ProjectAnalytics"));
 const ProjectDiagrams = lazy(() => import("./pages/ProjectDiagrams"));
 const ProjectDocumentsPlaceholder = lazy(() => import("./pages/ProjectDocumentsPlaceholder"));
 const ProjectSettingsPlaceholder = lazy(() => import("./pages/ProjectSettingsPlaceholder"));
@@ -65,7 +65,7 @@ function App() {
           <Route path="validation" element={<ValidationEngine />} />
           <Route path="diagrams" element={<ProjectDiagrams />} />
           <Route path="versions" element={<ProjectVersionsPlaceholder />} />
-          <Route path="analytics" element={<ProjectAnalyticsPlaceholder />} />
+          <Route path="analytics" element={<ProjectAnalytics />} />
           <Route path="settings" element={<ProjectSettingsPlaceholder />} />
         </Route>
         <Route path="/profile" element={<ProfilePlaceholder />} />

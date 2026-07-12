@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import LoadingSpinner from "../components/LoadingSpinner";
 import { useNotify } from "../context/NotificationContext";
 import { useProject } from "../context/ProjectContext";
@@ -20,12 +20,20 @@ function DesignElementRegistry() {
   const [form, setForm] = useState({ title: "", description: "", elementType: "" });
   const [formError, setFormError] = useState("");
   const [isDeletingId, setIsDeletingId] = useState("");
+  const [searchParams] = useSearchParams();
+  const highlightId = searchParams.get("highlight") || "";
   const { data: designElements = [], isLoading, error, refetch } = useDesignElements(id);
   const createMutation = useCreateDesignElement(id);
   const deleteMutation = useDeleteDesignElement(id);
   useAuthGuard(error, createMutation.error, deleteMutation.error);
   const errorType = error ? (error.status === 404 ? "not-found" : "load-error") : "";
   const isSubmitting = createMutation.isPending;
+
+  // Validation deep link: scroll the highlighted design element into view.
+  useEffect(() => {
+    if (!highlightId || isLoading) return;
+    document.getElementById(`artifact-${highlightId}`)?.scrollIntoView({ behavior: "smooth", block: "center" });
+  }, [highlightId, isLoading]);
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -169,8 +177,15 @@ function DesignElementRegistry() {
               {designElements.map((element) => (
                 <article
                   key={element.id}
+                  id={`artifact-${element.id}`}
                   className="rounded-xl border p-4"
-                  style={{ borderColor: "var(--devdoc-border)", backgroundColor: "var(--devdoc-surface)" }}
+                  style={{
+                    borderColor: "var(--devdoc-border)",
+                    backgroundColor: "var(--devdoc-surface)",
+                    ...(element.id === highlightId
+                      ? { outline: "2px solid var(--devdoc-primary)", outlineOffset: "2px" }
+                      : null)
+                  }}
                 >
                   <div className="flex items-start justify-between gap-4">
                     <div className="min-w-0">

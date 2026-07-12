@@ -1,5 +1,6 @@
 const prisma = require("../utils/prisma");
 const { PROJECT_NOT_FOUND, PROFILE_NOT_FOUND } = require("../constants/errorCodes");
+const { calculateCompletionPercent } = require("./documentService");
 
 function createProjectError(code, message) {
   const error = new Error(message);
@@ -124,16 +125,31 @@ async function getProjectOverview(ownerId, projectId) {
   }
 
   const [
-    documentsCount,
+    documents,
     requirementsCount,
     useCasesCount,
+    designElementsCount,
+    testCasesCount,
     traceabilityLinksCount,
     validationRunsCount,
     latestValidationRun
   ] = await Promise.all([
-    prisma.document.count({ where: { projectId } }),
+    prisma.document.findMany({
+      where: { projectId },
+      orderBy: { createdAt: "asc" },
+      select: {
+        id: true,
+        title: true,
+        documentType: true,
+        sections: {
+          select: { id: true, status: true, isRequired: true }
+        }
+      }
+    }),
     prisma.requirement.count({ where: { projectId } }),
     prisma.useCase.count({ where: { projectId } }),
+    prisma.designElement.count({ where: { projectId } }),
+    prisma.testCase.count({ where: { projectId } }),
     prisma.traceabilityLink.count({ where: { projectId } }),
     prisma.validationRun.count({ where: { projectId } }),
     prisma.validationRun.findFirst({
@@ -147,6 +163,15 @@ async function getProjectOverview(ownerId, projectId) {
       }
     })
   ]);
+
+  const documentsCount = documents.length;
+  const documentSummaries = documents.map((document) => ({
+    id: document.id,
+    title: document.title,
+    documentType: document.documentType,
+    completionPercent: calculateCompletionPercent(document.sections),
+    sectionIds: document.sections.map((section) => section.id)
+  }));
 
   // Find linked requirements by counting unique requirement IDs in traceability links
   // A requirement can be sourceType or targetType (typically targetType is DOCUMENT_SECTION, but just in case)
@@ -196,9 +221,12 @@ async function getProjectOverview(ownerId, projectId) {
       documents: documentsCount,
       requirements: requirementsCount,
       useCases: useCasesCount,
+      designElements: designElementsCount,
+      testCases: testCasesCount,
       traceabilityLinks: traceabilityLinksCount,
       validationRuns: validationRunsCount
     },
+    documents: documentSummaries,
     latestValidation: latestValidationRun || null,
     coverage: {
       linkedRequirements,

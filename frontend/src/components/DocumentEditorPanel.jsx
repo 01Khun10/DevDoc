@@ -303,7 +303,6 @@ function DocumentEditorPanel({
             <div className="flex flex-wrap gap-1 pr-4" style={{ borderRight: `1px solid var(--devdoc-border)` }}>
               <RibbonButton isActive={editor?.isActive("bold")} onClick={() => editor?.chain().focus().toggleBold().run()}>B</RibbonButton>
               <RibbonButton isActive={editor?.isActive("italic")} onClick={() => editor?.chain().focus().toggleItalic().run()}>I</RibbonButton>
-              <RibbonButton isActive={editor?.isActive("underline")} onClick={() => editor?.chain().focus().toggleUnderline().run()}>U</RibbonButton>
             </div>
             <div className="flex flex-wrap gap-1 pr-4" style={{ borderRight: `1px solid var(--devdoc-border)` }}>
               <RibbonButton wide isActive={editor?.isActive("heading", { level: 2 })} onClick={() => editor?.chain().focus().toggleHeading({ level: 2 }).run()}>Heading</RibbonButton>

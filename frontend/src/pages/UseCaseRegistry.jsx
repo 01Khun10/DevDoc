@@ -1,4 +1,5 @@
-import { useNavigate, useParams } from "react-router-dom";
+import { useEffect } from "react";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import CreateUseCaseForm from "../components/CreateUseCaseForm";
 import LoadingSpinner from "../components/LoadingSpinner";
 import UseCaseCard from "../components/UseCaseCard";
@@ -10,8 +11,16 @@ function UseCaseRegistry() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { project } = useProject();
+  const [searchParams] = useSearchParams();
+  const highlightId = searchParams.get("highlight") || "";
   const { data: useCases = [], isLoading, error, refetch } = useUseCases(id);
   useAuthGuard(error);
+
+  // Validation deep link: scroll the highlighted use case into view.
+  useEffect(() => {
+    if (!highlightId || isLoading) return;
+    document.getElementById(`artifact-${highlightId}`)?.scrollIntoView({ behavior: "smooth", block: "center" });
+  }, [highlightId, isLoading]);
   const createMutation = useCreateUseCase(id);
   const updateMutation = useUpdateUseCase(id);
   const errorType = error ? (error.status === 404 ? "not-found" : "load-error") : "";
@@ -145,7 +154,18 @@ function UseCaseRegistry() {
           ) : (
             <div className="grid gap-3">
               {useCases.map((useCase) => (
-                <UseCaseCard key={useCase.id} useCase={useCase} onUpdate={handleUpdateUseCase} />
+                <div
+                  key={useCase.id}
+                  id={`artifact-${useCase.id}`}
+                  className="rounded-xl"
+                  style={
+                    useCase.id === highlightId
+                      ? { outline: "2px solid var(--devdoc-primary)", outlineOffset: "2px" }
+                      : undefined
+                  }
+                >
+                  <UseCaseCard useCase={useCase} onUpdate={handleUpdateUseCase} />
+                </div>
               ))}
             </div>
           )}

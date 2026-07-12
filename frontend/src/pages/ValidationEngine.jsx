@@ -1,10 +1,16 @@
 import { useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import LoadingSpinner from "../components/LoadingSpinner";
+import ValidationCharts from "../components/ValidationCharts";
 import ValidationResultCard from "../components/ValidationResultCard";
+import { Modal } from "../components/ui";
 import { useProject } from "../context/ProjectContext";
+import { useNotify } from "../context/NotificationContext";
 import { getValidationRun } from "../services/validationService";
 import { useRunValidation, useValidationRuns } from "../api/validation";
+import { useProjectOverview } from "../api/projects";
+import { useCreateUseCase } from "../api/useCases";
+import { useCreateTraceabilityLink } from "../api/traceability";
 import useAuthGuard from "../api/useAuthGuard";
 
 const severityOrder = ["ERROR", "WARNING", "INFO"];
@@ -26,13 +32,30 @@ function ValidationEngine() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { project } = useProject();
+  const { notify } = useNotify();
   const [activeRun, setActiveRun] = useState(null);
   const [isLoadingRunId, setIsLoadingRunId] = useState("");
   const [runError, setRunError] = useState("");
+  const [coveringFix, setCoveringFix] = useState(null);
+  const [coveringError, setCoveringError] = useState("");
 
   const runsQuery = useValidationRuns(id);
   const runMutation = useRunValidation(id);
+  const overviewQuery = useProjectOverview(id);
+  const createUseCaseMutation = useCreateUseCase(id);
+  const createLinkMutation = useCreateTraceabilityLink(id);
   useAuthGuard(runsQuery.error, runMutation.error);
+
+  // sectionId -> documentId, so section findings can deep-link into the editor.
+  const sectionDocumentMap = useMemo(() => {
+    const map = {};
+    for (const document of overviewQuery.data?.documents || []) {
+      for (const sectionId of document.sectionIds || []) {
+        map[sectionId] = document.id;
+      }
+    }
+    return map;
+  }, [overviewQuery.data]);
   const validationRuns = runsQuery.data || [];
   const isLoading = runsQuery.isLoading;
   const isRunning = runMutation.isPending;
@@ -60,6 +83,46 @@ function ValidationEngine() {
       setRunError(error.message || "Could not load validation run.");
     } finally {
       setIsLoadingRunId("");
+    }
+  }
+
+  function handleOpenCoveringFix(result) {
+    setCoveringError("");
+    // "Requirement FR-001 ... is not covered" -> prefill a usable UC title.
+    const codeMatch = result.message.match(/\b(FR|NFR)-\d+\b/);
+    setCoveringFix({
+      result,
+      title: codeMatch ? `Covers ${codeMatch[0]}` : "",
+      description: ""
+    });
+  }
+
+  async function handleConfirmCoveringFix() {
+    if (!coveringFix?.title.trim()) {
+      setCoveringError("Title is required.");
+      return;
+    }
+
+    try {
+      const useCase = await createUseCaseMutation.mutateAsync({
+        title: coveringFix.title.trim(),
+        description: coveringFix.description.trim() || undefined
+      });
+      await createLinkMutation.mutateAsync({
+        sourceType: "USE_CASE",
+        sourceId: useCase.id,
+        targetType: "REQUIREMENT",
+        targetId: coveringFix.result.targetId,
+        linkType: "covers"
+      });
+      setCoveringFix(null);
+      notify(`${useCase.code} created and linked. Re-run validation to refresh results.`, { tone: "success" });
+    } catch (error) {
+      setCoveringError(
+        (error.fields && Object.values(error.fields)[0]) ||
+          error.message ||
+          "Could not create covering use case."
+      );
     }
   }
 
@@ -170,6 +233,8 @@ function ValidationEngine() {
             {runError}
           </div>
         ) : null}
+
+        <ValidationCharts activeRun={activeRun} validationRuns={validationRuns} />
 
         <div className="grid gap-6 lg:grid-cols-[1fr_256px]">
           {/* Main results */}
@@ -299,7 +364,13 @@ function ValidationEngine() {
                       </div>
                       <div className="grid gap-3">
                         {group.results.map((result) => (
-                          <ValidationResultCard key={result.id} result={result} />
+                          <ValidationResultCard
+                            key={result.id}
+                            result={result}
+                            projectId={id}
+                            sectionDocumentMap={sectionDocumentMap}
+                            onCreateCoveringUseCase={handleOpenCoveringFix}
+                          />
                         ))}
                       </div>
                     </section>
@@ -388,6 +459,80 @@ function ValidationEngine() {
           </aside>
         </div>
       </div>
+
+      {/* REQ-002 quick fix: create a use case and its covers link in one step */}
+      <Modal
+        isOpen={Boolean(coveringFix)}
+        title="Create covering use case"
+        onClose={() => setCoveringFix(null)}
+        footer={
+          <div className="flex justify-end gap-2">
+            <button
+              className="devdoc-button-secondary"
+              style={{
+                border: "1px solid var(--devdoc-border)",
+                backgroundColor: "var(--devdoc-surface)",
+                color: "var(--devdoc-text)"
+              }}
+              type="button"
+              onClick={() => setCoveringFix(null)}
+            >
+              Cancel
+            </button>
+            <button
+              className="devdoc-gradient-button"
+              type="button"
+              disabled={createUseCaseMutation.isPending || createLinkMutation.isPending}
+              onClick={handleConfirmCoveringFix}
+            >
+              {createUseCaseMutation.isPending || createLinkMutation.isPending
+                ? "Creating..."
+                : "Create & Link"}
+            </button>
+          </div>
+        }
+      >
+        {coveringFix ? (
+          <div className="flex flex-col gap-4">
+            <p className="text-sm" style={{ color: "var(--devdoc-muted)" }}>
+              Creates a use case and links it to the uncovered requirement with a covers link.
+            </p>
+            <p className="devdoc-inset text-sm" style={{ color: "var(--devdoc-text)" }}>
+              {coveringFix.result.message}
+            </p>
+            <label className="flex flex-col gap-1 text-sm font-semibold" style={{ color: "var(--devdoc-text)" }}>
+              Use case title
+              <input
+                className="rounded-lg px-3 py-2 text-sm font-normal outline-none"
+                style={{
+                  border: "1px solid var(--devdoc-border)",
+                  backgroundColor: "var(--devdoc-surface-inset)",
+                  color: "var(--devdoc-text)"
+                }}
+                value={coveringFix.title}
+                maxLength={200}
+                onChange={(event) => setCoveringFix({ ...coveringFix, title: event.target.value })}
+              />
+            </label>
+            <label className="flex flex-col gap-1 text-sm font-semibold" style={{ color: "var(--devdoc-text)" }}>
+              Description (optional)
+              <textarea
+                className="min-h-20 rounded-lg px-3 py-2 text-sm font-normal outline-none"
+                style={{
+                  border: "1px solid var(--devdoc-border)",
+                  backgroundColor: "var(--devdoc-surface-inset)",
+                  color: "var(--devdoc-text)"
+                }}
+                value={coveringFix.description}
+                onChange={(event) => setCoveringFix({ ...coveringFix, description: event.target.value })}
+              />
+            </label>
+            {coveringError ? (
+              <p className="text-sm font-medium" style={{ color: "var(--devdoc-error)" }}>{coveringError}</p>
+            ) : null}
+          </div>
+        ) : null}
+      </Modal>
     </main>
   );
 }

@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useSearchParams } from "react-router-dom";
 import DocumentEditorPanel from "../components/DocumentEditorPanel";
 import DocumentGuidancePanel from "../components/DocumentGuidancePanel";
 import DocumentSectionSidebar from "../components/DocumentSectionSidebar";
@@ -60,6 +60,7 @@ function DocumentEditor() {
   const projectId = params.id || params.projectId;
   const documentId = params.documentId;
   const { notify } = useNotify();
+  const [searchParams] = useSearchParams();
   const [selectedSectionId, setSelectedSectionId] = useState("");
   const [editorContent, setEditorContent] = useState("");
   const [saveError, setSaveError] = useState("");
@@ -92,16 +93,21 @@ function DocumentEditor() {
   const isLoadingLinkedArtefacts = linkedArtefactsQuery.isLoading && Boolean(selectedSectionId);
   const linkedArtefactsError = linkedArtefactsQuery.error ? "Could not load linked artefacts." : "";
 
-  // Select the first section once the document arrives.
+  // Select the initial section once the document arrives; a ?highlight=
+  // query param (validation deep link) wins over the first section.
   useEffect(() => {
     if (document && !selectedSectionId) {
-      const firstSection = document.sections?.[0] || null;
-      setSelectedSectionId(firstSection?.id || "");
-      setEditorContent(firstSection?.content || "");
-      editorContentRef.current = firstSection?.content || "";
+      const highlightId = searchParams.get("highlight");
+      const initialSection =
+        document.sections?.find((section) => section.id === highlightId) ||
+        document.sections?.[0] ||
+        null;
+      setSelectedSectionId(initialSection?.id || "");
+      setEditorContent(initialSection?.content || "");
+      editorContentRef.current = initialSection?.content || "";
       setHasUnsavedChanges(false);
     }
-  }, [document, selectedSectionId]);
+  }, [document, selectedSectionId, searchParams]);
 
   const getGridClasses = () => {
     if (isFocusMode) return "xl:grid-cols-1 max-w-5xl mx-auto";

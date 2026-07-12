@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import { useProject } from "../context/ProjectContext";
+import { useProjectOverview } from "../api/projects";
 
 function formatDateTime(value) {
   if (!value) return "Unknown";
@@ -83,8 +84,76 @@ const TOOLS = [
   },
 ];
 
+// 5-step readiness checklist, auto-checked from live project data.
+function getChecklistSteps(counts) {
+  return [
+    { label: "Create a document from a template", path: "templates", done: counts.documents > 0 },
+    { label: "Capture use cases", path: "use-cases", done: counts.useCases > 0 },
+    { label: "Register requirements", path: "requirements", done: counts.requirements > 0 },
+    { label: "Link artefacts in the traceability matrix", path: "traceability", done: counts.traceabilityLinks > 0 },
+    { label: "Run Doc-Linter validation", path: "validation", done: counts.validationRuns > 0 }
+  ];
+}
+
+function ReadinessChecklist({ projectId, counts }) {
+  const steps = getChecklistSteps(counts);
+  const doneCount = steps.filter((step) => step.done).length;
+
+  return (
+    <div
+      className="mb-6 rounded-xl border p-5"
+      style={{ borderColor: "var(--devdoc-border)", backgroundColor: "var(--devdoc-surface)" }}
+    >
+      <div className="mb-4 flex items-center justify-between">
+        <p className="devdoc-label">Getting to readiness</p>
+        <span className="text-xs font-bold" style={{ color: doneCount === steps.length ? "var(--devdoc-success)" : "var(--devdoc-muted)" }}>
+          {doneCount}/{steps.length} complete
+        </span>
+      </div>
+      <ol className="grid gap-2">
+        {steps.map((step, index) => (
+          <li key={step.path}>
+            <Link
+              className="flex items-center gap-3 rounded-lg border px-3 py-2.5 text-sm transition-all hover:border-[var(--devdoc-primary)]"
+              style={{
+                borderColor: "var(--devdoc-border)",
+                backgroundColor: step.done ? "var(--devdoc-success-soft)" : "var(--devdoc-surface-muted)"
+              }}
+              to={`/projects/${projectId}/${step.path}`}
+            >
+              <span
+                className="flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-xs font-bold"
+                style={{
+                  backgroundColor: step.done ? "var(--devdoc-success)" : "var(--devdoc-surface)",
+                  border: step.done ? "none" : "1px solid var(--devdoc-border)",
+                  color: step.done ? "#ffffff" : "var(--devdoc-muted)"
+                }}
+              >
+                {step.done ? (
+                  <svg viewBox="0 0 20 20" fill="currentColor" className="h-3.5 w-3.5">
+                    <path fillRule="evenodd" d="M16.704 4.153a.75.75 0 0 1 .143 1.052l-8 10.5a.75.75 0 0 1-1.127.075l-4.5-4.5a.75.75 0 0 1 1.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 0 1 1.05-.143z" clipRule="evenodd" />
+                  </svg>
+                ) : (
+                  index + 1
+                )}
+              </span>
+              <span
+                className="font-semibold"
+                style={{ color: step.done ? "var(--devdoc-success)" : "var(--devdoc-text)" }}
+              >
+                {step.label}
+              </span>
+            </Link>
+          </li>
+        ))}
+      </ol>
+    </div>
+  );
+}
+
 function ProjectWorkspace() {
   const { project } = useProject();
+  const { data: overview } = useProjectOverview(project.id);
 
   return (
     <main
@@ -142,6 +211,9 @@ function ProjectWorkspace() {
             </p>
           </div>
         </div>
+
+        {/* Readiness checklist */}
+        {overview ? <ReadinessChecklist projectId={project.id} counts={overview.counts} /> : null}
 
         {/* Tools grid */}
         <div>

@@ -25,6 +25,7 @@
     "react-dom": "^19.0.0",
     "react-router-dom": "^7.15.0",
     "reactflow": "^11.11.4",
+    "recharts": "^3.9.2",
     "vite": "^6.0.7"
   },
   "devDependencies": {

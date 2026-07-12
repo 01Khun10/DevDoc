@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import LoadingSpinner from "../components/LoadingSpinner";
 import { useNotify } from "../context/NotificationContext";
 import { useProject } from "../context/ProjectContext";
@@ -29,6 +29,8 @@ function TestCaseRegistry() {
   const [form, setForm] = useState({ title: "", description: "", expectedResult: "" });
   const [formError, setFormError] = useState("");
   const [isDeletingId, setIsDeletingId] = useState("");
+  const [searchParams] = useSearchParams();
+  const highlightId = searchParams.get("highlight") || "";
   const { data: testCases = [], isLoading, error, refetch } = useTestCases(id);
   const createMutation = useCreateTestCase(id);
   const updateMutation = useUpdateTestCase(id);
@@ -36,6 +38,12 @@ function TestCaseRegistry() {
   useAuthGuard(error, createMutation.error, updateMutation.error, deleteMutation.error);
   const errorType = error ? (error.status === 404 ? "not-found" : "load-error") : "";
   const isSubmitting = createMutation.isPending;
+
+  // Validation deep link: scroll the highlighted test case into view.
+  useEffect(() => {
+    if (!highlightId || isLoading) return;
+    document.getElementById(`artifact-${highlightId}`)?.scrollIntoView({ behavior: "smooth", block: "center" });
+  }, [highlightId, isLoading]);
 
   async function handleSubmit(event) {
     event.preventDefault();
@@ -183,8 +191,15 @@ function TestCaseRegistry() {
               {testCases.map((testCase) => (
                 <article
                   key={testCase.id}
+                  id={`artifact-${testCase.id}`}
                   className="rounded-xl border p-4"
-                  style={{ borderColor: "var(--devdoc-border)", backgroundColor: "var(--devdoc-surface)" }}
+                  style={{
+                    borderColor: "var(--devdoc-border)",
+                    backgroundColor: "var(--devdoc-surface)",
+                    ...(testCase.id === highlightId
+                      ? { outline: "2px solid var(--devdoc-primary)", outlineOffset: "2px" }
+                      : null)
+                  }}
                 >
                   <div className="flex items-start justify-between gap-4">
                     <div className="min-w-0">
