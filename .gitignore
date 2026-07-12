@@ -13,7 +13,12 @@ node_modules/
 ruvector.db
 .swarm/
 .claude-flow/
-graphify-out/cache/
+graphify-out/
+.claude/
+.codex/
+
+# Database dumps
+devdoc_backup.sql
 
 # Build output
 dist/
