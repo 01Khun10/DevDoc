@@ -9,7 +9,8 @@ const {
   getProjects,
   getProjectById,
   updateProject,
-  getProjectOverview: getProjectOverviewService
+  getProjectOverview: getProjectOverviewService,
+  listActivityLogs
 } = require("../services/projectService");
 const { sendError, sendUnexpectedError } = require("../utils/httpErrors");
 
@@ -85,10 +86,26 @@ async function getProjectOverview(req, res) {
   }
 }
 
+async function getActivity(req, res) {
+  const parsedLimit = Number.parseInt(req.query.limit, 10);
+  const limit = Number.isInteger(parsedLimit) ? Math.min(Math.max(parsedLimit, 1), 50) : 20;
+
+  try {
+    const activities = await listActivityLogs(req.user.id, req.params.id, limit);
+    return res.status(200).json({ activities });
+  } catch (error) {
+    if (error.code === PROJECT_NOT_FOUND) {
+      return sendError(res, 404, "Project not found");
+    }
+    return sendUnexpectedError(res, error, "projectController.getActivity");
+  }
+}
+
 module.exports = {
   create,
   list,
   get,
   update,
-  getProjectOverview
+  getProjectOverview,
+  getActivity
 };

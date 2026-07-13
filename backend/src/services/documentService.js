@@ -1,4 +1,5 @@
 const prisma = require("../utils/prisma");
+const { logActivity } = require("../utils/activityLog");
 const {
   PROJECT_NOT_FOUND,
   TEMPLATE_NOT_FOUND,
@@ -172,6 +173,13 @@ async function createDocumentFromTemplate(ownerId, projectId, values) {
           }
         }
       }
+    });
+
+    await logActivity(tx, project.id, {
+      action: "CREATED",
+      entityType: "DOCUMENT",
+      entityId: document.id,
+      metadata: { title: document.title, documentType: document.documentType }
     });
 
     return document;

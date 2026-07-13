@@ -1,5 +1,6 @@
 const prisma = require("../utils/prisma");
 const { getNextCode, createWithCodeRetry } = require("../utils/nextCode");
+const { logActivity } = require("../utils/activityLog");
 const { PROJECT_NOT_FOUND, TEST_CASE_NOT_FOUND } = require("../constants/errorCodes");
 
 const CODE_PREFIX = "TC";
@@ -54,7 +55,7 @@ async function createTestCase(ownerId, projectId, values) {
         existingTestCases.map((testCase) => testCase.code)
       );
 
-      return tx.testCase.create({
+      const testCase = await tx.testCase.create({
         data: {
           projectId: project.id,
           code,
@@ -65,6 +66,15 @@ async function createTestCase(ownerId, projectId, values) {
         },
         select: getTestCaseSelect()
       });
+
+      await logActivity(tx, project.id, {
+        action: "CREATED",
+        entityType: "TEST_CASE",
+        entityId: testCase.id,
+        metadata: { code: testCase.code, title: testCase.title }
+      });
+
+      return testCase;
     })
   );
 }
@@ -128,11 +138,20 @@ async function updateTestCase(ownerId, projectId, testCaseId, values) {
     return getTestCaseById(ownerId, projectId, testCaseId);
   }
 
-  return prisma.testCase.update({
+  const testCase = await prisma.testCase.update({
     where: { id: existingTestCase.id },
     data: values,
     select: getTestCaseSelect()
   });
+
+  await logActivity(prisma, projectId, {
+    action: "UPDATED",
+    entityType: "TEST_CASE",
+    entityId: testCase.id,
+    metadata: { code: testCase.code, title: testCase.title }
+  });
+
+  return testCase;
 }
 
 async function deleteTestCase(ownerId, projectId, testCaseId) {
@@ -144,7 +163,7 @@ async function deleteTestCase(ownerId, projectId, testCaseId) {
         ownerId
       }
     },
-    select: { id: true }
+    select: { id: true, code: true, title: true }
   });
 
   if (!existingTestCase) {
@@ -153,6 +172,13 @@ async function deleteTestCase(ownerId, projectId, testCaseId) {
 
   await prisma.testCase.delete({
     where: { id: existingTestCase.id }
+  });
+
+  await logActivity(prisma, projectId, {
+    action: "DELETED",
+    entityType: "TEST_CASE",
+    entityId: existingTestCase.id,
+    metadata: { code: existingTestCase.code, title: existingTestCase.title }
   });
 
   return { message: "Test case removed" };

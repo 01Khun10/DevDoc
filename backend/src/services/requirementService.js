@@ -1,5 +1,6 @@
 const prisma = require("../utils/prisma");
 const { getNextCode, createWithCodeRetry } = require("../utils/nextCode");
+const { logActivity } = require("../utils/activityLog");
 const {
   PROJECT_NOT_FOUND,
   REQUIREMENT_NOT_FOUND,
@@ -61,7 +62,7 @@ async function createRequirement(ownerId, projectId, values) {
         existingRequirements.map((requirement) => requirement.code)
       );
 
-      return tx.requirement.create({
+      const requirement = await tx.requirement.create({
         data: {
           projectId: project.id,
           code,
@@ -73,6 +74,15 @@ async function createRequirement(ownerId, projectId, values) {
         },
         select: getRequirementSelect()
       });
+
+      await logActivity(tx, project.id, {
+        action: "CREATED",
+        entityType: "REQUIREMENT",
+        entityId: requirement.id,
+        metadata: { code: requirement.code, title: requirement.title }
+      });
+
+      return requirement;
     })
   );
 }
@@ -128,6 +138,13 @@ async function createRequirementFromSection(ownerId, projectId, values) {
           targetId: section.id,
           linkType: "described_by"
         }
+      });
+
+      await logActivity(tx, project.id, {
+        action: "CREATED",
+        entityType: "REQUIREMENT",
+        entityId: requirement.id,
+        metadata: { code: requirement.code, title: requirement.title }
       });
 
       return requirement;
@@ -194,11 +211,20 @@ async function updateRequirement(ownerId, projectId, requirementId, values) {
     return getRequirementById(ownerId, projectId, requirementId);
   }
 
-  return prisma.requirement.update({
+  const requirement = await prisma.requirement.update({
     where: { id: existingRequirement.id },
     data: values,
     select: getRequirementSelect()
   });
+
+  await logActivity(prisma, projectId, {
+    action: "UPDATED",
+    entityType: "REQUIREMENT",
+    entityId: requirement.id,
+    metadata: { code: requirement.code, title: requirement.title }
+  });
+
+  return requirement;
 }
 
 async function deleteRequirement(ownerId, projectId, requirementId) {
@@ -208,7 +234,7 @@ async function deleteRequirement(ownerId, projectId, requirementId) {
       projectId,
       project: { ownerId }
     },
-    select: { id: true }
+    select: { id: true, code: true, title: true }
   });
 
   if (!existingRequirement) {
@@ -228,6 +254,13 @@ async function deleteRequirement(ownerId, projectId, requirementId) {
     }),
     prisma.requirement.delete({ where: { id: existingRequirement.id } })
   ]);
+
+  await logActivity(prisma, projectId, {
+    action: "DELETED",
+    entityType: "REQUIREMENT",
+    entityId: existingRequirement.id,
+    metadata: { code: existingRequirement.code, title: existingRequirement.title }
+  });
 
   return { message: "Requirement removed" };
 }

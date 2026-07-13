@@ -1,5 +1,6 @@
 const prisma = require("../utils/prisma");
 const { getNextCode, createWithCodeRetry } = require("../utils/nextCode");
+const { logActivity } = require("../utils/activityLog");
 const { PROJECT_NOT_FOUND, USE_CASE_NOT_FOUND } = require("../constants/errorCodes");
 
 function createUseCaseError(code, message) {
@@ -50,7 +51,7 @@ async function createUseCase(ownerId, projectId, values) {
         existingUseCases.map((useCase) => useCase.code)
       );
 
-      return tx.useCase.create({
+      const useCase = await tx.useCase.create({
         data: {
           projectId: project.id,
           code,
@@ -59,6 +60,15 @@ async function createUseCase(ownerId, projectId, values) {
         },
         select: getUseCaseSelect()
       });
+
+      await logActivity(tx, project.id, {
+        action: "CREATED",
+        entityType: "USE_CASE",
+        entityId: useCase.id,
+        metadata: { code: useCase.code, title: useCase.title }
+      });
+
+      return useCase;
     })
   );
 }
@@ -122,11 +132,20 @@ async function updateUseCase(ownerId, projectId, useCaseId, values) {
     return getUseCaseById(ownerId, projectId, useCaseId);
   }
 
-  return prisma.useCase.update({
+  const useCase = await prisma.useCase.update({
     where: { id: existingUseCase.id },
     data: values,
     select: getUseCaseSelect()
   });
+
+  await logActivity(prisma, projectId, {
+    action: "UPDATED",
+    entityType: "USE_CASE",
+    entityId: useCase.id,
+    metadata: { code: useCase.code, title: useCase.title }
+  });
+
+  return useCase;
 }
 
 async function deleteUseCase(ownerId, projectId, useCaseId) {
@@ -136,7 +155,7 @@ async function deleteUseCase(ownerId, projectId, useCaseId) {
       projectId,
       project: { ownerId }
     },
-    select: { id: true }
+    select: { id: true, code: true, title: true }
   });
 
   if (!existingUseCase) {
@@ -156,6 +175,13 @@ async function deleteUseCase(ownerId, projectId, useCaseId) {
     }),
     prisma.useCase.delete({ where: { id: existingUseCase.id } })
   ]);
+
+  await logActivity(prisma, projectId, {
+    action: "DELETED",
+    entityType: "USE_CASE",
+    entityId: existingUseCase.id,
+    metadata: { code: existingUseCase.code, title: existingUseCase.title }
+  });
 
   return { message: "Use case removed" };
 }

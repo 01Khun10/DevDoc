@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { useProject } from "../context/ProjectContext";
 import { useProjectOverview } from "../api/projects";
+import ActivityFeed from "../components/ActivityFeed";
 
 function formatDateTime(value) {
   if (!value) return "Unknown";
@@ -214,6 +215,12 @@ function ProjectWorkspace() {
 
         {/* Readiness checklist */}
         {overview ? <ReadinessChecklist projectId={project.id} counts={overview.counts} /> : null}
+
+        {/* Recent activity */}
+        <section className="mb-6">
+          <p className="devdoc-label mb-3">Recent activity</p>
+          <ActivityFeed projectId={project.id} />
+        </section>
 
         {/* Tools grid */}
         <div>

@@ -1,5 +1,6 @@
 const prisma = require("../utils/prisma");
 const { getNextCode, createWithCodeRetry } = require("../utils/nextCode");
+const { logActivity } = require("../utils/activityLog");
 const { PROJECT_NOT_FOUND, DESIGN_ELEMENT_NOT_FOUND } = require("../constants/errorCodes");
 
 const CODE_PREFIX = "DE";
@@ -53,7 +54,7 @@ async function createDesignElement(ownerId, projectId, values) {
         existingElements.map((element) => element.code)
       );
 
-      return tx.designElement.create({
+      const designElement = await tx.designElement.create({
         data: {
           projectId: project.id,
           code,
@@ -63,6 +64,15 @@ async function createDesignElement(ownerId, projectId, values) {
         },
         select: getDesignElementSelect()
       });
+
+      await logActivity(tx, project.id, {
+        action: "CREATED",
+        entityType: "DESIGN_ELEMENT",
+        entityId: designElement.id,
+        metadata: { code: designElement.code, title: designElement.title }
+      });
+
+      return designElement;
     })
   );
 }
@@ -126,11 +136,20 @@ async function updateDesignElement(ownerId, projectId, designElementId, values) 
     return getDesignElementById(ownerId, projectId, designElementId);
   }
 
-  return prisma.designElement.update({
+  const designElement = await prisma.designElement.update({
     where: { id: existingElement.id },
     data: values,
     select: getDesignElementSelect()
   });
+
+  await logActivity(prisma, projectId, {
+    action: "UPDATED",
+    entityType: "DESIGN_ELEMENT",
+    entityId: designElement.id,
+    metadata: { code: designElement.code, title: designElement.title }
+  });
+
+  return designElement;
 }
 
 async function deleteDesignElement(ownerId, projectId, designElementId) {
@@ -142,7 +161,7 @@ async function deleteDesignElement(ownerId, projectId, designElementId) {
         ownerId
       }
     },
-    select: { id: true }
+    select: { id: true, code: true, title: true }
   });
 
   if (!existingElement) {
@@ -151,6 +170,13 @@ async function deleteDesignElement(ownerId, projectId, designElementId) {
 
   await prisma.designElement.delete({
     where: { id: existingElement.id }
+  });
+
+  await logActivity(prisma, projectId, {
+    action: "DELETED",
+    entityType: "DESIGN_ELEMENT",
+    entityId: existingElement.id,
+    metadata: { code: existingElement.code, title: existingElement.title }
   });
 
   return { message: "Design element removed" };

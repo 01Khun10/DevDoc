@@ -1,4 +1,5 @@
 const prisma = require("../utils/prisma");
+const { logActivity } = require("../utils/activityLog");
 const {
   PROJECT_NOT_FOUND,
   SOURCE_NOT_FOUND,
@@ -79,7 +80,7 @@ async function verifySourceArtefact(tx, projectId, values) {
         id: values.sourceId,
         projectId
       },
-      select: { id: true }
+      select: { id: true, code: true }
     });
 
     if (!businessObjective) {
@@ -95,7 +96,7 @@ async function verifySourceArtefact(tx, projectId, values) {
         id: values.sourceId,
         projectId
       },
-      select: { id: true }
+      select: { id: true, code: true }
     });
 
     if (!useCase) {
@@ -111,7 +112,7 @@ async function verifySourceArtefact(tx, projectId, values) {
         id: values.sourceId,
         projectId
       },
-      select: { id: true }
+      select: { id: true, code: true }
     });
 
     if (!requirement) {
@@ -131,7 +132,7 @@ async function verifyTargetArtefact(tx, projectId, values) {
         id: values.targetId,
         projectId
       },
-      select: { id: true }
+      select: { id: true, code: true }
     });
 
     if (!useCase) {
@@ -147,7 +148,7 @@ async function verifyTargetArtefact(tx, projectId, values) {
         id: values.targetId,
         projectId
       },
-      select: { id: true }
+      select: { id: true, code: true }
     });
 
     if (!requirement) {
@@ -165,7 +166,7 @@ async function verifyTargetArtefact(tx, projectId, values) {
           projectId
         }
       },
-      select: { id: true }
+      select: { id: true, sectionNumber: true }
     });
 
     if (!documentSection) {
@@ -181,7 +182,7 @@ async function verifyTargetArtefact(tx, projectId, values) {
         id: values.targetId,
         projectId
       },
-      select: { id: true }
+      select: { id: true, code: true }
     });
 
     if (!designElement) {
@@ -197,7 +198,7 @@ async function verifyTargetArtefact(tx, projectId, values) {
         id: values.targetId,
         projectId
       },
-      select: { id: true }
+      select: { id: true, code: true }
     });
 
     if (!testCase) {
@@ -334,8 +335,8 @@ async function createTraceabilityLink(ownerId, projectId, values) {
       );
     }
 
-    await verifySourceArtefact(tx, project.id, values);
-    await verifyTargetArtefact(tx, project.id, values);
+    const sourceArtefact = await verifySourceArtefact(tx, project.id, values);
+    const targetArtefact = await verifyTargetArtefact(tx, project.id, values);
 
     const existingLink = await tx.traceabilityLink.findFirst({
       where: {
@@ -354,7 +355,7 @@ async function createTraceabilityLink(ownerId, projectId, values) {
     }
 
     try {
-      return await tx.traceabilityLink.create({
+      const link = await tx.traceabilityLink.create({
         data: {
           projectId: project.id,
           sourceType: values.sourceType,
@@ -365,6 +366,21 @@ async function createTraceabilityLink(ownerId, projectId, values) {
         },
         select: getTraceabilityLinkSelect()
       });
+
+      await logActivity(tx, project.id, {
+        action: "LINKED",
+        entityType: "TRACEABILITY_LINK",
+        entityId: link.id,
+        metadata: {
+          sourceType: values.sourceType,
+          sourceCode: sourceArtefact.code || sourceArtefact.sectionNumber,
+          targetType: values.targetType,
+          targetCode: targetArtefact.code || targetArtefact.sectionNumber,
+          linkType: values.linkType
+        }
+      });
+
+      return link;
     } catch (error) {
       if (error.code === "P2002") {
         throw createTraceabilityError(DUPLICATE_LINK, "Traceability link already exists");
@@ -408,7 +424,7 @@ async function deleteTraceabilityLink(ownerId, projectId, linkId) {
         id: linkId,
         projectId: project.id
       },
-      select: { id: true }
+      select: { id: true, sourceType: true, targetType: true, linkType: true }
     });
 
     if (!link) {
@@ -417,6 +433,17 @@ async function deleteTraceabilityLink(ownerId, projectId, linkId) {
 
     await tx.traceabilityLink.delete({
       where: { id: link.id }
+    });
+
+    await logActivity(tx, project.id, {
+      action: "UNLINKED",
+      entityType: "TRACEABILITY_LINK",
+      entityId: link.id,
+      metadata: {
+        sourceType: link.sourceType,
+        targetType: link.targetType,
+        linkType: link.linkType
+      }
     });
 
     return { message: "Traceability link removed" };

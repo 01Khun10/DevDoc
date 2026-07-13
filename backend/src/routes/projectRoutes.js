@@ -11,6 +11,7 @@ router.post("/", projectController.create);
 router.get("/", projectController.list);
 router.get("/:id", projectController.get);
 router.get("/:id/overview", projectController.getProjectOverview);
+router.get("/:id/activity", projectController.getActivity);
 router.put("/:id", projectController.update);
 router.post("/:id/share", shareController.create);
 

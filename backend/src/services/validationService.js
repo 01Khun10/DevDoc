@@ -1,5 +1,6 @@
 const prisma = require("../utils/prisma");
 const validationChecks = require("./validationChecks");
+const { logActivity } = require("../utils/activityLog");
 const { PROJECT_NOT_FOUND, RUN_NOT_FOUND } = require("../constants/errorCodes");
 
 const FALLBACK_PROFILE_CODE = "STANDARD_SOFTWARE";
@@ -344,7 +345,7 @@ async function runProjectValidation(ownerId, projectId) {
         });
       }
 
-      return tx.validationRun.update({
+      const updatedRun = await tx.validationRun.update({
         where: { id: validationRun.id },
         data: {
           status: "COMPLETED",
@@ -354,6 +355,15 @@ async function runProjectValidation(ownerId, projectId) {
         },
         select: getValidationRunSelect()
       });
+
+      await logActivity(tx, project.id, {
+        action: "VALIDATION_RUN",
+        entityType: "VALIDATION_RUN",
+        entityId: updatedRun.id,
+        metadata: { readinessScore }
+      });
+
+      return updatedRun;
     });
 
     return {

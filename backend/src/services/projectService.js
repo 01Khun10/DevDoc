@@ -265,6 +265,31 @@ async function getProjectOverview(ownerId, projectId) {
   };
 }
 
+async function listActivityLogs(ownerId, projectId, limit = 20) {
+  const project = await prisma.project.findFirst({
+    where: { id: projectId, ownerId },
+    select: { id: true }
+  });
+
+  if (!project) {
+    throw createProjectError(PROJECT_NOT_FOUND, "Project not found");
+  }
+
+  return prisma.activityLog.findMany({
+    where: { projectId: project.id },
+    orderBy: { createdAt: "desc" },
+    take: limit,
+    select: {
+      id: true,
+      action: true,
+      entityType: true,
+      entityId: true,
+      metadata: true,
+      createdAt: true
+    }
+  });
+}
+
 module.exports = {
   PROJECT_NOT_FOUND,
   PROFILE_NOT_FOUND,
@@ -272,5 +297,6 @@ module.exports = {
   getProjects,
   getProjectById,
   updateProject,
-  getProjectOverview
+  getProjectOverview,
+  listActivityLogs
 };
