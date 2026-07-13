@@ -2,7 +2,8 @@ const {
   PROJECT_NOT_FOUND,
   generateTraceabilityTreePlantUml,
   generateUseCasePlantUml,
-  generateComponentPlantUml
+  generateComponentPlantUml,
+  getProjectGraphData
 } = require("../services/diagramService");
 const { sendError, sendUnexpectedError } = require("../utils/httpErrors");
 
@@ -34,5 +35,16 @@ module.exports = {
   getComponentPlantUml: makeDiagramHandler(
     generateComponentPlantUml,
     "diagramController.getComponentPlantUml"
-  )
+  ),
+  getGraphData: async function getGraphData(req, res) {
+    try {
+      const graph = await getProjectGraphData(req.user.id, req.params.projectId);
+      return res.status(200).json({ graph });
+    } catch (error) {
+      if (error.code === PROJECT_NOT_FOUND) {
+        return sendError(res, 404, "Project not found");
+      }
+      return sendUnexpectedError(res, error, "diagramController.getGraphData");
+    }
+  }
 };

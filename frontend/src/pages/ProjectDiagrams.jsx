@@ -6,6 +6,7 @@ import {
   getUseCasePlantUml,
   getComponentPlantUml
 } from "../services/diagramService";
+import DiagramInteractiveGraph from "../components/DiagramInteractiveGraph";
 
 const CHIP_COLORS = {
   "Use Cases": "#8b5cf6",
@@ -59,6 +60,13 @@ const TABS = [
       ["Design Elements", summary.designElementCount],
       ["Links", summary.linkCount]
     ]
+  },
+  {
+    key: "interactive",
+    label: "Interactive",
+    description:
+      "Live React Flow graph of the full hierarchy: business objectives, use cases, requirements, sections, design elements, and test cases.",
+    interactive: true
   }
 ];
 
@@ -281,9 +289,23 @@ function ProjectDiagrams() {
           })}
         </div>
 
-        {TABS.map((tab) =>
-          tab.key === activeTab ? <DiagramPanel key={tab.key} projectId={projectId} tab={tab} /> : null
-        )}
+        {TABS.map((tab) => {
+          if (tab.key !== activeTab) return null;
+          if (tab.interactive) {
+            return (
+              <div key={tab.key} className="devdoc-card-border p-6">
+                <h2 className="font-headline text-xl font-extrabold" style={{ color: "var(--devdoc-text)" }}>
+                  Interactive Hierarchy Graph
+                </h2>
+                <p className="mb-4 mt-2 text-sm leading-6" style={{ color: "var(--devdoc-muted)" }}>
+                  {tab.description}
+                </p>
+                <DiagramInteractiveGraph projectId={projectId} />
+              </div>
+            );
+          }
+          return <DiagramPanel key={tab.key} projectId={projectId} tab={tab} />;
+        })}
       </section>
     </main>
   );

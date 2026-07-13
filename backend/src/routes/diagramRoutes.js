@@ -9,5 +9,6 @@ router.use(authMiddleware);
 router.get("/traceability-tree/plantuml", diagramController.getTraceabilityTreePlantUml);
 router.get("/use-case/plantuml", diagramController.getUseCasePlantUml);
 router.get("/component/plantuml", diagramController.getComponentPlantUml);
+router.get("/graph-data", diagramController.getGraphData);
 
 module.exports = router;

@@ -350,11 +350,80 @@ async function generateComponentPlantUml(ownerId, projectId) {
   });
 }
 
+// Full-hierarchy data for the interactive React Flow graph: every artifact
+// with the fields the detail panel needs, plus all traceability links.
+async function getProjectGraphData(ownerId, projectId) {
+  return prisma.$transaction(async (tx) => {
+    const project = await requireProject(tx, ownerId, projectId);
+
+    const [businessObjectives, useCases, requirements, documentSections, designElements, testCases, links] =
+      await Promise.all([
+        tx.businessObjective.findMany({
+          where: { projectId: project.id },
+          orderBy: { code: "asc" },
+          select: { id: true, code: true, title: true, description: true }
+        }),
+        tx.useCase.findMany({
+          where: { projectId: project.id },
+          orderBy: { code: "asc" },
+          select: { id: true, code: true, title: true, description: true }
+        }),
+        tx.requirement.findMany({
+          where: { projectId: project.id },
+          orderBy: { code: "asc" },
+          select: { id: true, code: true, type: true, title: true, description: true }
+        }),
+        tx.documentSection.findMany({
+          where: { document: { projectId: project.id } },
+          orderBy: [{ document: { title: "asc" } }, { displayOrder: "asc" }],
+          select: {
+            id: true,
+            sectionNumber: true,
+            title: true,
+            document: { select: { id: true, title: true, documentType: true } }
+          }
+        }),
+        tx.designElement.findMany({
+          where: { projectId: project.id },
+          orderBy: { code: "asc" },
+          select: { id: true, code: true, title: true, description: true, elementType: true }
+        }),
+        tx.testCase.findMany({
+          where: { projectId: project.id },
+          orderBy: { code: "asc" },
+          select: { id: true, code: true, title: true, description: true, status: true }
+        }),
+        tx.traceabilityLink.findMany({
+          where: { projectId: project.id },
+          select: {
+            id: true,
+            sourceType: true,
+            sourceId: true,
+            targetType: true,
+            targetId: true,
+            linkType: true
+          }
+        })
+      ]);
+
+    return {
+      businessObjectives,
+      useCases,
+      requirements,
+      documentSections,
+      designElements,
+      testCases,
+      links
+    };
+  });
+}
+
 module.exports = {
   PROJECT_NOT_FOUND,
   generateSafeAlias,
   escapeLabel,
   generateTraceabilityTreePlantUml,
   generateUseCasePlantUml,
-  generateComponentPlantUml
+  generateComponentPlantUml,
+  getProjectGraphData
 };

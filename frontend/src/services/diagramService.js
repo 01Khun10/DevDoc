@@ -15,4 +15,9 @@ async function getComponentPlantUml(projectId) {
   return response.diagram;
 }
 
-export { getTraceabilityTreePlantUml, getUseCasePlantUml, getComponentPlantUml };
+async function getDiagramGraphData(projectId) {
+  const response = await apiRequest(`/api/projects/${projectId}/diagrams/graph-data`);
+  return response.graph;
+}
+
+export { getTraceabilityTreePlantUml, getUseCasePlantUml, getComponentPlantUml, getDiagramGraphData };
