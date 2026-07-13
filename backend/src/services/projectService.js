@@ -141,8 +141,18 @@ async function getProjectOverview(ownerId, projectId) {
         id: true,
         title: true,
         documentType: true,
+        status: true,
+        createdAt: true,
+        updatedAt: true,
         sections: {
-          select: { id: true, status: true, isRequired: true }
+          orderBy: { displayOrder: "asc" },
+          select: {
+            id: true,
+            sectionNumber: true,
+            title: true,
+            status: true,
+            isRequired: true
+          }
         }
       }
     }),
@@ -166,13 +176,22 @@ async function getProjectOverview(ownerId, projectId) {
   ]);
 
   const documentsCount = documents.length;
-  const documentSummaries = documents.map((document) => ({
-    id: document.id,
-    title: document.title,
-    documentType: document.documentType,
-    completionPercent: calculateCompletionPercent(document.sections),
-    sectionIds: document.sections.map((section) => section.id)
-  }));
+  const documentSummaries = documents.map((document) => {
+    const requiredSections = document.sections.filter((section) => section.isRequired);
+    return {
+      id: document.id,
+      title: document.title,
+      documentType: document.documentType,
+      status: document.status,
+      createdAt: document.createdAt,
+      updatedAt: document.updatedAt,
+      completionPercent: calculateCompletionPercent(document.sections),
+      totalRequired: requiredSections.length,
+      completedRequired: requiredSections.filter((section) => section.status === "COMPLETE").length,
+      sections: document.sections,
+      sectionIds: document.sections.map((section) => section.id)
+    };
+  });
 
   // Find linked requirements by counting unique requirement IDs in traceability links
   // A requirement can be sourceType or targetType (typically targetType is DOCUMENT_SECTION, but just in case)

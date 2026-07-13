@@ -46,3 +46,7 @@ Desktop.ini
 *.swp
 *.swo
 
+
+# Plan docs (deliberately untracked)
+DEVDOC_UPGRADE_PLAN*.md
+MANUAL_CHECKLIST.md
