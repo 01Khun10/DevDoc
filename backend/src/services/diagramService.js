@@ -215,9 +215,146 @@ async function generateTraceabilityTreePlantUml(ownerId, projectId) {
   });
 }
 
+async function requireProject(tx, ownerId, projectId) {
+  const project = await tx.project.findFirst({
+    where: { id: projectId, ownerId },
+    select: { id: true }
+  });
+
+  if (!project) {
+    throw createDiagramError(PROJECT_NOT_FOUND, "Project not found");
+  }
+
+  return project;
+}
+
+async function generateUseCasePlantUml(ownerId, projectId) {
+  return prisma.$transaction(async (tx) => {
+    const project = await requireProject(tx, ownerId, projectId);
+
+    const useCases = await tx.useCase.findMany({
+      where: { projectId: project.id },
+      orderBy: { code: "asc" }
+    });
+
+    const boLinks = await tx.traceabilityLink.findMany({
+      where: {
+        projectId: project.id,
+        sourceType: "BUSINESS_OBJECTIVE",
+        targetType: "USE_CASE",
+        linkType: "initiates"
+      }
+    });
+
+    let plantUml = "@startuml\nleft to right direction\nskinparam shadowing false\n\n";
+    plantUml += "actor \"User\" as user\n";
+
+    const initiatedUcIds = new Set(boLinks.map((link) => link.targetId));
+    const hasStakeholder = initiatedUcIds.size > 0;
+    if (hasStakeholder) {
+      plantUml += "actor \"Stakeholder\" as stakeholder\n";
+    }
+
+    plantUml += "rectangle \"System\" {\n";
+    if (useCases.length === 0) {
+      plantUml += "  usecase \"No use cases yet\" as EMPTY\n";
+    }
+    const ucAliases = new Map();
+    useCases.forEach((uc, idx) => {
+      const alias = generateSafeAlias("USE_CASE", uc.id, uc.code, idx);
+      ucAliases.set(uc.id, alias);
+      plantUml += `  usecase "${escapeLabel(`${uc.code} ${uc.title}`)}" as ${alias}\n`;
+    });
+    plantUml += "}\n\n";
+
+    useCases.forEach((uc) => {
+      plantUml += `user --> ${ucAliases.get(uc.id)}\n`;
+      if (initiatedUcIds.has(uc.id)) {
+        plantUml += `stakeholder --> ${ucAliases.get(uc.id)}\n`;
+      }
+    });
+
+    plantUml += "@enduml\n";
+
+    return {
+      type: "USE_CASE",
+      format: "PLANTUML",
+      title: "Use Case Diagram",
+      plantUml,
+      summary: {
+        useCaseCount: useCases.length,
+        actorCount: hasStakeholder ? 2 : 1,
+        initiatesLinkCount: boLinks.length
+      }
+    };
+  });
+}
+
+async function generateComponentPlantUml(ownerId, projectId) {
+  return prisma.$transaction(async (tx) => {
+    const project = await requireProject(tx, ownerId, projectId);
+
+    const designElements = await tx.designElement.findMany({
+      where: { projectId: project.id },
+      orderBy: { code: "asc" }
+    });
+
+    const deLinks = await tx.traceabilityLink.findMany({
+      where: {
+        projectId: project.id,
+        sourceType: "DESIGN_ELEMENT",
+        targetType: "DESIGN_ELEMENT"
+      }
+    });
+
+    let plantUml = "@startuml\nskinparam componentStyle rectangle\nskinparam shadowing false\n\n";
+
+    if (designElements.length === 0) {
+      plantUml += "note \"No design elements yet\" as NOTE\n@enduml\n";
+      return {
+        type: "COMPONENT",
+        format: "PLANTUML",
+        title: "Component Diagram",
+        plantUml,
+        summary: { designElementCount: 0, linkCount: 0 }
+      };
+    }
+
+    const deAliases = new Map();
+    designElements.forEach((de, idx) => {
+      const alias = generateSafeAlias("DESIGN_ELEMENT", de.id, de.code, idx);
+      deAliases.set(de.id, alias);
+      plantUml += `[${escapeLabel(`${de.code} ${de.title}`)}] as ${alias}\n`;
+    });
+    plantUml += "\n";
+
+    let drawnLinks = 0;
+    deLinks.forEach((link) => {
+      const sourceAlias = deAliases.get(link.sourceId);
+      const targetAlias = deAliases.get(link.targetId);
+      if (sourceAlias && targetAlias) {
+        plantUml += `${sourceAlias} --> ${targetAlias} : ${link.linkType}\n`;
+        drawnLinks += 1;
+      }
+    });
+
+    plantUml += "@enduml\n";
+
+    return {
+      type: "COMPONENT",
+      format: "PLANTUML",
+      title: "Component Diagram",
+      plantUml,
+      summary: { designElementCount: designElements.length, linkCount: drawnLinks }
+    };
+  });
+}
+
 module.exports = {
   PROJECT_NOT_FOUND,
   generateSafeAlias,
   escapeLabel,
-  generateTraceabilityTreePlantUml
+  generateTraceabilityTreePlantUml,
+  generateUseCasePlantUml,
+  generateComponentPlantUml
 };

@@ -5,4 +5,14 @@ async function getTraceabilityTreePlantUml(projectId) {
   return response.diagram;
 }
 
-export { getTraceabilityTreePlantUml };
+async function getUseCasePlantUml(projectId) {
+  const response = await apiRequest(`/api/projects/${projectId}/diagrams/use-case/plantuml`);
+  return response.diagram;
+}
+
+async function getComponentPlantUml(projectId) {
+  const response = await apiRequest(`/api/projects/${projectId}/diagrams/component/plantuml`);
+  return response.diagram;
+}
+
+export { getTraceabilityTreePlantUml, getUseCasePlantUml, getComponentPlantUml };
