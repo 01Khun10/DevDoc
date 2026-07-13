@@ -16,6 +16,7 @@ const designElementRoutes = require("./routes/designElementRoutes");
 const testCaseRoutes = require("./routes/testCaseRoutes");
 const validationRoutes = require("./routes/validationRoutes");
 const diagramRoutes = require("./routes/diagramRoutes");
+const searchRoutes = require("./routes/searchRoutes");
 const shareController = require("./controllers/shareController");
 const { sendError, sendUnexpectedError } = require("./utils/httpErrors");
 
@@ -45,6 +46,7 @@ const authRateLimiter = rateLimit({
 });
 
 app.use("/api/auth", authRateLimiter, authRoutes);
+app.use("/api/search", searchRoutes);
 app.use("/api/projects", projectRoutes);
 app.use("/api/projects/:projectId/documents", documentRoutes);
 app.use("/api/projects/:projectId/requirements", requirementRoutes);

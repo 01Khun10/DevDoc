@@ -4,7 +4,7 @@ import { useTheme } from "../../context/ThemeContext";
 import BackButton from "./BackButton";
 import Breadcrumb from "./Breadcrumb";
 import ProfileMenu from "./ProfileMenu";
-import SearchPlaceholder from "./SearchPlaceholder";
+import GlobalSearch from "../GlobalSearch";
 
 const SunIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4">
@@ -95,7 +95,7 @@ function TopBar() {
 
         {/* Right: Search + Actions */}
         <div className="flex min-w-0 flex-1 items-center justify-end gap-2" ref={menuRef}>
-          <SearchPlaceholder />
+          <GlobalSearch />
 
           <div className="flex shrink-0 items-center gap-1">
             {/* Bell */}
