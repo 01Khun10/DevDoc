@@ -10,5 +10,6 @@ router.get("/", useCaseController.list);
 router.post("/", useCaseController.create);
 router.get("/:useCaseId", useCaseController.get);
 router.put("/:useCaseId", useCaseController.update);
+router.delete("/:useCaseId", useCaseController.remove);
 
 module.exports = router;

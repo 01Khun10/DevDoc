@@ -11,7 +11,8 @@ const {
   createRequirementFromSection,
   getRequirements,
   getRequirementById,
-  updateRequirement
+  updateRequirement,
+  deleteRequirement
 } = require("../services/requirementService");
 const { sendError, sendUnexpectedError } = require("../utils/httpErrors");
 
@@ -123,10 +124,29 @@ async function update(req, res) {
   }
 }
 
+async function remove(req, res) {
+  try {
+    const result = await deleteRequirement(
+      req.user.id,
+      req.params.projectId,
+      req.params.requirementId
+    );
+
+    return res.status(200).json(result);
+  } catch (error) {
+    if (error.code === REQUIREMENT_NOT_FOUND) {
+      return sendError(res, 404, "Requirement not found");
+    }
+
+    return sendUnexpectedError(res, error, "requirementController.remove");
+  }
+}
+
 module.exports = {
   list,
   create,
   createFromSection,
   get,
-  update
+  update,
+  remove
 };

@@ -56,10 +56,20 @@ async function updateRequirement(projectId, requirementId, input) {
   return response.requirement;
 }
 
+async function deleteRequirement(projectId, requirementId) {
+  return apiRequest(
+    `/api/projects/${encodeURIComponent(projectId)}/requirements/${encodeURIComponent(
+      requirementId
+    )}`,
+    { method: "DELETE" }
+  );
+}
+
 export {
   listRequirements,
   createRequirement,
   createRequirementFromSection,
   getRequirement,
-  updateRequirement
+  updateRequirement,
+  deleteRequirement
 };

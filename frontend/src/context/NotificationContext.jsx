@@ -18,7 +18,8 @@ function NotificationProvider({ children }) {
         tone: options.tone || "info"
       };
 
-      setToasts((currentToasts) => [...currentToasts, toast]);
+      // Stack up to 3 — oldest auto-removed.
+      setToasts((currentToasts) => [...currentToasts, toast].slice(-3));
 
       window.setTimeout(() => {
         dismiss(id);

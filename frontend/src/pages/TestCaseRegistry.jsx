@@ -1,6 +1,8 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
-import LoadingSpinner from "../components/LoadingSpinner";
+import InlineBadgeSelect from "../components/InlineBadgeSelect";
+import { RegistryControls, sortAndSearch } from "../components/RegistryControls";
+import { SkeletonCard } from "../components/ui";
 import { useNotify } from "../context/NotificationContext";
 import { useProject } from "../context/ProjectContext";
 import {
@@ -31,6 +33,8 @@ function TestCaseRegistry() {
   const [isDeletingId, setIsDeletingId] = useState("");
   const [searchParams] = useSearchParams();
   const highlightId = searchParams.get("highlight") || "";
+  const [sort, setSort] = useState("newest");
+  const [search, setSearch] = useState("");
   const { data: testCases = [], isLoading, error, refetch } = useTestCases(id);
   const createMutation = useCreateTestCase(id);
   const updateMutation = useUpdateTestCase(id);
@@ -38,6 +42,11 @@ function TestCaseRegistry() {
   useAuthGuard(error, createMutation.error, updateMutation.error, deleteMutation.error);
   const errorType = error ? (error.status === 404 ? "not-found" : "load-error") : "";
   const isSubmitting = createMutation.isPending;
+
+  const visibleTestCases = useMemo(
+    () => sortAndSearch(testCases, { sort, search }),
+    [testCases, sort, search]
+  );
 
   // Validation deep link: scroll the highlighted test case into view with a 2.5s glow.
   useEffect(() => {
@@ -97,7 +106,17 @@ function TestCaseRegistry() {
     }
   }
 
-  if (isLoading) return <LoadingSpinner fullScreen label="Loading test cases..." />;
+  if (isLoading) {
+    return (
+      <main className="min-h-screen px-6 py-8" style={{ backgroundColor: "var(--devdoc-bg)" }}>
+        <div className="mx-auto grid max-w-5xl gap-3">
+          <SkeletonCard lines={2} />
+          <SkeletonCard lines={3} />
+          <SkeletonCard lines={3} />
+        </div>
+      </main>
+    );
+  }
 
   if (errorType === "not-found") {
     return (
@@ -178,11 +197,14 @@ function TestCaseRegistry() {
         </section>
 
         <section>
-          <div className="mb-4 flex items-end justify-between">
-            <h2 className="font-headline text-lg font-extrabold">Test cases</h2>
-            <span className="text-sm font-semibold" style={{ color: "var(--devdoc-muted)" }}>
-              {testCases.length} total
-            </span>
+          <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h2 className="font-headline text-lg font-extrabold">Test cases</h2>
+              <span className="text-sm font-semibold" style={{ color: "var(--devdoc-muted)" }}>
+                Showing {visibleTestCases.length} of {testCases.length}
+              </span>
+            </div>
+            <RegistryControls sort={sort} onSortChange={setSort} search={search} onSearchChange={setSearch} />
           </div>
 
           {testCases.length === 0 ? (
@@ -197,7 +219,7 @@ function TestCaseRegistry() {
             </div>
           ) : (
             <div className="grid gap-3">
-              {testCases.map((testCase) => (
+              {visibleTestCases.map((testCase) => (
                 <article
                   key={testCase.id}
                   id={`artifact-${testCase.id}`}
@@ -211,16 +233,12 @@ function TestCaseRegistry() {
                     <div className="min-w-0">
                       <div className="flex flex-wrap items-center gap-2">
                         <span className="text-sm font-bold" style={{ color: "var(--devdoc-primary)" }}>{testCase.code}</span>
-                        <span
-                          className="rounded-md px-2 py-0.5 text-xs font-bold uppercase"
-                          style={{
-                            backgroundColor: "var(--devdoc-surface-muted)",
-                            border: "1px solid var(--devdoc-border)",
-                            color: STATUS_COLORS[testCase.status] || "var(--devdoc-muted)"
-                          }}
-                        >
-                          {testCase.status || "DRAFT"}
-                        </span>
+                        <InlineBadgeSelect
+                          value={testCase.status || "DRAFT"}
+                          options={STATUSES}
+                          badgeStyle={{ color: STATUS_COLORS[testCase.status] || "var(--devdoc-muted)" }}
+                          onSelect={(next) => handleStatusChange(testCase, next)}
+                        />
                       </div>
                       <h3 className="mt-2 text-sm font-semibold" style={{ color: "var(--devdoc-text)" }}>{testCase.title}</h3>
                       {testCase.description ? (
@@ -233,15 +251,6 @@ function TestCaseRegistry() {
                       ) : null}
                     </div>
                     <div className="flex shrink-0 items-center gap-2">
-                      <select
-                        className="devdoc-input py-1.5 text-xs"
-                        value={testCase.status || "DRAFT"}
-                        onChange={(e) => handleStatusChange(testCase, e.target.value)}
-                      >
-                        {STATUSES.map((status) => (
-                          <option key={status} value={status}>{status}</option>
-                        ))}
-                      </select>
                       <button
                         className="rounded-lg px-3 py-1.5 text-xs font-bold transition disabled:opacity-40"
                         style={{

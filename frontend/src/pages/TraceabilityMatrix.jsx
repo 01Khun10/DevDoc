@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
-import LoadingSpinner from "../components/LoadingSpinner";
+import { SkeletonCard } from "../components/ui";
 import TraceabilityGrid from "../components/TraceabilityGrid";
 import TraceabilityGraph from "../components/TraceabilityGraph";
 import TraceabilityLinkForm from "../components/TraceabilityLinkForm";
@@ -277,7 +277,79 @@ function TraceabilityMatrix() {
     }
   }
 
-  if (isLoading) return <LoadingSpinner fullScreen label="Loading traceability..." />;
+  if (isLoading) {
+    return (
+      <main className="min-h-screen px-6 py-8" style={{ backgroundColor: "var(--devdoc-bg)" }}>
+        <div className="mx-auto grid max-w-6xl gap-3">
+          <SkeletonCard lines={2} />
+          <SkeletonCard lines={5} />
+        </div>
+      </main>
+    );
+  }
+
+  const hasAnyArtifact =
+    businessObjectives.length > 0 ||
+    useCases.length > 0 ||
+    requirements.length > 0 ||
+    documentSections.length > 0 ||
+    designElements.length > 0 ||
+    testCases.length > 0;
+
+  if (!errorType && !hasAnyArtifact) {
+    return (
+      <main className="flex min-h-screen items-center justify-center px-6" style={{ backgroundColor: "var(--devdoc-bg)", color: "var(--devdoc-text)" }}>
+        <div className="devdoc-card-border w-full max-w-2xl p-10 text-center">
+          <h1 className="font-headline text-2xl font-extrabold">Build your traceability chain</h1>
+          <p className="mx-auto mt-2 max-w-md text-sm leading-6" style={{ color: "var(--devdoc-muted)" }}>
+            Nothing to link yet. Follow these steps, then come back to connect everything.
+          </p>
+          <div className="mt-8 flex flex-col items-center gap-2 sm:flex-row sm:justify-center sm:gap-0">
+            {[
+              ["1", "Add use cases", `/projects/${id}/use-cases`],
+              ["2", "Add requirements", `/projects/${id}/requirements`],
+              ["3", "Link them here", null]
+            ].map(([step, label, href], index) => (
+              <div key={step} className="flex items-center">
+                {index > 0 ? (
+                  <span className="mx-3 hidden text-lg sm:inline" style={{ color: "var(--devdoc-muted)" }}>→</span>
+                ) : null}
+                {href ? (
+                  <button
+                    type="button"
+                    className="flex items-center gap-2 rounded-xl border px-4 py-3 text-sm font-bold transition hover:-translate-y-0.5"
+                    style={{ borderColor: "var(--devdoc-border)", backgroundColor: "var(--devdoc-surface)" }}
+                    onClick={() => navigate(href)}
+                  >
+                    <span
+                      className="flex h-6 w-6 items-center justify-center rounded-full text-xs font-black"
+                      style={{ backgroundColor: "var(--devdoc-primary-soft)", color: "var(--devdoc-primary)" }}
+                    >
+                      {step}
+                    </span>
+                    {label}
+                  </button>
+                ) : (
+                  <div
+                    className="flex items-center gap-2 rounded-xl border border-dashed px-4 py-3 text-sm font-bold"
+                    style={{ borderColor: "var(--devdoc-border)", color: "var(--devdoc-muted)" }}
+                  >
+                    <span
+                      className="flex h-6 w-6 items-center justify-center rounded-full text-xs font-black"
+                      style={{ backgroundColor: "var(--devdoc-surface-muted)" }}
+                    >
+                      {step}
+                    </span>
+                    {label}
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </main>
+    );
+  }
 
   if (errorType === "not-found") {
     return (

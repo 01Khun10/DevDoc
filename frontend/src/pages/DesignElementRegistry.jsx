@@ -1,12 +1,15 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
-import LoadingSpinner from "../components/LoadingSpinner";
+import InlineBadgeSelect from "../components/InlineBadgeSelect";
+import { RegistryControls, sortAndSearch } from "../components/RegistryControls";
+import { SkeletonCard } from "../components/ui";
 import { useNotify } from "../context/NotificationContext";
 import { useProject } from "../context/ProjectContext";
 import {
   useCreateDesignElement,
   useDeleteDesignElement,
-  useDesignElements
+  useDesignElements,
+  useUpdateDesignElement
 } from "../api/designElements";
 import useAuthGuard from "../api/useAuthGuard";
 
@@ -22,10 +25,18 @@ function DesignElementRegistry() {
   const [isDeletingId, setIsDeletingId] = useState("");
   const [searchParams] = useSearchParams();
   const highlightId = searchParams.get("highlight") || "";
+  const [sort, setSort] = useState("newest");
+  const [search, setSearch] = useState("");
   const { data: designElements = [], isLoading, error, refetch } = useDesignElements(id);
   const createMutation = useCreateDesignElement(id);
+  const updateMutation = useUpdateDesignElement(id);
   const deleteMutation = useDeleteDesignElement(id);
   useAuthGuard(error, createMutation.error, deleteMutation.error);
+
+  const visibleElements = useMemo(
+    () => sortAndSearch(designElements, { sort, search }),
+    [designElements, sort, search]
+  );
   const errorType = error ? (error.status === 404 ? "not-found" : "load-error") : "";
   const isSubmitting = createMutation.isPending;
 
@@ -78,7 +89,17 @@ function DesignElementRegistry() {
     }
   }
 
-  if (isLoading) return <LoadingSpinner fullScreen label="Loading design elements..." />;
+  if (isLoading) {
+    return (
+      <main className="min-h-screen px-6 py-8" style={{ backgroundColor: "var(--devdoc-bg)" }}>
+        <div className="mx-auto grid max-w-5xl gap-3">
+          <SkeletonCard lines={2} />
+          <SkeletonCard lines={3} />
+          <SkeletonCard lines={3} />
+        </div>
+      </main>
+    );
+  }
 
   if (errorType === "not-found") {
     return (
@@ -164,11 +185,14 @@ function DesignElementRegistry() {
         </section>
 
         <section>
-          <div className="mb-4 flex items-end justify-between">
-            <h2 className="font-headline text-lg font-extrabold">Design elements</h2>
-            <span className="text-sm font-semibold" style={{ color: "var(--devdoc-muted)" }}>
-              {designElements.length} total
-            </span>
+          <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h2 className="font-headline text-lg font-extrabold">Design elements</h2>
+              <span className="text-sm font-semibold" style={{ color: "var(--devdoc-muted)" }}>
+                Showing {visibleElements.length} of {designElements.length}
+              </span>
+            </div>
+            <RegistryControls sort={sort} onSortChange={setSort} search={search} onSearchChange={setSearch} />
           </div>
 
           {designElements.length === 0 ? (
@@ -183,7 +207,7 @@ function DesignElementRegistry() {
             </div>
           ) : (
             <div className="grid gap-3">
-              {designElements.map((element) => (
+              {visibleElements.map((element) => (
                 <article
                   key={element.id}
                   id={`artifact-${element.id}`}
@@ -197,14 +221,18 @@ function DesignElementRegistry() {
                     <div className="min-w-0">
                       <div className="flex flex-wrap items-center gap-2">
                         <span className="text-sm font-bold" style={{ color: "var(--devdoc-primary)" }}>{element.code}</span>
-                        {element.elementType ? (
-                          <span
-                            className="rounded-md px-2 py-0.5 text-xs font-semibold"
-                            style={{ backgroundColor: "var(--devdoc-surface-muted)", border: "1px solid var(--devdoc-border)", color: "var(--devdoc-muted)" }}
-                          >
-                            {element.elementType}
-                          </span>
-                        ) : null}
+                        <InlineBadgeSelect
+                          value={element.elementType || ""}
+                          options={["", ...ELEMENT_TYPES]}
+                          placeholder="No type"
+                          onSelect={(next) =>
+                            updateMutation
+                              .mutateAsync({ designElementId: element.id, elementType: next || null })
+                              .catch((mutationError) =>
+                                notify(mutationError.message || "Could not update design element.", { tone: "error" })
+                              )
+                          }
+                        />
                       </div>
                       <h3 className="mt-2 text-sm font-semibold" style={{ color: "var(--devdoc-text)" }}>{element.title}</h3>
                       {element.description ? (

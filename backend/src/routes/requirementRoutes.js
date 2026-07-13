@@ -11,5 +11,6 @@ router.post("/", requirementController.create);
 router.post("/from-section", requirementController.createFromSection);
 router.get("/:requirementId", requirementController.get);
 router.put("/:requirementId", requirementController.update);
+router.delete("/:requirementId", requirementController.remove);
 
 module.exports = router;

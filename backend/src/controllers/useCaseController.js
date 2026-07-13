@@ -8,7 +8,8 @@ const {
   createUseCase,
   getUseCases,
   getUseCaseById,
-  updateUseCase
+  updateUseCase,
+  deleteUseCase
 } = require("../services/useCaseService");
 const { sendError, sendUnexpectedError } = require("../utils/httpErrors");
 
@@ -88,9 +89,28 @@ async function update(req, res) {
   }
 }
 
+async function remove(req, res) {
+  try {
+    const result = await deleteUseCase(
+      req.user.id,
+      req.params.projectId,
+      req.params.useCaseId
+    );
+
+    return res.status(200).json(result);
+  } catch (error) {
+    if (error.code === USE_CASE_NOT_FOUND) {
+      return sendError(res, 404, "Use case not found");
+    }
+
+    return sendUnexpectedError(res, error, "useCaseController.remove");
+  }
+}
+
 module.exports = {
   list,
   create,
   get,
-  update
+  update,
+  remove
 };

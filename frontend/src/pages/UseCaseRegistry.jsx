@@ -1,18 +1,24 @@
-import { useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import CreateUseCaseForm from "../components/CreateUseCaseForm";
-import LoadingSpinner from "../components/LoadingSpinner";
 import UseCaseCard from "../components/UseCaseCard";
+import { RegistryControls, sortAndSearch } from "../components/RegistryControls";
+import { SkeletonCard } from "../components/ui";
+import useKeyboardNav from "../hooks/useKeyboardNav";
+import { useNotify } from "../context/NotificationContext";
 import { useProject } from "../context/ProjectContext";
-import { useCreateUseCase, useUpdateUseCase, useUseCases } from "../api/useCases";
+import { useCreateUseCase, useDeleteUseCase, useUpdateUseCase, useUseCases } from "../api/useCases";
 import useAuthGuard from "../api/useAuthGuard";
 
 function UseCaseRegistry() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { project } = useProject();
+  const { notify } = useNotify();
   const [searchParams] = useSearchParams();
   const highlightId = searchParams.get("highlight") || "";
+  const [sort, setSort] = useState("newest");
+  const [search, setSearch] = useState("");
   const { data: useCases = [], isLoading, error, refetch } = useUseCases(id);
   useAuthGuard(error);
 
@@ -32,7 +38,13 @@ function UseCaseRegistry() {
   }, [highlightId, isLoading]);
   const createMutation = useCreateUseCase(id);
   const updateMutation = useUpdateUseCase(id);
+  const deleteMutation = useDeleteUseCase(id);
   const errorType = error ? (error.status === 404 ? "not-found" : "load-error") : "";
+
+  const visibleUseCases = useMemo(
+    () => sortAndSearch(useCases, { sort, search }),
+    [useCases, sort, search]
+  );
 
   async function handleCreateUseCase(input) {
     return createMutation.mutateAsync(input);
@@ -44,7 +56,33 @@ function UseCaseRegistry() {
     return updateMutation.mutateAsync({ useCaseId, ...input });
   }
 
-  if (isLoading) return <LoadingSpinner fullScreen label="Loading use cases..." />;
+  async function handleDeleteUseCase(useCase) {
+    if (!window.confirm(`Delete use case ${useCase.code}?`)) return;
+    try {
+      await deleteMutation.mutateAsync(useCase.id);
+      notify(`Use case ${useCase.code} deleted.`, { tone: "success" });
+    } catch (mutationError) {
+      notify(mutationError.message || "Could not delete use case.", { tone: "error" });
+    }
+  }
+
+  const { focusedId } = useKeyboardNav(visibleUseCases, {
+    onEdit: (useCase) =>
+      document.getElementById(`artifact-${useCase.id}`)?.querySelector("input, textarea")?.focus(),
+    onDelete: handleDeleteUseCase
+  });
+
+  if (isLoading) {
+    return (
+      <main className="min-h-screen px-6 py-8" style={{ backgroundColor: "var(--devdoc-bg)" }}>
+        <div className="mx-auto grid max-w-5xl gap-3">
+          <SkeletonCard lines={2} />
+          <SkeletonCard lines={3} />
+          <SkeletonCard lines={3} />
+        </div>
+      </main>
+    );
+  }
 
   if (errorType === "not-found") {
     return (
@@ -113,6 +151,7 @@ function UseCaseRegistry() {
 
         {/* Create form */}
         <section
+          id="create-use-case"
           className="mb-6 rounded-xl border p-5"
           style={{ borderColor: "var(--devdoc-border)", backgroundColor: "var(--devdoc-surface)" }}
         >
@@ -122,11 +161,14 @@ function UseCaseRegistry() {
 
         {/* Use case list */}
         <section>
-          <div className="mb-4 flex items-center justify-between">
-            <h2 className="font-headline text-lg font-extrabold">Use cases</h2>
-            <span className="text-sm" style={{ color: "var(--devdoc-muted)" }}>
-              {useCases.length} total
-            </span>
+          <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <h2 className="font-headline text-lg font-extrabold">Use cases</h2>
+              <span className="text-sm" style={{ color: "var(--devdoc-muted)" }}>
+                Showing {visibleUseCases.length} of {useCases.length}
+              </span>
+            </div>
+            <RegistryControls sort={sort} onSortChange={setSort} search={search} onSearchChange={setSearch} />
           </div>
 
           {useCases.length === 0 ? (
@@ -146,10 +188,13 @@ function UseCaseRegistry() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.75" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
                 </svg>
               </div>
-              <p className="font-headline text-lg font-extrabold">No use cases yet</p>
-              <p className="mt-2 text-sm" style={{ color: "var(--devdoc-muted)" }}>
-                Start by describing the first user goal or scenario.
+              <p className="font-headline text-lg font-extrabold">No use cases yet.</p>
+              <p className="mx-auto mt-2 max-w-md text-sm leading-6" style={{ color: "var(--devdoc-muted)" }}>
+                Use cases describe how actors interact with the system. Add them before registering requirements.
               </p>
+              <div className="mt-6">
+                <a className="devdoc-gradient-button" href="#create-use-case">Add Use Case</a>
+              </div>
               <div
                 className="mx-auto mt-6 max-w-xs rounded-xl border p-4 text-left text-xs"
                 style={{ borderColor: "var(--devdoc-border)", backgroundColor: "var(--devdoc-surface-muted)" }}
@@ -162,11 +207,16 @@ function UseCaseRegistry() {
             </div>
           ) : (
             <div className="grid gap-3">
-              {useCases.map((useCase) => (
+              {visibleUseCases.map((useCase) => (
                 <div
                   key={useCase.id}
                   id={`artifact-${useCase.id}`}
                   className="rounded-xl"
+                  style={
+                    focusedId === useCase.id
+                      ? { outline: "2px solid var(--devdoc-primary)", outlineOffset: "3px" }
+                      : undefined
+                  }
                 >
                   <UseCaseCard useCase={useCase} onUpdate={handleUpdateUseCase} />
                 </div>

@@ -129,11 +129,43 @@ async function updateUseCase(ownerId, projectId, useCaseId, values) {
   });
 }
 
+async function deleteUseCase(ownerId, projectId, useCaseId) {
+  const existingUseCase = await prisma.useCase.findFirst({
+    where: {
+      id: useCaseId,
+      projectId,
+      project: { ownerId }
+    },
+    select: { id: true }
+  });
+
+  if (!existingUseCase) {
+    throw createUseCaseError(USE_CASE_NOT_FOUND, "Use case not found");
+  }
+
+  await prisma.$transaction([
+    // Traceability links are polymorphic (no FK), so clean them up explicitly.
+    prisma.traceabilityLink.deleteMany({
+      where: {
+        projectId,
+        OR: [
+          { sourceType: "USE_CASE", sourceId: existingUseCase.id },
+          { targetType: "USE_CASE", targetId: existingUseCase.id }
+        ]
+      }
+    }),
+    prisma.useCase.delete({ where: { id: existingUseCase.id } })
+  ]);
+
+  return { message: "Use case removed" };
+}
+
 module.exports = {
   PROJECT_NOT_FOUND,
   USE_CASE_NOT_FOUND,
   createUseCase,
   getUseCases,
   getUseCaseById,
-  updateUseCase
+  updateUseCase,
+  deleteUseCase
 };

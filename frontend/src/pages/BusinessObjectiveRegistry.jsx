@@ -1,5 +1,6 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { RegistryControls, sortAndSearch } from "../components/RegistryControls";
 import { useProject } from "../context/ProjectContext";
 import { useNotify } from "../context/NotificationContext";
 import {
@@ -100,6 +101,8 @@ function BusinessObjectiveRegistry() {
   const [showCreateForm, setShowCreateForm] = useState(false);
   const [editingId, setEditingId] = useState("");
   const [deletingId, setDeletingId] = useState("");
+  const [sort, setSort] = useState("newest");
+  const [search, setSearch] = useState("");
   const cardRefs = useRef({});
 
   const { data: objectives = [], isLoading, error, refetch } = useBusinessObjectives(id);
@@ -108,6 +111,11 @@ function BusinessObjectiveRegistry() {
   const updateMutation = useUpdateBusinessObjective(id);
   const deleteMutation = useDeleteBusinessObjective(id);
   const errorType = error ? (error.status === 404 ? "not-found" : "load-error") : "";
+
+  const visibleObjectives = useMemo(
+    () => sortAndSearch(objectives, { sort, search }),
+    [objectives, sort, search]
+  );
 
   // Validation deep link: scroll the highlighted objective into view with a glow.
   useEffect(() => {
@@ -256,7 +264,10 @@ function BusinessObjectiveRegistry() {
           </div>
         ) : (
           <div className="grid gap-3">
-            {objectives.map((objective) => (
+            <div className="flex justify-end">
+              <RegistryControls sort={sort} onSortChange={setSort} search={search} onSearchChange={setSearch} />
+            </div>
+            {visibleObjectives.map((objective) => (
               <div
                 key={objective.id}
                 id={`artifact-${objective.id}`}

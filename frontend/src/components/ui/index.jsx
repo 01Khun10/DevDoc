@@ -128,6 +128,32 @@ export function Skeleton({ className = "", style }) {
   );
 }
 
+const SKELETON_LINE_WIDTHS = ["w-3/4", "w-full", "w-5/6", "w-2/3", "w-1/2"];
+
+export function SkeletonText({ width = "w-32", className = "" }) {
+  return <div className={`devdoc-skeleton h-4 ${width} ${className}`} aria-hidden="true" />;
+}
+
+export function SkeletonCard({ lines = 3 }) {
+  return (
+    <div
+      className="rounded-xl border p-5"
+      style={{ borderColor: "var(--devdoc-border)", backgroundColor: "var(--devdoc-surface)" }}
+      aria-hidden="true"
+    >
+      <div className="flex gap-2">
+        <div className="devdoc-skeleton h-6 w-16 !rounded-full" />
+        <div className="devdoc-skeleton h-6 w-20 !rounded-full" />
+      </div>
+      <div className="mt-4 grid gap-2.5">
+        {Array.from({ length: lines }).map((_, index) => (
+          <SkeletonText key={index} width={SKELETON_LINE_WIDTHS[index % SKELETON_LINE_WIDTHS.length]} />
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export function PageSkeleton() {
   return (
     <main

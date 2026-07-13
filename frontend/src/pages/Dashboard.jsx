@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import CreateProjectForm from "../components/CreateProjectForm";
-import LoadingSpinner from "../components/LoadingSpinner";
 import ProjectCard from "../components/ProjectCard";
+import { SkeletonCard } from "../components/ui";
 import useAuth from "../hooks/useAuth";
 import { useProjects } from "../api/projects";
 import useAuthGuard from "../api/useAuthGuard";
@@ -167,7 +167,14 @@ function Dashboard() {
         ) : null}
 
         {/* Loading */}
-        {isLoadingProjects ? <LoadingSpinner label="Loading projects..." /> : null}
+        {isLoadingProjects ? (
+          <div className="grid gap-3 sm:grid-cols-2">
+            <SkeletonCard lines={3} />
+            <SkeletonCard lines={3} />
+            <SkeletonCard lines={3} />
+            <SkeletonCard lines={3} />
+          </div>
+        ) : null}
 
         {/* Error */}
         {!isLoadingProjects && loadError ? (
@@ -197,13 +204,15 @@ function Dashboard() {
               }}
             >
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" className="h-8 w-8">
-                <path d="M3 7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z" />
-                <path d="M3 7l9 6 9-6" />
+                <path d="M4.5 16.5c-1.5 1.26-2 5-2 5s3.74-.5 5-2c.71-.84.7-2.13-.09-2.91a2.18 2.18 0 0 0-2.91-.09z" />
+                <path d="M12 15l-3-3a22 22 0 0 1 2-3.95A12.88 12.88 0 0 1 22 2c0 2.72-.78 7.5-6 11a22.35 22.35 0 0 1-4 2z" />
+                <path d="M9 12H4s.55-3.03 2-4c1.62-1.08 5 0 5 0" />
+                <path d="M12 15v5s3.03-.55 4-2c1.08-1.62 0-5 0-5" />
               </svg>
             </div>
-            <h2 className="font-headline mt-5 text-xl font-extrabold">Welcome to DevDoc</h2>
+            <h2 className="font-headline mt-5 text-xl font-extrabold">Create your first DevDoc project</h2>
             <p className="mt-3 max-w-md text-sm leading-6" style={{ color: "var(--devdoc-muted)" }}>
-              You have no projects yet. Create your first project to start managing documentation, requirements, and traceability.
+              Structure your software documentation from use cases to verified requirements.
             </p>
             <button
               className="devdoc-gradient-button mt-6 gap-1.5"
@@ -213,7 +222,7 @@ function Dashboard() {
               <svg viewBox="0 0 20 20" fill="currentColor" className="h-4 w-4">
                 <path d="M10.75 4.75a.75.75 0 0 0-1.5 0v4.5h-4.5a.75.75 0 0 0 0 1.5h4.5v4.5a.75.75 0 0 0 1.5 0v-4.5h4.5a.75.75 0 0 0 0-1.5h-4.5v-4.5Z" />
               </svg>
-              Create first project
+              New Project
             </button>
           </div>
         ) : null}

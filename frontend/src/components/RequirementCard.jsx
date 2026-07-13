@@ -1,4 +1,8 @@
 import { useEffect, useState } from "react";
+import InlineBadgeSelect from "./InlineBadgeSelect";
+
+const PRIORITY_OPTIONS = ["", "HIGH", "MEDIUM", "LOW"];
+const STATUS_OPTIONS = ["PROPOSED", "APPROVED", "IMPLEMENTED", "VERIFIED"];
 
 function formatDate(value) {
   if (!value) return "Unknown";
@@ -74,8 +78,22 @@ function RequirementCard({ requirement, onUpdate }) {
           <div className="flex flex-wrap gap-2">
             <Badge tone="teal">{requirement.code}</Badge>
             <Badge>{requirement.type}</Badge>
-            <Badge tone={requirement.priority === "HIGH" ? "amber" : "slate"}>{requirement.priority || "No priority"}</Badge>
-            <Badge>{requirement.status}</Badge>
+            <InlineBadgeSelect
+              value={requirement.priority || ""}
+              options={PRIORITY_OPTIONS}
+              placeholder="No priority"
+              badgeStyle={
+                requirement.priority === "HIGH"
+                  ? { backgroundColor: BADGE.amber.bg, border: `1px solid ${BADGE.amber.border}`, color: BADGE.amber.color }
+                  : {}
+              }
+              onSelect={(next) => onUpdate(requirement.id, { priority: next || null })}
+            />
+            <InlineBadgeSelect
+              value={requirement.status}
+              options={STATUS_OPTIONS}
+              onSelect={(next) => onUpdate(requirement.id, { status: next })}
+            />
           </div>
 
           <div className="mt-5 grid gap-4">

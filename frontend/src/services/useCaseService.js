@@ -38,4 +38,11 @@ async function updateUseCase(projectId, useCaseId, input) {
   return response.useCase;
 }
 
-export { listUseCases, createUseCase, getUseCase, updateUseCase };
+async function deleteUseCase(projectId, useCaseId) {
+  return apiRequest(
+    `/api/projects/${encodeURIComponent(projectId)}/use-cases/${encodeURIComponent(useCaseId)}`,
+    { method: "DELETE" }
+  );
+}
+
+export { listUseCases, createUseCase, getUseCase, updateUseCase, deleteUseCase };

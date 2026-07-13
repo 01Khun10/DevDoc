@@ -201,6 +201,37 @@ async function updateRequirement(ownerId, projectId, requirementId, values) {
   });
 }
 
+async function deleteRequirement(ownerId, projectId, requirementId) {
+  const existingRequirement = await prisma.requirement.findFirst({
+    where: {
+      id: requirementId,
+      projectId,
+      project: { ownerId }
+    },
+    select: { id: true }
+  });
+
+  if (!existingRequirement) {
+    throw createRequirementError(REQUIREMENT_NOT_FOUND, "Requirement not found");
+  }
+
+  await prisma.$transaction([
+    // Traceability links are polymorphic (no FK), so clean them up explicitly.
+    prisma.traceabilityLink.deleteMany({
+      where: {
+        projectId,
+        OR: [
+          { sourceType: "REQUIREMENT", sourceId: existingRequirement.id },
+          { targetType: "REQUIREMENT", targetId: existingRequirement.id }
+        ]
+      }
+    }),
+    prisma.requirement.delete({ where: { id: existingRequirement.id } })
+  ]);
+
+  return { message: "Requirement removed" };
+}
+
 module.exports = {
   PROJECT_NOT_FOUND,
   REQUIREMENT_NOT_FOUND,
@@ -209,5 +240,6 @@ module.exports = {
   createRequirementFromSection,
   getRequirements,
   getRequirementById,
-  updateRequirement
+  updateRequirement,
+  deleteRequirement
 };

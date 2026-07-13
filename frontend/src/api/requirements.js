@@ -2,6 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   createRequirement,
   createRequirementFromSection,
+  deleteRequirement,
   listRequirements,
   updateRequirement
 } from "../services/requirementService";
@@ -33,6 +34,19 @@ export function useCreateRequirementFromSection(projectId, options = {}) {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (input) => createRequirementFromSection(projectId, input),
+    ...options,
+    onSuccess: (...args) => {
+      queryClient.invalidateQueries({ queryKey: ["projects", projectId, "requirements"] });
+      queryClient.invalidateQueries({ queryKey: ["projects", projectId, "traceability"] });
+      options.onSuccess?.(...args);
+    }
+  });
+}
+
+export function useDeleteRequirement(projectId, options = {}) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (requirementId) => deleteRequirement(projectId, requirementId),
     ...options,
     onSuccess: (...args) => {
       queryClient.invalidateQueries({ queryKey: ["projects", projectId, "requirements"] });
