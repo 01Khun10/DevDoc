@@ -467,6 +467,17 @@ body {
   border-radius: 6px;
 }
 
+/* Landing hero: traceability chain draws itself, then pulses. */
+@keyframes devdoc-chain-draw {
+  from { stroke-dashoffset: 60; }
+  to   { stroke-dashoffset: 0; }
+}
+
+.devdoc-chain-link {
+  stroke-dasharray: 6 4;
+  animation: devdoc-chain-draw 3s linear infinite;
+}
+
 /* legacy compat */
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(8px); }
