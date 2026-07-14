@@ -50,3 +50,8 @@ Desktop.ini
 # Plan docs (deliberately untracked)
 DEVDOC_UPGRADE_PLAN*.md
 MANUAL_CHECKLIST.md
+
+.secrets/
+backend/.env
+**/node_modules/
+frontend/dist/
