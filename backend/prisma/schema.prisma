@@ -106,6 +106,9 @@ model Project {
   shareTokens        ShareToken[]
   createdAt          DateTime            @default(now())
   updatedAt          DateTime            @updatedAt
+
+  // Backs getProjects(ownerId), which orders by createdAt desc.
+  @@index([ownerId, createdAt])
 }
 
 model ValidationProfile {
@@ -177,6 +180,8 @@ model Document {
   sections          DocumentSection[]
   createdAt         DateTime          @default(now())
   updatedAt         DateTime          @updatedAt
+
+  @@index([projectId])
 }
 
 model DocumentSection {
@@ -273,16 +278,16 @@ model TestCase {
 }
 
 model TraceabilityLink {
-  id         String        @id @default(cuid())
-  projectId  String
-  sourceType TraceableType
-  sourceId   String
-  targetType TraceableType
-  targetId   String
+  id             String        @id @default(cuid())
+  projectId      String
+  sourceType     TraceableType
+  sourceId       String
+  targetType     TraceableType
+  targetId       String
   linkType       String
-  lastVerifiedAt DateTime  @default(now())
-  project        Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
-  createdAt      DateTime  @default(now())
+  lastVerifiedAt DateTime      @default(now())
+  project        Project       @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  createdAt      DateTime      @default(now())
 
   @@unique([projectId, sourceType, sourceId, targetType, targetId, linkType])
 }
@@ -317,6 +322,8 @@ model ValidationRun {
   completedAt    DateTime?
   project        Project             @relation(fields: [projectId], references: [id], onDelete: Cascade)
   results        ValidationResult[]
+
+  @@index([projectId])
 }
 
 model ValidationResult {
@@ -330,6 +337,8 @@ model ValidationResult {
   targetId        String?
   validationRun   ValidationRun      @relation(fields: [validationRunId], references: [id], onDelete: Cascade)
   createdAt       DateTime           @default(now())
+
+  @@index([validationRunId])
 }
 
 model ShareToken {
@@ -339,6 +348,8 @@ model ShareToken {
   expiresAt DateTime?
   project   Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
   createdAt DateTime  @default(now())
+
+  @@index([projectId])
 }
 
 model ActivityLog {
@@ -351,4 +362,7 @@ model ActivityLog {
   metadata   Json?
   project    Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
   createdAt  DateTime @default(now())
+
+  // Backs listActivityLogs: filter by project, newest first.
+  @@index([projectId, createdAt])
 }
