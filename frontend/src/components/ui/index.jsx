@@ -109,9 +109,11 @@ export function Card({ interactive = false, header, footer, className = "", styl
 }
 
 // Shared label/helper/error chrome for Input, Textarea, and Select.
-function Field({ id, label, helper, error, required, children }) {
+// `className` on the public components targets the control itself, so layout
+// classes for the wrapper (grid spans and the like) come in via fieldClassName.
+function Field({ id, label, helper, error, required, className = "", children }) {
   return (
-    <div className="grid gap-1.5">
+    <div className={`grid gap-1.5 ${className}`}>
       {label ? (
         <label htmlFor={id} className="text-xs font-bold" style={{ color: "var(--devdoc-text-secondary)" }}>
           {label}
@@ -143,12 +145,12 @@ function describedBy(id, helper, error) {
   return undefined;
 }
 
-export function Input({ label, helper, error, required, className = "", style, id, ...props }) {
+export function Input({ label, helper, error, required, fieldClassName = "", className = "", style, id, ...props }) {
   const autoId = useId();
   const fieldId = id || autoId;
 
   return (
-    <Field id={fieldId} label={label} helper={helper} error={error} required={required}>
+    <Field id={fieldId} label={label} helper={helper} error={error} required={required} className={fieldClassName}>
       <input
         id={fieldId}
         className={`devdoc-input w-full ${className}`}
@@ -162,12 +164,12 @@ export function Input({ label, helper, error, required, className = "", style, i
   );
 }
 
-export function Textarea({ label, helper, error, required, rows = 4, className = "", style, id, ...props }) {
+export function Textarea({ label, helper, error, required, fieldClassName = "", rows = 4, className = "", style, id, ...props }) {
   const autoId = useId();
   const fieldId = id || autoId;
 
   return (
-    <Field id={fieldId} label={label} helper={helper} error={error} required={required}>
+    <Field id={fieldId} label={label} helper={helper} error={error} required={required} className={fieldClassName}>
       <textarea
         id={fieldId}
         rows={rows}
@@ -182,12 +184,12 @@ export function Textarea({ label, helper, error, required, rows = 4, className =
   );
 }
 
-export function Select({ label, helper, error, required, options, className = "", style, id, children, ...props }) {
+export function Select({ label, helper, error, required, fieldClassName = "", options, className = "", style, id, children, ...props }) {
   const autoId = useId();
   const fieldId = id || autoId;
 
   return (
-    <Field id={fieldId} label={label} helper={helper} error={error} required={required}>
+    <Field id={fieldId} label={label} helper={helper} error={error} required={required} className={fieldClassName}>
       <select
         id={fieldId}
         className={`devdoc-select w-full ${className}`}

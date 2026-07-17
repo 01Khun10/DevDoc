@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNotify } from "../context/NotificationContext";
 import { createProject } from "../services/projectService";
+import { Button, Input, Textarea } from "./ui";
 
 const profileOptions = [
   {
@@ -68,37 +69,26 @@ function CreateProjectForm({ onCreated, onCancel }) {
       onSubmit={handleSubmit}
     >
       <div className="grid gap-4">
-        <label className="block">
-          <span className="devdoc-label">Project name</span>
-          <input
-            className="devdoc-soft-input mt-2 w-full"
-            type="text"
-            autoFocus
-            value={name}
-            onChange={(event) => setName(event.target.value)}
-            maxLength={200}
-            placeholder="Example: Flight Booking API"
-          />
-          {fieldErrors.name ? (
-            <span className="mt-2 block text-sm font-medium text-[var(--devdoc-error)]">{fieldErrors.name}</span>
-          ) : null}
-        </label>
+        <Input
+          label="Project name"
+          error={fieldErrors.name}
+          type="text"
+          autoFocus
+          value={name}
+          onChange={(event) => setName(event.target.value)}
+          maxLength={200}
+          placeholder="Example: Flight Booking API"
+        />
 
-        <label className="block">
-          <span className="devdoc-label">Description</span>
-          <textarea
-            className="devdoc-soft-input mt-2 min-h-28 w-full"
-            value={description}
-            onChange={(event) => setDescription(event.target.value)}
-            maxLength={5000}
-            placeholder="Describe the project goals, product scope, or documentation focus."
-          />
-          {fieldErrors.description ? (
-            <span className="mt-2 block text-sm font-medium text-[var(--devdoc-error)]">
-              {fieldErrors.description}
-            </span>
-          ) : null}
-        </label>
+        <Textarea
+          label="Description"
+          error={fieldErrors.description}
+          rows={4}
+          value={description}
+          onChange={(event) => setDescription(event.target.value)}
+          maxLength={5000}
+          placeholder="Describe the project goals, product scope, or documentation focus."
+        />
       </div>
 
       <section>
@@ -188,21 +178,12 @@ function CreateProjectForm({ onCreated, onCancel }) {
       ) : null}
 
       <div className="flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
-        <button
-          className="devdoc-button-secondary"
-          type="button"
-          onClick={onCancel}
-          disabled={isSubmitting}
-        >
+        <Button variant="secondary" type="button" onClick={onCancel} disabled={isSubmitting}>
           Cancel
-        </button>
-        <button
-          className="devdoc-gradient-button"
-          type="submit"
-          disabled={isSubmitting}
-        >
+        </Button>
+        <Button type="submit" loading={isSubmitting}>
           {isSubmitting ? "Creating..." : "Create project"}
-        </button>
+        </Button>
       </div>
     </form>
   );

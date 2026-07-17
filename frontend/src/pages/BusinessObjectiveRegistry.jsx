@@ -10,6 +10,7 @@ import {
   useUpdateBusinessObjective
 } from "../api/businessObjectives";
 import useAuthGuard from "../api/useAuthGuard";
+import { Button, Input, Textarea } from "../components/ui";
 
 const BO_TEAL = "var(--devdoc-artifact-bo)";
 
@@ -36,55 +37,34 @@ function ObjectiveForm({ initialValues, submitLabel, isPending, onSubmit, onCanc
 
   return (
     <form onSubmit={handleSubmit} className="grid gap-3">
-      <div>
-        <label className="devdoc-label mb-1.5 block">Title</label>
-        <input
-          className="w-full rounded-lg border px-3 py-2 text-sm outline-none"
-          style={{
-            borderColor: "var(--devdoc-border)",
-            backgroundColor: "var(--devdoc-bg)",
-            color: "var(--devdoc-text)"
-          }}
-          maxLength={200}
-          placeholder="e.g. Reduce documentation review time by 50%"
-          value={title}
-          onChange={(event) => setTitle(event.target.value)}
-        />
-      </div>
-      <div>
-        <label className="devdoc-label mb-1.5 block">Description (optional)</label>
-        <textarea
-          className="w-full rounded-lg border px-3 py-2 text-sm outline-none"
-          style={{
-            borderColor: "var(--devdoc-border)",
-            backgroundColor: "var(--devdoc-bg)",
-            color: "var(--devdoc-text)"
-          }}
-          maxLength={5000}
-          rows={3}
-          placeholder="Why does this goal matter, and how will you measure it?"
-          value={description}
-          onChange={(event) => setDescription(event.target.value)}
-        />
-      </div>
+      <Input
+        label="Title"
+        maxLength={200}
+        placeholder="e.g. Reduce documentation review time by 50%"
+        value={title}
+        onChange={(event) => setTitle(event.target.value)}
+      />
+      <Textarea
+        label="Description (optional)"
+        maxLength={5000}
+        rows={3}
+        placeholder="Why does this goal matter, and how will you measure it?"
+        value={description}
+        onChange={(event) => setDescription(event.target.value)}
+      />
       {formError ? (
         <p className="text-sm font-semibold" style={{ color: "var(--devdoc-danger)" }}>
           {formError}
         </p>
       ) : null}
       <div className="flex items-center gap-2">
-        <button className="devdoc-gradient-button" type="submit" disabled={isPending}>
+        <Button type="submit" loading={isPending}>
           {isPending ? "Saving..." : submitLabel}
-        </button>
+        </Button>
         {onCancel ? (
-          <button
-            className="rounded-lg border px-3 py-2 text-sm font-semibold"
-            style={{ borderColor: "var(--devdoc-border)", color: "var(--devdoc-muted)" }}
-            type="button"
-            onClick={onCancel}
-          >
+          <Button variant="secondary" type="button" onClick={onCancel}>
             Cancel
-          </button>
+          </Button>
         ) : null}
       </div>
     </form>

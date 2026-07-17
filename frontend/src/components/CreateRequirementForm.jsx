@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Button, Input, Select, Textarea } from "./ui";
 
 const initialValues = {
   type: "FR",
@@ -7,6 +8,18 @@ const initialValues = {
   priority: "",
   acceptanceCriteria: ""
 };
+
+const TYPE_OPTIONS = [
+  { value: "FR", label: "FR" },
+  { value: "NFR", label: "NFR" }
+];
+
+const PRIORITY_OPTIONS = [
+  { value: "", label: "No priority" },
+  { value: "HIGH", label: "HIGH" },
+  { value: "MEDIUM", label: "MEDIUM" },
+  { value: "LOW", label: "LOW" }
+];
 
 function CreateRequirementForm({ onCreate, onCreated }) {
   const [values, setValues] = useState(initialValues);
@@ -48,81 +61,78 @@ function CreateRequirementForm({ onCreate, onCreated }) {
       </div>
 
       <div className="grid gap-5 lg:grid-cols-2">
-        <label className="block">
-          <span className="devdoc-label">Type</span>
-          <p className="mt-1 text-xs leading-5" style={{ color: "var(--devdoc-muted)" }}>Choose FR for behavior or NFR for quality expectations.</p>
-          <select className="devdoc-select mt-2 w-full" value={values.type} onChange={(e) => updateField("type", e.target.value)}>
-            <option value="FR">FR</option>
-            <option value="NFR">NFR</option>
-          </select>
-          {fieldErrors.type ? <span className="mt-2 block text-sm" style={{ color: "var(--devdoc-error)" }}>{fieldErrors.type}</span> : null}
-        </label>
+        <Select
+          label="Type"
+          helper="Choose FR for behavior or NFR for quality expectations."
+          error={fieldErrors.type}
+          options={TYPE_OPTIONS}
+          value={values.type}
+          onChange={(e) => updateField("type", e.target.value)}
+        />
 
-        <label className="block">
-          <span className="devdoc-label">Priority</span>
-          <p className="mt-1 text-xs leading-5" style={{ color: "var(--devdoc-muted)" }}>Optional. High priority items should be reviewed first.</p>
-          <select className="devdoc-select mt-2 w-full" value={values.priority} onChange={(e) => updateField("priority", e.target.value)}>
-            <option value="">No priority</option>
-            <option value="HIGH">HIGH</option>
-            <option value="MEDIUM">MEDIUM</option>
-            <option value="LOW">LOW</option>
-          </select>
-          {fieldErrors.priority ? <span className="mt-2 block text-sm" style={{ color: "var(--devdoc-error)" }}>{fieldErrors.priority}</span> : null}
-        </label>
+        <Select
+          label="Priority"
+          helper="Optional. High priority items should be reviewed first."
+          error={fieldErrors.priority}
+          options={PRIORITY_OPTIONS}
+          value={values.priority}
+          onChange={(e) => updateField("priority", e.target.value)}
+        />
 
-        <label className="block lg:col-span-2">
-          <span className="devdoc-label">Title</span>
-          <input
-            className="devdoc-soft-input mt-2 w-full"
-            maxLength={200}
-            placeholder="Example: User can log in securely"
-            type="text"
-            value={values.title}
-            onChange={(e) => updateField("title", e.target.value)}
-          />
-          {fieldErrors.title ? <span className="mt-2 block text-sm" style={{ color: "var(--devdoc-error)" }}>{fieldErrors.title}</span> : null}
-        </label>
+        <Input
+          label="Title"
+          fieldClassName="lg:col-span-2"
+          error={fieldErrors.title}
+          maxLength={200}
+          placeholder="Example: User can log in securely"
+          type="text"
+          value={values.title}
+          onChange={(e) => updateField("title", e.target.value)}
+        />
 
-        <label className="block lg:col-span-2">
-          <span className="devdoc-label">Description</span>
-          <p className="mt-1 text-xs leading-5" style={{ color: "var(--devdoc-muted)" }}>Describe the requirement in simple, testable language.</p>
-          <textarea
-            className="devdoc-soft-input mt-2 min-h-28 w-full"
-            maxLength={5000}
-            placeholder="Describe the requirement in simple, testable language."
-            value={values.description}
-            onChange={(e) => updateField("description", e.target.value)}
-          />
-          {fieldErrors.description ? <span className="mt-2 block text-sm" style={{ color: "var(--devdoc-error)" }}>{fieldErrors.description}</span> : null}
-        </label>
+        <Textarea
+          label="Description"
+          fieldClassName="lg:col-span-2"
+          helper="Describe the requirement in simple, testable language."
+          error={fieldErrors.description}
+          maxLength={5000}
+          rows={4}
+          placeholder="Describe the requirement in simple, testable language."
+          value={values.description}
+          onChange={(e) => updateField("description", e.target.value)}
+        />
 
-        <label className="block lg:col-span-2">
-          <span className="devdoc-label">Acceptance criteria</span>
-          <p className="mt-1 text-xs leading-5" style={{ color: "var(--devdoc-muted)" }}>How do we know the requirement is satisfied?</p>
-          <textarea
-            className="devdoc-soft-input mt-2 min-h-28 w-full"
-            maxLength={5000}
-            placeholder="Given valid credentials, when the user logs in, then the dashboard opens."
-            value={values.acceptanceCriteria}
-            onChange={(e) => updateField("acceptanceCriteria", e.target.value)}
-          />
-          {fieldErrors.acceptanceCriteria ? <span className="mt-2 block text-sm" style={{ color: "var(--devdoc-error)" }}>{fieldErrors.acceptanceCriteria}</span> : null}
-        </label>
+        <Textarea
+          label="Acceptance criteria"
+          fieldClassName="lg:col-span-2"
+          helper="How do we know the requirement is satisfied?"
+          error={fieldErrors.acceptanceCriteria}
+          maxLength={5000}
+          rows={4}
+          placeholder="Given valid credentials, when the user logs in, then the dashboard opens."
+          value={values.acceptanceCriteria}
+          onChange={(e) => updateField("acceptanceCriteria", e.target.value)}
+        />
       </div>
 
       {errorMessage ? (
         <div
           className="mt-5 rounded-xl border px-4 py-3 text-sm font-medium"
-          style={{ backgroundColor: "rgba(207,34,46,0.08)", borderColor: "rgba(207,34,46,0.35)", color: "var(--devdoc-error)" }}
+          style={{
+            backgroundColor: "var(--devdoc-error-soft)",
+            borderColor: "color-mix(in srgb, var(--devdoc-error) 32%, var(--devdoc-border))",
+            color: "var(--devdoc-error)"
+          }}
+          role="alert"
         >
           {errorMessage}
         </div>
       ) : null}
 
       <div className="mt-5 flex justify-end">
-        <button className="devdoc-gradient-button" disabled={isSubmitting} type="submit">
+        <Button loading={isSubmitting} type="submit">
           {isSubmitting ? "Creating..." : "Create requirement"}
-        </button>
+        </Button>
       </div>
     </form>
   );

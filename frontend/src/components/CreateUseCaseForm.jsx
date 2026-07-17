@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Button, Input, Textarea } from "./ui";
 
 const initialValues = {
   title: "",
@@ -46,37 +47,26 @@ function CreateUseCaseForm({ onCreate, onCreated }) {
       </div>
 
       <div className="grid gap-5">
-        <label className="block">
-          <span className="devdoc-label">Title</span>
-          <input
-            className="devdoc-soft-input mt-2 w-full"
-            maxLength={200}
-            placeholder="Example: User logs in"
-            type="text"
-            value={values.title}
-            onChange={(event) => updateField("title", event.target.value)}
-          />
-          {fieldErrors.title ? (
-            <span className="mt-2 block text-sm font-medium text-[var(--devdoc-error)]">{fieldErrors.title}</span>
-          ) : null}
-        </label>
+        <Input
+          label="Title"
+          error={fieldErrors.title}
+          maxLength={200}
+          placeholder="Example: User logs in"
+          type="text"
+          value={values.title}
+          onChange={(event) => updateField("title", event.target.value)}
+        />
 
-        <label className="block">
-          <span className="devdoc-label">Description</span>
-          <p className="mt-1 text-xs leading-5 text-[var(--devdoc-muted)]">
-            Example: User enters valid credentials and reaches the dashboard.
-          </p>
-          <textarea
-            className="devdoc-soft-input mt-2 min-h-28 w-full"
-            maxLength={5000}
-            placeholder="Describe the user scenario in clear, simple steps."
-            value={values.description}
-            onChange={(event) => updateField("description", event.target.value)}
-          />
-          {fieldErrors.description ? (
-            <span className="mt-2 block text-sm font-medium text-[var(--devdoc-error)]">{fieldErrors.description}</span>
-          ) : null}
-        </label>
+        <Textarea
+          label="Description"
+          helper="Example: User enters valid credentials and reaches the dashboard."
+          error={fieldErrors.description}
+          maxLength={5000}
+          rows={4}
+          placeholder="Describe the user scenario in clear, simple steps."
+          value={values.description}
+          onChange={(event) => updateField("description", event.target.value)}
+        />
       </div>
 
       {errorMessage ? (
@@ -86,9 +76,9 @@ function CreateUseCaseForm({ onCreate, onCreated }) {
       ) : null}
 
       <div className="mt-5 flex justify-end">
-        <button className="devdoc-gradient-button" disabled={isSubmitting} type="submit">
+        <Button loading={isSubmitting} type="submit">
           {isSubmitting ? "Creating..." : "Create use case"}
-        </button>
+        </Button>
       </div>
     </form>
   );
