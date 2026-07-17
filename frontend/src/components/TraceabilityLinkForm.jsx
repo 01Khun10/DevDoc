@@ -1,7 +1,7 @@
 const BADGE_MAP = {
-  teal:    { bg: "rgba(20,184,166,0.12)",  border: "rgba(20,184,166,0.35)",  color: "#0d9488" },
-  emerald: { bg: "rgba(16,185,129,0.12)",  border: "rgba(16,185,129,0.35)",  color: "#059669" },
-  amber:   { bg: "rgba(245,158,11,0.12)",  border: "rgba(245,158,11,0.35)",  color: "#b45309" },
+  teal:    { bg: "rgba(20,184,166,0.12)",  border: "rgba(20,184,166,0.35)",  color: "var(--devdoc-artifact-bo)" },
+  emerald: { bg: "rgba(16,185,129,0.12)",  border: "rgba(16,185,129,0.35)",  color: "var(--devdoc-artifact-de)" },
+  amber:   { bg: "rgba(245,158,11,0.12)",  border: "rgba(245,158,11,0.35)",  color: "var(--devdoc-artifact-nfr)" },
   slate:   { bg: "var(--devdoc-surface-muted)", border: "var(--devdoc-border)", color: "var(--devdoc-muted)" },
 };
 

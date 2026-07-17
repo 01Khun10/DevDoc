@@ -10,8 +10,8 @@ function formatDate(value) {
 }
 
 const BADGE = {
-  teal:    { bg: "rgba(20,184,166,0.12)", border: "rgba(20,184,166,0.35)", color: "#0d9488" },
-  amber:   { bg: "rgba(245,158,11,0.12)", border: "rgba(245,158,11,0.35)", color: "#b45309" },
+  teal:    { bg: "rgba(20,184,166,0.12)", border: "rgba(20,184,166,0.35)", color: "var(--devdoc-artifact-bo)" },
+  amber:   { bg: "rgba(245,158,11,0.12)", border: "rgba(245,158,11,0.35)", color: "var(--devdoc-artifact-nfr)" },
   slate:   { bg: "var(--devdoc-surface-muted)", border: "var(--devdoc-border)", color: "var(--devdoc-muted)" },
 };
 

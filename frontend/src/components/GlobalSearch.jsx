@@ -4,12 +4,12 @@ import { useQuery } from "@tanstack/react-query";
 import apiRequest from "../services/api";
 
 const TYPE_META = {
-  PROJECT: { color: "#6366f1", label: "P" },
-  REQUIREMENT: { color: "#06b6d4", label: "RQ" },
-  USE_CASE: { color: "#8b5cf6", label: "UC" },
-  DOCUMENT: { color: "#3b82f6", label: "DOC" },
-  DESIGN_ELEMENT: { color: "#10b981", label: "DE" },
-  TEST_CASE: { color: "#ec4899", label: "TC" }
+  PROJECT: { color: "var(--devdoc-primary)", label: "P" },
+  REQUIREMENT: { color: "var(--devdoc-artifact-fr)", label: "RQ" },
+  USE_CASE: { color: "var(--devdoc-artifact-uc)", label: "UC" },
+  DOCUMENT: { color: "var(--devdoc-artifact-sec)", label: "DOC" },
+  DESIGN_ELEMENT: { color: "var(--devdoc-artifact-de)", label: "DE" },
+  TEST_CASE: { color: "var(--devdoc-artifact-tc)", label: "TC" }
 };
 
 function resultPath(result) {

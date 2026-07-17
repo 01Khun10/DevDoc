@@ -11,7 +11,7 @@ import {
 } from "../api/businessObjectives";
 import useAuthGuard from "../api/useAuthGuard";
 
-const BO_TEAL = "#0d9488";
+const BO_TEAL = "var(--devdoc-artifact-bo)";
 
 function ObjectiveForm({ initialValues, submitLabel, isPending, onSubmit, onCancel }) {
   const [title, setTitle] = useState(initialValues?.title || "");
@@ -68,7 +68,7 @@ function ObjectiveForm({ initialValues, submitLabel, isPending, onSubmit, onCanc
         />
       </div>
       {formError ? (
-        <p className="text-sm font-semibold" style={{ color: "var(--devdoc-danger, #dc2626)" }}>
+        <p className="text-sm font-semibold" style={{ color: "var(--devdoc-danger)" }}>
           {formError}
         </p>
       ) : null}
@@ -312,7 +312,7 @@ function BusinessObjectiveRegistry() {
                       </button>
                       <button
                         className="rounded-lg border px-3 py-1.5 text-xs font-semibold"
-                        style={{ borderColor: "var(--devdoc-border)", color: "var(--devdoc-danger, #dc2626)" }}
+                        style={{ borderColor: "var(--devdoc-border)", color: "var(--devdoc-danger)" }}
                         type="button"
                         disabled={deletingId === objective.id}
                         onClick={() => handleDelete(objective)}

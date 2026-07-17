@@ -1,5 +1,5 @@
 const BADGE = {
-  teal:  { bg: "rgba(20,184,166,0.12)", border: "rgba(20,184,166,0.35)", color: "#0d9488" },
+  teal:  { bg: "rgba(20,184,166,0.12)", border: "rgba(20,184,166,0.35)", color: "var(--devdoc-artifact-bo)" },
   slate: { bg: "var(--devdoc-surface-muted)", border: "var(--devdoc-border)", color: "var(--devdoc-muted)" },
 };
 

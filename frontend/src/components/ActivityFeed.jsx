@@ -4,14 +4,14 @@ import { Modal, SkeletonText } from "./ui";
 import { useActivityLog } from "../api/activity";
 
 const ENTITY_META = {
-  BUSINESS_OBJECTIVE: { color: "#0d9488", label: "Business objective", path: "business-objectives" },
-  USE_CASE: { color: "#8b5cf6", label: "Use case", path: "use-cases" },
-  REQUIREMENT: { color: "#06b6d4", label: "Requirement", path: "requirements" },
-  DESIGN_ELEMENT: { color: "#10b981", label: "Design element", path: "design-elements" },
-  TEST_CASE: { color: "#ec4899", label: "Test case", path: "test-cases" },
-  DOCUMENT: { color: "#3b82f6", label: "Document", path: "documents" },
-  TRACEABILITY_LINK: { color: "#6366f1", label: "Traceability link", path: "traceability" },
-  VALIDATION_RUN: { color: "#f59e0b", label: "Validation run", path: "validation" }
+  BUSINESS_OBJECTIVE: { color: "var(--devdoc-artifact-bo)", label: "Business objective", path: "business-objectives" },
+  USE_CASE: { color: "var(--devdoc-artifact-uc)", label: "Use case", path: "use-cases" },
+  REQUIREMENT: { color: "var(--devdoc-artifact-fr)", label: "Requirement", path: "requirements" },
+  DESIGN_ELEMENT: { color: "var(--devdoc-artifact-de)", label: "Design element", path: "design-elements" },
+  TEST_CASE: { color: "var(--devdoc-artifact-tc)", label: "Test case", path: "test-cases" },
+  DOCUMENT: { color: "var(--devdoc-artifact-sec)", label: "Document", path: "documents" },
+  TRACEABILITY_LINK: { color: "var(--devdoc-primary)", label: "Traceability link", path: "traceability" },
+  VALIDATION_RUN: { color: "var(--devdoc-warning)", label: "Validation run", path: "validation" }
 };
 
 const ACTION_VERBS = {

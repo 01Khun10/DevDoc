@@ -361,8 +361,8 @@ function DocumentEditorPanel({
                 editorFontFamily === "Times New Roman" ? "'Times New Roman', Times, serif" :
                 editorFontFamily === "Courier New" ? "'Courier New', Courier, monospace" : "inherit",
     fontSize: `${editorFontSize}px`,
-    backgroundColor: "var(--devdoc-paper, #ffffff)",
-    color: "var(--devdoc-paper-text, #24292f)",
+    backgroundColor: "var(--devdoc-paper)",
+    color: "var(--devdoc-paper-text)",
   };
 
   return (
@@ -456,7 +456,7 @@ function DocumentEditorPanel({
         </div>
 
         {/* Rich text editor with a readable paper feel. */}
-        <div className="px-6 py-6 sm:px-12 sm:py-8" style={{ backgroundColor: "var(--devdoc-paper, #ffffff)" }}>
+        <div className="px-6 py-6 sm:px-12 sm:py-8" style={{ backgroundColor: "var(--devdoc-paper)" }}>
           <div ref={editorWrapperRef} className="relative">
             {captureButton ? (
               <button

@@ -45,6 +45,31 @@
   --devdoc-info: #2563eb;
   --devdoc-info-soft: rgba(37, 99, 235, 0.10);
 
+  /* Alias: several pages reference --devdoc-danger. */
+  --devdoc-danger: var(--devdoc-error);
+
+  /* Artifact types — one hue per artifact, used by registries, the
+     traceability matrix, activity feed, search, and analytics. */
+  --devdoc-artifact-bo: #0d9488;
+  --devdoc-artifact-uc: #7f77dd;
+  --devdoc-artifact-fr: #3b82f6;
+  --devdoc-artifact-nfr: #d97706;
+  --devdoc-artifact-de: #10b981;
+  --devdoc-artifact-tc: #ec4899;
+  --devdoc-artifact-sec: #0ea5e9;
+
+  /* Blueprint accents */
+  --devdoc-highlight: #3b82f6;
+  --devdoc-highlight-soft: rgba(59, 130, 246, 0.14);
+  --devdoc-grid-line: rgba(15, 23, 42, 0.06);
+
+  /* Editor page. Deliberately stays white in both themes: it represents a
+     printed document, not app chrome. */
+  --devdoc-paper: #ffffff;
+  --devdoc-paper-text: #24292f;
+
+  --devdoc-surface-2: var(--devdoc-surface);
+
   /* Shell */
   --devdoc-topbar: rgba(255, 255, 255, 0.88);
   --devdoc-sidebar: #ffffff;
@@ -140,6 +165,23 @@
   --devdoc-error-soft: rgba(248, 113, 113, 0.12);
   --devdoc-info: #60a5fa;
   --devdoc-info-soft: rgba(96, 165, 250, 0.12);
+
+  --devdoc-danger: var(--devdoc-error);
+
+  /* Lifted for contrast against the dark surfaces. */
+  --devdoc-artifact-bo: #2dd4bf;
+  --devdoc-artifact-uc: #a5a0f0;
+  --devdoc-artifact-fr: #60a5fa;
+  --devdoc-artifact-nfr: #fbbf24;
+  --devdoc-artifact-de: #34d399;
+  --devdoc-artifact-tc: #f472b6;
+  --devdoc-artifact-sec: #38bdf8;
+
+  --devdoc-highlight: #60a5fa;
+  --devdoc-highlight-soft: rgba(96, 165, 250, 0.16);
+  --devdoc-grid-line: rgba(255, 255, 255, 0.05);
+
+  --devdoc-surface-2: var(--devdoc-surface);
 
   --devdoc-topbar: rgba(12, 16, 24, 0.90);
   --devdoc-sidebar: #111827;
@@ -514,6 +556,12 @@ body {
 @keyframes devdocScaleIn {
   from { opacity: 0; transform: scale(0.96); }
   to   { opacity: 1; transform: scale(1); }
+}
+
+/* Validation findings scan-line: sweeps the panel once per run. */
+@keyframes devdoc-scan {
+  from { transform: translateY(0); opacity: 1; }
+  to   { transform: translateY(100vh); opacity: 0; }
 }
 
 @keyframes devdoc-shimmer {
