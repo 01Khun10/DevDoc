@@ -1,4 +1,7 @@
 // DevDoc UI primitives — thin wrappers over the --devdoc-* CSS variable theme.
+import { useEffect, useId, useRef } from "react";
+
+export { default as Tooltip } from "./Tooltip";
 
 const BUTTON_VARIANTS = {
   primary: {
@@ -20,17 +23,55 @@ const BUTTON_VARIANTS = {
     backgroundColor: "var(--devdoc-success-soft)",
     color: "var(--devdoc-success)",
     border: "1px solid color-mix(in srgb, var(--devdoc-success) 35%, var(--devdoc-border))"
+  },
+  ghost: {
+    backgroundColor: "transparent",
+    color: "var(--devdoc-muted)",
+    border: "1px solid transparent"
   }
 };
 
-export function Button({ variant = "primary", className = "", style, children, ...props }) {
+const BUTTON_SIZES = {
+  sm: "px-3 py-1.5 text-xs",
+  md: "px-4 py-2 text-sm"
+};
+
+export function Spinner({ size = 16, className = "", label }) {
+  return (
+    <span
+      className={`inline-block shrink-0 animate-spin rounded-full border-2 border-transparent ${className}`}
+      style={{
+        height: size,
+        width: size,
+        borderColor: "var(--devdoc-border)",
+        borderTopColor: "currentColor"
+      }}
+      role="status"
+      aria-label={label || "Loading"}
+    />
+  );
+}
+
+export function Button({
+  variant = "primary",
+  size = "md",
+  loading = false,
+  disabled = false,
+  className = "",
+  style,
+  children,
+  ...props
+}) {
   return (
     <button
       type="button"
-      className={`rounded-lg px-4 py-2 text-sm font-bold transition hover:-translate-y-0.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--devdoc-primary)] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:translate-y-0 ${className}`}
+      className={`inline-flex items-center justify-center gap-2 rounded-lg font-bold transition hover:-translate-y-0.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--devdoc-primary)] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:translate-y-0 ${BUTTON_SIZES[size] || BUTTON_SIZES.md} ${className}`}
       style={{ ...BUTTON_VARIANTS[variant], ...style }}
+      disabled={disabled || loading}
+      aria-busy={loading || undefined}
       {...props}
     >
+      {loading ? <Spinner size={size === "sm" ? 12 : 14} /> : null}
       {children}
     </button>
   );
@@ -48,6 +89,179 @@ export function Card({ className = "", style, children, ...props }) {
       {...props}
     >
       {children}
+    </div>
+  );
+}
+
+// Shared label/helper/error chrome for Input, Textarea, and Select.
+function Field({ id, label, helper, error, required, children }) {
+  return (
+    <div className="grid gap-1.5">
+      {label ? (
+        <label htmlFor={id} className="text-xs font-bold" style={{ color: "var(--devdoc-text-secondary)" }}>
+          {label}
+          {required ? <span style={{ color: "var(--devdoc-error)" }}> *</span> : null}
+        </label>
+      ) : null}
+      {children}
+      {error ? (
+        <p id={`${id}-error`} className="text-xs font-medium" style={{ color: "var(--devdoc-error)" }}>
+          {error}
+        </p>
+      ) : helper ? (
+        <p id={`${id}-helper`} className="text-xs" style={{ color: "var(--devdoc-subtle)" }}>
+          {helper}
+        </p>
+      ) : null}
+    </div>
+  );
+}
+
+const ERROR_STYLE = {
+  borderColor: "var(--devdoc-error)",
+  backgroundColor: "var(--devdoc-error-soft)"
+};
+
+function describedBy(id, helper, error) {
+  if (error) return `${id}-error`;
+  if (helper) return `${id}-helper`;
+  return undefined;
+}
+
+export function Input({ label, helper, error, required, className = "", style, id, ...props }) {
+  const autoId = useId();
+  const fieldId = id || autoId;
+
+  return (
+    <Field id={fieldId} label={label} helper={helper} error={error} required={required}>
+      <input
+        id={fieldId}
+        className={`devdoc-input w-full ${className}`}
+        style={error ? { ...ERROR_STYLE, ...style } : style}
+        required={required}
+        aria-invalid={error ? true : undefined}
+        aria-describedby={describedBy(fieldId, helper, error)}
+        {...props}
+      />
+    </Field>
+  );
+}
+
+export function Textarea({ label, helper, error, required, rows = 4, className = "", style, id, ...props }) {
+  const autoId = useId();
+  const fieldId = id || autoId;
+
+  return (
+    <Field id={fieldId} label={label} helper={helper} error={error} required={required}>
+      <textarea
+        id={fieldId}
+        rows={rows}
+        className={`devdoc-input w-full resize-y ${className}`}
+        style={error ? { ...ERROR_STYLE, ...style } : style}
+        required={required}
+        aria-invalid={error ? true : undefined}
+        aria-describedby={describedBy(fieldId, helper, error)}
+        {...props}
+      />
+    </Field>
+  );
+}
+
+export function Select({ label, helper, error, required, options, className = "", style, id, children, ...props }) {
+  const autoId = useId();
+  const fieldId = id || autoId;
+
+  return (
+    <Field id={fieldId} label={label} helper={helper} error={error} required={required}>
+      <select
+        id={fieldId}
+        className={`devdoc-select w-full ${className}`}
+        style={error ? { ...ERROR_STYLE, ...style } : style}
+        required={required}
+        aria-invalid={error ? true : undefined}
+        aria-describedby={describedBy(fieldId, helper, error)}
+        {...props}
+      >
+        {options
+          ? options.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))
+          : children}
+      </select>
+    </Field>
+  );
+}
+
+/**
+ * columns: [{ key, header, render?, width?, align? }]
+ * Falls back to EmptyState when rows is empty; renders a skeleton while loading.
+ */
+export function Table({
+  columns,
+  rows,
+  rowKey = (row, index) => row.id ?? index,
+  loading = false,
+  error,
+  onRetry,
+  emptyMessage = "Nothing here yet.",
+  emptyAction,
+  onRowClick,
+  className = ""
+}) {
+  if (error) return <ErrorState message={error} onRetry={onRetry} />;
+  if (loading) return <SkeletonCard lines={4} />;
+  if (!rows?.length) return <EmptyState message={emptyMessage} action={emptyAction} />;
+
+  return (
+    <div
+      className={`overflow-x-auto rounded-xl border ${className}`}
+      style={{ borderColor: "var(--devdoc-border)", backgroundColor: "var(--devdoc-surface)" }}
+    >
+      <table className="w-full border-collapse text-sm">
+        <thead className="sticky top-0 z-[var(--devdoc-z-sticky)]">
+          <tr>
+            {columns.map((column) => (
+              <th
+                key={column.key}
+                scope="col"
+                className="devdoc-label whitespace-nowrap border-b px-4 py-2.5 text-left"
+                style={{
+                  borderColor: "var(--devdoc-border)",
+                  backgroundColor: "var(--devdoc-surface-muted)",
+                  textAlign: column.align || "left",
+                  width: column.width
+                }}
+              >
+                {column.header}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((row, index) => (
+            <tr
+              key={rowKey(row, index)}
+              className={`border-b transition-colors last:border-b-0 hover:bg-[var(--devdoc-surface-muted)] ${
+                onRowClick ? "cursor-pointer" : ""
+              }`}
+              style={{ borderColor: "var(--devdoc-border)" }}
+              onClick={onRowClick ? () => onRowClick(row) : undefined}
+            >
+              {columns.map((column) => (
+                <td
+                  key={column.key}
+                  className="px-4 py-2.5 align-top"
+                  style={{ color: "var(--devdoc-text-secondary)", textAlign: column.align || "left" }}
+                >
+                  {column.render ? column.render(row) : row[column.key]}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
     </div>
   );
 }
@@ -76,16 +290,24 @@ export function Badge({ tone = "primary", className = "", style, children, ...pr
   );
 }
 
-export function EmptyState({ message, action, className = "" }) {
+export function EmptyState({ icon, message, action, className = "" }) {
   return (
     <div
-      className={`rounded-2xl border border-dashed p-8 text-sm ${className}`}
+      className={`rounded-2xl border border-dashed p-8 text-center text-sm ${className}`}
       style={{
         borderColor: "var(--devdoc-border)",
         backgroundColor: "var(--devdoc-surface)",
         color: "var(--devdoc-muted)"
       }}
     >
+      {icon ? (
+        <div
+          className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-full"
+          style={{ backgroundColor: "var(--devdoc-surface-muted)", color: "var(--devdoc-subtle)" }}
+        >
+          {icon}
+        </div>
+      ) : null}
       <p>{message}</p>
       {action ? <div className="mt-4">{action}</div> : null}
     </div>
@@ -173,12 +395,53 @@ export function PageSkeleton() {
   );
 }
 
+const FOCUSABLE =
+  'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+
 export function Modal({ isOpen, title, onClose, children, footer }) {
+  const panelRef = useRef(null);
+
+  useEffect(() => {
+    if (!isOpen) return undefined;
+
+    const previouslyFocused = document.activeElement;
+    panelRef.current?.querySelector(FOCUSABLE)?.focus();
+
+    function onKeyDown(event) {
+      if (event.key === "Escape") {
+        onClose?.();
+        return;
+      }
+      if (event.key !== "Tab") return;
+
+      const focusable = panelRef.current?.querySelectorAll(FOCUSABLE);
+      if (!focusable?.length) return;
+
+      const first = focusable[0];
+      const last = focusable[focusable.length - 1];
+
+      if (event.shiftKey && document.activeElement === first) {
+        event.preventDefault();
+        last.focus();
+      } else if (!event.shiftKey && document.activeElement === last) {
+        event.preventDefault();
+        first.focus();
+      }
+    }
+
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("keydown", onKeyDown);
+      previouslyFocused?.focus?.();
+    };
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center px-6"
+      className="fixed inset-0 flex items-center justify-center px-6"
+      style={{ zIndex: "var(--devdoc-z-modal)" }}
       role="dialog"
       aria-modal="true"
       aria-label={title}
@@ -189,7 +452,8 @@ export function Modal({ isOpen, title, onClose, children, footer }) {
         onClick={onClose}
       />
       <div
-        className="relative w-full max-w-lg rounded-2xl border p-6 shadow-xl"
+        ref={panelRef}
+        className="relative max-h-[85vh] w-full max-w-lg overflow-y-auto rounded-2xl border p-6 shadow-xl"
         style={{ borderColor: "var(--devdoc-border)", backgroundColor: "var(--devdoc-surface)" }}
       >
         <div className="flex items-start justify-between gap-4">
@@ -221,5 +485,39 @@ export function StatCard({ label, value, color = "var(--devdoc-text)" }) {
         {value}
       </p>
     </Card>
+  );
+}
+
+export function ErrorState({ message = "Something went wrong.", onRetry, className = "" }) {
+  return (
+    <div
+      className={`rounded-2xl border border-dashed p-8 text-center ${className}`}
+      style={{
+        borderColor: "color-mix(in srgb, var(--devdoc-error) 40%, var(--devdoc-border))",
+        backgroundColor: "var(--devdoc-error-soft)"
+      }}
+    >
+      <div
+        className="mx-auto mb-3 flex h-10 w-10 items-center justify-center rounded-full text-lg font-black"
+        style={{ backgroundColor: "var(--devdoc-error-soft)", color: "var(--devdoc-error)" }}
+      >
+        !
+      </div>
+      <p className="text-sm font-medium" style={{ color: "var(--devdoc-error)" }}>{message}</p>
+      {onRetry ? (
+        <button
+          type="button"
+          className="mt-4 rounded-lg border px-4 py-2 text-sm font-bold transition hover:-translate-y-0.5"
+          style={{
+            borderColor: "var(--devdoc-border)",
+            backgroundColor: "var(--devdoc-surface)",
+            color: "var(--devdoc-text)"
+          }}
+          onClick={onRetry}
+        >
+          Try again
+        </button>
+      ) : null}
+    </div>
   );
 }
