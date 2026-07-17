@@ -4,64 +4,35 @@ import DocumentEditorPanel from "../components/DocumentEditorPanel";
 import DocumentGuidancePanel from "../components/DocumentGuidancePanel";
 import DocumentSectionSidebar from "../components/DocumentSectionSidebar";
 import { useNotify } from "../context/NotificationContext";
-import {
-  useDocument,
-  useSectionLinkedArtefacts,
-  useUpdateDocumentSection
-} from "../api/documents";
+import { useDocument, useSectionLinkedArtefacts, useUpdateDocumentSection } from "../api/documents";
 import useAuthGuard from "../api/useAuthGuard";
+import useUnsavedChangesWarning from "../hooks/useUnsavedChangesWarning";
 import { useProjectOverview } from "../api/projects";
 
-function Badge({ children, tone = "slate" }) {
-  const colorMap = {
-    teal:    { bg: "rgba(20,184,166,0.12)",  border: "rgba(20,184,166,0.35)",  color: "#0d9488" },
-    emerald: { bg: "rgba(16,185,129,0.12)",  border: "rgba(16,185,129,0.35)",  color: "#059669" },
-    amber:   { bg: "rgba(245,158,11,0.12)",  border: "rgba(245,158,11,0.35)",  color: "#b45309" },
-    slate:   { bg: "var(--devdoc-surface-muted)", border: "var(--devdoc-border)", color: "var(--devdoc-muted)" },
-  };
-  const s = colorMap[tone] || colorMap.slate;
+function Icon({ children, size = 16 }) {
   return (
-    <span
-      className="rounded-full px-2.5 py-0.5 text-xs font-bold"
-      style={{ backgroundColor: s.bg, border: `1px solid ${s.border}`, color: s.color }}
-    >
-      {children}
-    </span>
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor"
+      strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{children}</svg>
   );
 }
 
-function getSaveErrorMessage(error) {
-  if (error.fields) {
-    return Object.values(error.fields)[0] || error.message || "Could not save section.";
-  }
+const TYPE_COLOR = {
+  SCOPE: "var(--devdoc-artifact-uc)", SRS: "var(--devdoc-artifact-fr)",
+  SDS: "var(--devdoc-artifact-de)", STP: "var(--devdoc-artifact-sec)",
+};
 
+function getSaveErrorMessage(error) {
+  if (error.fields) return Object.values(error.fields)[0] || error.message || "Could not save section.";
   return error.message || "Could not save section.";
 }
 
-function RibbonButton({ children, wide = false }) {
-  return (
-    <button
-      className={`rounded-lg px-2.5 py-1.5 text-xs font-semibold transition opacity-50 cursor-not-allowed ${wide ? "min-w-20" : "min-w-8"}`}
-      style={{
-        border: "1px solid var(--devdoc-border)",
-        backgroundColor: "var(--devdoc-surface)",
-        color: "var(--devdoc-muted)",
-      }}
-      disabled
-      title="Formatting tools will be added later."
-      type="button"
-    >
-      {children}
-    </button>
-  );
-}
-
-function DocumentEditor() {
+export default function DocumentEditor() {
   const params = useParams();
   const projectId = params.id || params.projectId;
   const documentId = params.documentId;
   const { notify } = useNotify();
   const [searchParams] = useSearchParams();
+
   const [selectedSectionId, setSelectedSectionId] = useState("");
   const [editorContent, setEditorContent] = useState("");
   const [saveError, setSaveError] = useState("");
@@ -70,13 +41,15 @@ function DocumentEditor() {
   const [lastSavedAt, setLastSavedAt] = useState(null);
   const editorContentRef = useRef("");
 
+  useUnsavedChangesWarning(hasUnsavedChanges);
+
   const [activeRibbonTab, setActiveRibbonTab] = useState("Home");
   const [editorFontFamily, setEditorFontFamily] = useState("Inter");
   const [editorFontSize, setEditorFontSize] = useState("16");
   const [isFocusMode, setIsFocusMode] = useState(false);
   const [showSectionRail, setShowSectionRail] = useState(true);
   const [showGuidancePanel, setShowGuidancePanel] = useState(true);
-  const [writingIssues, setWritingIssues] = useState(null);
+  const [, setWritingIssues] = useState(null);
 
   const documentQuery = useDocument(projectId, documentId);
   const overviewQuery = useProjectOverview(projectId);
@@ -87,90 +60,38 @@ function DocumentEditor() {
   const document = documentQuery.data || null;
   const sections = useMemo(() => document?.sections || [], [document]);
   const isLoading = documentQuery.isLoading;
-  const loadError = documentQuery.error
-    ? (documentQuery.error.status === 404 ? "not-found" : "general")
-    : "";
+  const loadError = documentQuery.error ? (documentQuery.error.status === 404 ? "not-found" : "general") : "";
   const isSaving = saveMutation.isPending;
-  // Export gate: latest validation run completed with zero ERROR findings.
+
   const latestValidation = overviewQuery.data?.latestValidation || null;
-  const canExport = Boolean(
-    latestValidation && latestValidation.status === "COMPLETED" && latestValidation.errorCount === 0
-  );
+  const canExport = Boolean(latestValidation && latestValidation.status === "COMPLETED" && latestValidation.errorCount === 0);
   const linkedArtefacts = linkedArtefactsQuery.data || null;
   const isLoadingLinkedArtefacts = linkedArtefactsQuery.isLoading && Boolean(selectedSectionId);
   const linkedArtefactsError = linkedArtefactsQuery.error ? "Could not load linked artefacts." : "";
 
-  // Select the initial section once the document arrives; a ?highlight=
-  // query param (validation deep link) wins over the first section.
   useEffect(() => {
     if (document && !selectedSectionId) {
       const highlightId = searchParams.get("highlight");
-      const initialSection =
-        document.sections?.find((section) => section.id === highlightId) ||
-        document.sections?.[0] ||
-        null;
-      setSelectedSectionId(initialSection?.id || "");
-      setEditorContent(initialSection?.content || "");
-      editorContentRef.current = initialSection?.content || "";
+      const initial = document.sections?.find((s) => s.id === highlightId) || document.sections?.[0] || null;
+      setSelectedSectionId(initial?.id || "");
+      setEditorContent(initial?.content || "");
+      editorContentRef.current = initial?.content || "";
       setHasUnsavedChanges(false);
     }
   }, [document, selectedSectionId, searchParams]);
 
-  const getGridClasses = () => {
-    if (isFocusMode) return "xl:grid-cols-1 max-w-5xl mx-auto";
-    if (showSectionRail && showGuidancePanel) return "xl:grid-cols-[320px_minmax(0,1fr)_340px]";
-    if (showSectionRail) return "xl:grid-cols-[320px_minmax(0,1fr)]";
-    if (showGuidancePanel) return "xl:grid-cols-[minmax(0,1fr)_340px]";
-    return "xl:grid-cols-[minmax(0,1fr)]";
-  };
-
-  const selectedSection = useMemo(
-    () => sections.find((section) => section.id === selectedSectionId) || null,
-    [sections, selectedSectionId]
-  );
-
-  const selectedSectionIndex = useMemo(
-    () => sections.findIndex((section) => section.id === selectedSectionId),
-    [sections, selectedSectionId]
-  );
-
-  const completedSectionCount = useMemo(
-    () => sections.filter((section) => section.status === "COMPLETE").length,
-    [sections]
-  );
-
-  function getPreviousSection() {
-    if (selectedSectionIndex <= 0) {
-      return null;
-    }
-
-    return sections[selectedSectionIndex - 1] || null;
-  }
-
-  function getNextSection() {
-    if (selectedSectionIndex < 0 || selectedSectionIndex >= sections.length - 1) {
-      return null;
-    }
-
-    return sections[selectedSectionIndex + 1] || null;
-  }
+  const selectedSection = useMemo(() => sections.find((s) => s.id === selectedSectionId) || null, [sections, selectedSectionId]);
+  const selectedSectionIndex = useMemo(() => sections.findIndex((s) => s.id === selectedSectionId), [sections, selectedSectionId]);
+  const completedSectionCount = useMemo(() => sections.filter((s) => s.status === "COMPLETE").length, [sections]);
 
   const canGoPrevious = selectedSectionIndex > 0;
   const canGoNext = selectedSectionIndex >= 0 && selectedSectionIndex < sections.length - 1;
+  const getPreviousSection = () => (selectedSectionIndex <= 0 ? null : sections[selectedSectionIndex - 1] || null);
+  const getNextSection = () => (selectedSectionIndex < 0 || selectedSectionIndex >= sections.length - 1 ? null : sections[selectedSectionIndex + 1] || null);
 
   function switchToSection(section, options = {}) {
-    if (!section || section.id === selectedSectionId) {
-      return false;
-    }
-
-    if (
-      !options.skipConfirm &&
-      hasUnsavedChanges &&
-      !window.confirm("You have unsaved changes. Discard them?")
-    ) {
-      return false;
-    }
-
+    if (!section || section.id === selectedSectionId) return false;
+    if (!options.skipConfirm && hasUnsavedChanges && !window.confirm("You have unsaved changes. Discard them?")) return false;
     setSelectedSectionId(section.id);
     setEditorContent(section.content || "");
     editorContentRef.current = section.content || "";
@@ -179,18 +100,9 @@ function DocumentEditor() {
     setSaveSuccess("");
     return true;
   }
-
-  function handleSelectSection(section) {
-    switchToSection(section);
-  }
-
-  function handlePreviousSection() {
-    switchToSection(getPreviousSection());
-  }
-
-  function handleNextSection() {
-    switchToSection(getNextSection());
-  }
+  const handleSelectSection = (s) => switchToSection(s);
+  const handlePreviousSection = () => switchToSection(getPreviousSection());
+  const handleNextSection = () => switchToSection(getNextSection());
 
   function handleChangeContent(value) {
     setEditorContent(value);
@@ -201,68 +113,33 @@ function DocumentEditor() {
   }
 
   async function saveCurrentSection(successMessage = "Section saved.", options = {}) {
-    if (!selectedSection) {
-      return false;
-    }
-
+    if (!selectedSection) return false;
     setSaveError("");
-    if (!options.silent) {
-      setSaveSuccess("");
-    }
-
-    // The TipTap editor owns the document after mount, so do not write the
-    // saved content back into state; just record what was persisted.
+    if (!options.silent) setSaveSuccess("");
     const contentToSave = editorContent;
-
     try {
-      await saveMutation.mutateAsync({
-        sectionId: selectedSection.id,
-        content: contentToSave
-      });
-
-      // Only clear the dirty flag if nothing was typed while saving.
-      if (editorContentRef.current === contentToSave) {
-        setHasUnsavedChanges(false);
-      }
+      await saveMutation.mutateAsync({ sectionId: selectedSection.id, content: contentToSave });
+      if (editorContentRef.current === contentToSave) setHasUnsavedChanges(false);
       setLastSavedAt(new Date());
-
-      if (!options.silent) {
-        setSaveSuccess(successMessage);
-        notify("Section saved.", { tone: "success" });
-      }
+      if (!options.silent) { setSaveSuccess(successMessage); notify("Section saved.", { tone: "success" }); }
       return true;
     } catch (error) {
-      setSaveError(
-        error.status === 404 ? "Document or section not found." : getSaveErrorMessage(error)
-      );
+      setSaveError(error.status === 404 ? "Document or section not found." : getSaveErrorMessage(error));
       return false;
     }
   }
 
-  // Debounced autosave: persist quietly after 3s of idle typing.
   useEffect(() => {
-    if (!hasUnsavedChanges || isSaving || !selectedSection) {
-      return undefined;
-    }
-
-    const timer = setTimeout(() => {
-      saveCurrentSection("", { silent: true });
-    }, 3000);
-
+    if (!hasUnsavedChanges || isSaving || !selectedSection) return undefined;
+    const timer = setTimeout(() => { saveCurrentSection("", { silent: true }); }, 3000);
     return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [editorContent, hasUnsavedChanges, isSaving, selectedSection]);
 
-  async function handleSaveSection() {
-    await saveCurrentSection();
-  }
-
+  const handleSaveSection = () => saveCurrentSection();
   async function handleSaveAndNext() {
     const nextSection = getNextSection();
-    const didSave = await saveCurrentSection(
-      nextSection ? "Section saved. Moved to next section." : "Section saved."
-    );
-
+    const didSave = await saveCurrentSection(nextSection ? "Section saved. Moved to next section." : "Section saved.");
     if (didSave && nextSection) {
       setSelectedSectionId(nextSection.id);
       setEditorContent(nextSection.content || "");
@@ -272,146 +149,126 @@ function DocumentEditor() {
     }
   }
 
+  const pct = sections.length ? Math.round((completedSectionCount / sections.length) * 100) : 0;
+
+  // ---- loading / error shells ----
   if (isLoading) {
     return (
-      <main className="flex min-h-screen items-center justify-center px-6" style={{ backgroundColor: "var(--devdoc-bg)", color: "var(--devdoc-text)" }}>
-        <p className="text-sm font-medium" style={{ color: "var(--devdoc-muted)" }}>Loading document...</p>
+      <main className="flex min-h-screen items-center justify-center" style={{ backgroundColor: "var(--devdoc-bg)" }}>
+        <p className="font-mono text-sm text-[var(--devdoc-muted)]">Loading document…</p>
       </main>
     );
   }
-
   if (loadError === "not-found") {
     return (
       <main className="min-h-screen px-6 py-10" style={{ backgroundColor: "var(--devdoc-bg)" }}>
-        <section className="mx-auto max-w-3xl devdoc-card-border p-8">
-          <p className="text-lg font-semibold" style={{ color: "var(--devdoc-text)" }}>Document not found.</p>
-          <Link
-            className="mt-5 inline-flex text-sm font-semibold"
-            style={{ color: "var(--devdoc-primary)" }}
-            to={`/projects/${projectId}`}
-          >
-            Back to project workspace
-          </Link>
-        </section>
+        <div className="mx-auto max-w-2xl rounded-lg border p-8 text-center" style={{ borderColor: "var(--devdoc-border)", backgroundColor: "var(--devdoc-surface)" }}>
+          <p className="mb-1 font-mono text-[11px] uppercase tracking-[0.15em] text-[var(--devdoc-muted)]">Not found</p>
+          <h1 className="font-headline text-xl font-bold text-[var(--devdoc-text)]">Document not found</h1>
+          <Link to={`/projects/${projectId}/documents`} className="mt-4 inline-flex text-sm font-medium text-[var(--devdoc-primary)]">← Back to documents</Link>
+        </div>
       </main>
     );
   }
 
-  if (loadError) {
-    return (
-      <main className="min-h-screen px-6 py-10" style={{ backgroundColor: "var(--devdoc-bg)" }}>
-        <section className="mx-auto max-w-3xl devdoc-card-border p-8">
-          <p className="text-lg font-semibold" style={{ color: "var(--devdoc-text)" }}>
-            Could not load document. Check your connection and try again.
-          </p>
-          <Link
-            className="mt-5 inline-flex text-sm font-semibold"
-            style={{ color: "var(--devdoc-primary)" }}
-            to={`/projects/${projectId}`}
-          >
-            Back to project workspace
-          </Link>
-        </section>
-      </main>
-    );
-  }
+  const typeColor = TYPE_COLOR[document?.documentType] || "var(--devdoc-primary)";
+
+  const savedLabel = isSaving ? "Saving…"
+    : hasUnsavedChanges ? "Unsaved changes"
+    : lastSavedAt ? `Saved · ${lastSavedAt.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`
+    : "All changes saved";
 
   return (
-    <main className="min-h-screen" style={{ backgroundColor: "var(--devdoc-bg)", color: "var(--devdoc-text)" }}>
-      <header
-        className="border-b shadow-sm"
-        style={{ borderColor: "var(--devdoc-border)", backgroundColor: "var(--devdoc-surface)" }}
-      >
-        <div className="mx-auto flex max-w-[1800px] flex-col gap-4 px-4 py-3 sm:px-6 xl:flex-row xl:items-center xl:justify-between">
-          <div className="min-w-0">
-            <p className="devdoc-label">DevDoc document workspace</p>
-            <h1 className="mt-1 truncate text-2xl font-bold" style={{ color: "var(--devdoc-text)" }}>{document.title}</h1>
-            {document.template?.name ? (
-              <p className="mt-1 text-sm" style={{ color: "var(--devdoc-muted)" }}>
-                Template: <span className="font-semibold" style={{ color: "var(--devdoc-text)" }}>{document.template.name}</span>
-              </p>
-            ) : null}
-          </div>
+    <main className="flex h-screen flex-col text-[var(--devdoc-text)]" style={{ backgroundColor: "var(--devdoc-bg)" }}>
+      {/* top bar */}
+      <header className="flex flex-shrink-0 items-center gap-4 border-b px-5 py-3"
+        style={{ borderColor: "var(--devdoc-border)", backgroundColor: "var(--devdoc-surface)" }}>
+        <Link to={`/projects/${projectId}/documents`} className="flex items-center gap-1 text-sm text-[var(--devdoc-muted)] transition-colors hover:text-[var(--devdoc-text)]">
+          <Icon size={16}><path d="M19 12H5M12 19l-7-7 7-7" /></Icon>
+        </Link>
+        <div className="flex min-w-0 items-center gap-3">
+          <span className="rounded px-2 py-0.5 font-mono text-[11px] font-medium" style={{ color: typeColor, backgroundColor: `color-mix(in srgb, ${typeColor} 14%, transparent)` }}>
+            {document?.documentType}
+          </span>
+          <h1 className="truncate font-headline text-lg font-semibold">{document?.title}</h1>
+          <span className="rounded px-2 py-0.5 text-[10px] font-medium"
+            style={document?.status === "COMPLETE" ? { color: "var(--devdoc-success)", backgroundColor: "var(--devdoc-success-soft)" } : { color: "var(--devdoc-muted)", backgroundColor: "var(--devdoc-surface-inset)" }}>
+            {(document?.status || "DRAFT").toLowerCase()}
+          </span>
+        </div>
 
-          <div className="flex flex-col gap-3 sm:flex-row sm:items-center xl:justify-end">
-            <div className="flex flex-wrap gap-2">
-              <Badge tone="teal">{document.documentType}</Badge>
-              <Badge
-                tone={
-                  document.status === "COMPLETE"
-                    ? "emerald"
-                    : document.status === "IN_PROGRESS"
-                      ? "amber"
-                      : "slate"
-                }
-              >
-                {document.status}
-              </Badge>
-              <Badge>{document.completionPercent}% complete</Badge>
-            </div>
-            <span
-              className="rounded-full px-2.5 py-0.5 text-xs font-bold"
-              style={{
-                backgroundColor: hasUnsavedChanges ? "rgba(245,158,11,0.12)" : "rgba(16,185,129,0.12)",
-                border: `1px solid ${hasUnsavedChanges ? "rgba(245,158,11,0.35)" : "rgba(16,185,129,0.35)"}`,
-                color: hasUnsavedChanges ? "var(--devdoc-warning)" : "var(--devdoc-success)",
-              }}
-            >
-              {hasUnsavedChanges
-                ? "Unsaved changes"
-                : lastSavedAt
-                  ? `Saved - ${lastSavedAt.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`
-                  : "Saved"}
-            </span>
-            {canExport ? (
-              <Link
-                className="rounded-lg border px-3 py-1.5 text-xs font-bold transition"
-                style={{
-                  borderColor: "var(--devdoc-border)",
-                  backgroundColor: "var(--devdoc-surface)",
-                  color: "var(--devdoc-primary)",
-                }}
-                to={`/projects/${projectId}/documents/${documentId}/print`}
-              >
-                Export / Print
-              </Link>
-            ) : (
-              <span
-                className="rounded-lg border px-3 py-1.5 text-xs font-bold opacity-50"
-                style={{
-                  borderColor: "var(--devdoc-border)",
-                  backgroundColor: "var(--devdoc-surface)",
-                  color: "var(--devdoc-muted)",
-                }}
-                title="Export unlocks when the latest validation run has zero errors."
-              >
-                Export / Print
-              </span>
-            )}
-          </div>
+        <div className="ml-auto flex items-center gap-3">
+          {/* save indicator */}
+          <span className="flex items-center gap-1.5 font-mono text-[11px]"
+            style={{ color: hasUnsavedChanges ? "var(--devdoc-warning)" : "var(--devdoc-muted)" }}>
+            {isSaving && <span className="h-2 w-2 animate-pulse rounded-full bg-[var(--devdoc-highlight)]" />}
+            {savedLabel}
+          </span>
+          {/* panel toggles */}
+          <button onClick={() => setShowSectionRail((v) => !v)} title="Toggle sections"
+            className="rounded border p-1.5 text-[var(--devdoc-muted)] transition-colors hover:text-[var(--devdoc-text)]"
+            style={{ borderColor: "var(--devdoc-border)", backgroundColor: showSectionRail ? "var(--devdoc-surface-inset)" : "transparent" }}>
+            <Icon size={15}><path d="M3 3h7v18H3zM14 3h7v18h-7z" /></Icon>
+          </button>
+          <button onClick={() => setShowGuidancePanel((v) => !v)} title="Toggle guidance"
+            className="rounded border p-1.5 text-[var(--devdoc-muted)] transition-colors hover:text-[var(--devdoc-text)]"
+            style={{ borderColor: "var(--devdoc-border)", backgroundColor: showGuidancePanel ? "var(--devdoc-surface-inset)" : "transparent" }}>
+            <Icon size={15}><circle cx="12" cy="12" r="10" /><path d="M12 16v-4M12 8h.01" /></Icon>
+          </button>
+          <button onClick={() => setIsFocusMode((v) => !v)} title="Focus mode"
+            className="rounded border p-1.5 text-[var(--devdoc-muted)] transition-colors hover:text-[var(--devdoc-text)]"
+            style={{ borderColor: "var(--devdoc-border)", backgroundColor: isFocusMode ? "var(--devdoc-primary-soft)" : "transparent", color: isFocusMode ? "var(--devdoc-primary)" : undefined }}>
+            <Icon size={15}><path d="M8 3H5a2 2 0 0 0-2 2v3M21 8V5a2 2 0 0 0-2-2h-3M3 16v3a2 2 0 0 0 2 2h3M16 21h3a2 2 0 0 0 2-2v-3" /></Icon>
+          </button>
+          <Link to={`/projects/${projectId}/documents/${documentId}/print`}
+            className="flex items-center gap-1.5 rounded-md border px-3 py-1.5 text-sm transition-colors"
+            style={canExport
+              ? { borderColor: "var(--devdoc-primary)", color: "var(--devdoc-primary)" }
+              : { borderColor: "var(--devdoc-border)", color: "var(--devdoc-subtle)", pointerEvents: "none", opacity: 0.6 }}
+            title={canExport ? "Export document" : "Resolve validation errors to export"}>
+            <Icon size={15}><path d="M6 9V2h12v7M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2M6 14h12v8H6z" /></Icon>
+            Export
+          </Link>
         </div>
       </header>
 
-      <section className="mx-auto max-w-[1800px] px-4 py-6 sm:px-6">
-        <div className={`grid gap-6 ${getGridClasses()}`}>
-          {showSectionRail && !isFocusMode && (
+      {/* progress strip */}
+      <div className="flex flex-shrink-0 items-center gap-3 border-b px-5 py-2" style={{ borderColor: "var(--devdoc-border)", backgroundColor: "var(--devdoc-bg)" }}>
+        <span className="font-mono text-[11px] text-[var(--devdoc-muted)]">{completedSectionCount} / {sections.length} sections</span>
+        <div className="h-1 flex-1 overflow-hidden rounded-full" style={{ backgroundColor: "var(--devdoc-surface-inset)" }}>
+          <div className="h-full rounded-full" style={{ width: `${pct}%`, backgroundColor: "var(--devdoc-highlight)", transition: "width 400ms ease" }} />
+        </div>
+        <span className="font-mono text-[11px]" style={{ color: "var(--devdoc-highlight)" }}>{pct}%</span>
+      </div>
+
+      {/* body */}
+      <div className="flex min-h-0 flex-1">
+        {showSectionRail && !isFocusMode && (
+          <div className="w-[300px] flex-shrink-0 overflow-y-auto border-r" style={{ borderColor: "var(--devdoc-border)", backgroundColor: "var(--devdoc-surface-inset)" }}>
             <DocumentSectionSidebar
               sections={sections}
               selectedSectionId={selectedSectionId}
               onSelectSection={handleSelectSection}
-              completionPercent={document.completionPercent}
               completedCount={completedSectionCount}
             />
-          )}
+          </div>
+        )}
+
+        <div className="min-w-0 flex-1 overflow-y-auto">
           <DocumentEditorPanel
             section={selectedSection}
             editorContent={editorContent}
-            hasUnsavedChanges={hasUnsavedChanges}
+            onChangeContent={handleChangeContent}
+            onSave={handleSaveSection}
+            onSaveAndNext={handleSaveAndNext}
+            onPrevious={handlePreviousSection}
+            onNext={handleNextSection}
+            canGoPrevious={canGoPrevious}
+            canGoNext={canGoNext}
             isSaving={isSaving}
             saveError={saveError}
             saveSuccess={saveSuccess}
-            canGoPrevious={canGoPrevious}
-            canGoNext={canGoNext}
+            hasUnsavedChanges={hasUnsavedChanges}
             activeRibbonTab={activeRibbonTab}
             setActiveRibbonTab={setActiveRibbonTab}
             editorFontFamily={editorFontFamily}
@@ -426,25 +283,20 @@ function DocumentEditor() {
             setShowGuidancePanel={setShowGuidancePanel}
             setWritingIssues={setWritingIssues}
             projectId={projectId}
-            onChangeContent={handleChangeContent}
-            onSave={handleSaveSection}
-            onSaveAndNext={handleSaveAndNext}
-            onPrevious={handlePreviousSection}
-            onNext={handleNextSection}
           />
-          {showGuidancePanel && !isFocusMode && (
-            <DocumentGuidancePanel 
-              section={selectedSection} 
-              writingIssues={writingIssues}
+        </div>
+
+        {showGuidancePanel && !isFocusMode && (
+          <div className="w-[320px] flex-shrink-0 overflow-y-auto border-l p-4" style={{ borderColor: "var(--devdoc-border)", backgroundColor: "var(--devdoc-surface-inset)" }}>
+            <DocumentGuidancePanel
+              section={selectedSection}
               linkedArtefacts={linkedArtefacts}
               isLoadingLinkedArtefacts={isLoadingLinkedArtefacts}
               linkedArtefactsError={linkedArtefactsError}
             />
-          )}
-        </div>
-      </section>
+          </div>
+        )}
+      </div>
     </main>
   );
 }
-
-export default DocumentEditor;
