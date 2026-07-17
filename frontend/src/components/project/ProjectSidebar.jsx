@@ -1,5 +1,7 @@
-import { NavLink } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { NavLink, useLocation } from "react-router-dom";
 import { useProject } from "../../context/ProjectContext";
+import { Tooltip } from "../ui";
 
 const OverviewIcon = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" className="h-[17px] w-[17px] shrink-0">
@@ -67,12 +69,6 @@ const DiagramsIcon = () => (
   </svg>
 );
 
-const VersionsIcon = () => (
-  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" className="h-[17px] w-[17px] shrink-0">
-    <circle cx="12" cy="12" r="10" /><polyline points="12 6 12 12 16 14" />
-  </svg>
-);
-
 const AnalyticsIcon = () => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" className="h-[17px] w-[17px] shrink-0">
     <line x1="18" y1="20" x2="18" y2="10" /><line x1="12" y1="20" x2="12" y2="4" /><line x1="6" y1="20" x2="6" y2="14" /><line x1="2" y1="20" x2="22" y2="20" />
@@ -85,84 +81,270 @@ const SettingsIcon = () => (
   </svg>
 );
 
-const navigationItems = [
-  { Icon: OverviewIcon, label: "Overview", path: "", exact: true },
-  { Icon: BusinessObjectivesIcon, label: "Objectives", path: "business-objectives" },
-  { Icon: DocumentsIcon, label: "Documents", path: "documents" },
-  { Icon: TemplatesIcon, label: "Templates", path: "templates" },
-  { Icon: UseCasesIcon, label: "Use Cases", path: "use-cases" },
-  { Icon: RequirementsIcon, label: "Requirements", path: "requirements" },
-  { Icon: DesignElementsIcon, label: "Design Elements", path: "design-elements" },
-  { Icon: TestCasesIcon, label: "Test Cases", path: "test-cases" },
-  { Icon: TraceabilityIcon, label: "Traceability", path: "traceability" },
-  { Icon: ValidationIcon, label: "Validation", path: "validation" },
-  { Icon: DiagramsIcon, label: "Diagrams", path: "diagrams" },
-  { Icon: VersionsIcon, label: "Versions", path: "versions" },
-  { Icon: AnalyticsIcon, label: "Analytics", path: "analytics" },
-  { Icon: SettingsIcon, label: "Settings", path: "settings" },
+const CollapseIcon = ({ collapsed }) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" className="h-4 w-4 shrink-0">
+    <rect x="3" y="3" width="18" height="18" rx="2" /><line x1="9" y1="3" x2="9" y2="21" />
+    <path d={collapsed ? "M14 10l2 2-2 2" : "M17 10l-2 2 2 2"} />
+  </svg>
+);
+
+const MenuIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5 shrink-0">
+    <line x1="3" y1="6" x2="21" y2="6" /><line x1="3" y1="12" x2="21" y2="12" /><line x1="3" y1="18" x2="21" y2="18" />
+  </svg>
+);
+
+const CloseIcon = () => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.75" strokeLinecap="round" strokeLinejoin="round" className="h-5 w-5 shrink-0">
+    <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
+  </svg>
+);
+
+const navigationGroups = [
+  {
+    label: "Workspace",
+    items: [
+      { Icon: OverviewIcon, label: "Overview", path: "", exact: true },
+      { Icon: BusinessObjectivesIcon, label: "Objectives", path: "business-objectives" },
+    ],
+  },
+  {
+    label: "Documents",
+    items: [
+      { Icon: DocumentsIcon, label: "Documents", path: "documents" },
+      { Icon: TemplatesIcon, label: "Templates", path: "templates" },
+      { Icon: DiagramsIcon, label: "Diagrams", path: "diagrams" },
+    ],
+  },
+  {
+    label: "Specification",
+    items: [
+      { Icon: UseCasesIcon, label: "Use Cases", path: "use-cases" },
+      { Icon: RequirementsIcon, label: "Requirements", path: "requirements" },
+      { Icon: DesignElementsIcon, label: "Design Elements", path: "design-elements" },
+      { Icon: TestCasesIcon, label: "Test Cases", path: "test-cases" },
+    ],
+  },
+  {
+    label: "Quality",
+    items: [
+      { Icon: TraceabilityIcon, label: "Traceability", path: "traceability" },
+      { Icon: ValidationIcon, label: "Validation", path: "validation" },
+    ],
+  },
+  {
+    label: "Project",
+    items: [
+      { Icon: AnalyticsIcon, label: "Analytics", path: "analytics" },
+      { Icon: SettingsIcon, label: "Settings", path: "settings" },
+    ],
+  },
 ];
 
-function ProjectSidebar() {
+const COLLAPSE_KEY = "devdoc.sidebar.collapsed";
+
+function readCollapsed() {
+  try {
+    return localStorage.getItem(COLLAPSE_KEY) === "true";
+  } catch {
+    return false;
+  }
+}
+
+function NavItem({ to, exact, path, Icon, label, collapsed, onNavigate }) {
+  const link = (
+    <NavLink
+      to={to}
+      end={exact || !path}
+      onClick={onNavigate}
+      className={({ isActive }) =>
+        `devdoc-focus-ring group relative flex h-9 items-center gap-2.5 rounded-md text-[13px] font-medium transition-colors duration-150 ${
+          collapsed ? "justify-center px-0" : "px-2.5"
+        } ${
+          isActive
+            ? "bg-[var(--devdoc-primary-soft)] text-[var(--devdoc-primary)]"
+            : "text-[var(--devdoc-muted)] hover:bg-[var(--devdoc-surface-muted)] hover:text-[var(--devdoc-text-secondary)]"
+        }`
+      }
+    >
+      {({ isActive }) => (
+        <>
+          {isActive && (
+            <span
+              className="absolute left-0 top-1/2 h-5 w-0.5 -translate-y-1/2 rounded-full"
+              style={{ backgroundColor: "var(--devdoc-primary)" }}
+            />
+          )}
+          <Icon />
+          {collapsed ? null : <span className="truncate leading-none">{label}</span>}
+        </>
+      )}
+    </NavLink>
+  );
+
+  // Collapsed rail is icon-only, so the label has to surface on hover.
+  return collapsed ? (
+    <Tooltip content={label} side="right">
+      {link}
+    </Tooltip>
+  ) : (
+    link
+  );
+}
+
+function SidebarBody({ collapsed, onToggleCollapse, onNavigate }) {
   const { projectId, project } = useProject();
 
   return (
-    <aside
-      className="border-b lg:sticky lg:top-[52px] lg:h-[calc(100vh-52px)] lg:w-56 lg:shrink-0 lg:border-b-0 lg:border-r lg:flex lg:flex-col"
-      style={{
-        borderColor: "var(--devdoc-border)",
-        backgroundColor: "var(--devdoc-sidebar)",
-      }}
-    >
-      {/* Project header */}
+    <>
       <div
-        className="hidden border-b px-4 py-3 lg:block"
+        className="flex items-center gap-2 border-b px-3 py-3"
         style={{ borderColor: "var(--devdoc-border)" }}
       >
-        <p className="devdoc-label mb-1.5">Workspace</p>
-        <p
-          className="truncate text-[13px] font-bold leading-snug"
-          style={{ color: "var(--devdoc-text)" }}
-          title={project?.name}
-        >
-          {project?.name || "Project"}
-        </p>
+        {collapsed ? null : (
+          <div className="min-w-0 flex-1">
+            <p className="devdoc-label mb-1.5">Workspace</p>
+            <p
+              className="truncate text-[13px] font-bold leading-snug"
+              style={{ color: "var(--devdoc-text)" }}
+              title={project?.name}
+            >
+              {project?.name || "Project"}
+            </p>
+          </div>
+        )}
+        {onToggleCollapse ? (
+          <Tooltip content={collapsed ? "Expand sidebar" : "Collapse sidebar"} side="right">
+            <button
+              type="button"
+              className="devdoc-icon-button devdoc-focus-ring h-8 w-8 shrink-0"
+              onClick={onToggleCollapse}
+              aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+              aria-expanded={!collapsed}
+            >
+              <CollapseIcon collapsed={collapsed} />
+            </button>
+          </Tooltip>
+        ) : null}
       </div>
 
-      {/* Navigation */}
-      <nav className="flex gap-1 overflow-x-auto p-2 lg:grid lg:gap-0.5 lg:overflow-visible lg:flex-1 lg:overflow-y-auto">
-        {navigationItems.map(({ Icon, label, path, exact }) => {
-          const to = path ? `/projects/${projectId}/${path}` : `/projects/${projectId}`;
-
-          return (
-            <NavLink
-              key={label}
-              to={to}
-              end={exact || !path}
-              className={({ isActive }) =>
-                `group relative flex min-w-max items-center gap-2.5 rounded-md px-2.5 py-[7px] text-[13px] font-medium transition-all duration-150 lg:min-w-0 ${
-                  isActive
-                    ? "bg-[var(--devdoc-primary-soft)] text-[var(--devdoc-primary)]"
-                    : "text-[var(--devdoc-muted)] hover:bg-[var(--devdoc-surface-muted)] hover:text-[var(--devdoc-text-secondary)]"
-                }`
-              }
-            >
-              {({ isActive }) => (
-                <>
-                  {isActive && (
-                    <span
-                      className="absolute left-0 top-1/2 hidden h-5 w-0.5 -translate-y-1/2 rounded-full lg:block"
-                      style={{ backgroundColor: "var(--devdoc-primary)" }}
-                    />
-                  )}
-                  <Icon />
-                  <span className="leading-none">{label}</span>
-                </>
-              )}
-            </NavLink>
-          );
-        })}
+      <nav className="flex-1 overflow-y-auto overflow-x-hidden p-2">
+        {navigationGroups.map((group) => (
+          <div key={group.label} className="mb-3 last:mb-0">
+            {collapsed ? (
+              <div className="mx-2 mb-2 h-px" style={{ backgroundColor: "var(--devdoc-border)" }} />
+            ) : (
+              <p className="devdoc-label px-2.5 pb-1.5">{group.label}</p>
+            )}
+            <div className="grid gap-0.5">
+              {group.items.map((item) => (
+                <NavItem
+                  key={item.label}
+                  {...item}
+                  to={item.path ? `/projects/${projectId}/${item.path}` : `/projects/${projectId}`}
+                  collapsed={collapsed}
+                  onNavigate={onNavigate}
+                />
+              ))}
+            </div>
+          </div>
+        ))}
       </nav>
-    </aside>
+    </>
+  );
+}
+
+function ProjectSidebar() {
+  const [collapsed, setCollapsed] = useState(readCollapsed);
+  const [drawerOpen, setDrawerOpen] = useState(false);
+  const location = useLocation();
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(COLLAPSE_KEY, String(collapsed));
+    } catch {
+      // Private mode or blocked storage: collapse still works, just not across reloads.
+    }
+  }, [collapsed]);
+
+  // The drawer overlays content, so it must not survive a navigation.
+  useEffect(() => {
+    setDrawerOpen(false);
+  }, [location.pathname]);
+
+  useEffect(() => {
+    if (!drawerOpen) return undefined;
+    const onKeyDown = (event) => event.key === "Escape" && setDrawerOpen(false);
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [drawerOpen]);
+
+  return (
+    <>
+      {/* Mobile: hamburger bar. The sidebar itself is an overlay drawer below lg. */}
+      <div
+        className="flex items-center gap-2 border-b px-3 py-2 lg:hidden"
+        style={{ borderColor: "var(--devdoc-border)", backgroundColor: "var(--devdoc-sidebar)" }}
+      >
+        <button
+          type="button"
+          className="devdoc-icon-button devdoc-focus-ring"
+          onClick={() => setDrawerOpen(true)}
+          aria-label="Open project navigation"
+          aria-expanded={drawerOpen}
+        >
+          <MenuIcon />
+        </button>
+        <span className="devdoc-label">Project menu</span>
+      </div>
+
+      {drawerOpen ? (
+        <div
+          className="fixed inset-0 lg:hidden"
+          style={{ zIndex: "var(--devdoc-z-drawer)", backgroundColor: "rgba(0,0,0,0.45)" }}
+          onClick={() => setDrawerOpen(false)}
+          aria-hidden="true"
+        />
+      ) : null}
+
+      <aside
+        className={`fixed inset-y-0 left-0 flex w-64 flex-col border-r transition-transform duration-200 ease-out lg:hidden ${
+          drawerOpen ? "translate-x-0 shadow-2xl" : "-translate-x-full"
+        }`}
+        style={{
+          zIndex: "var(--devdoc-z-drawer)",
+          borderColor: "var(--devdoc-border)",
+          backgroundColor: "var(--devdoc-sidebar)",
+        }}
+        aria-label="Project navigation"
+        aria-hidden={!drawerOpen}
+      >
+        <div className="flex items-center justify-end px-3 py-2 lg:hidden">
+          <button
+            type="button"
+            className="devdoc-icon-button devdoc-focus-ring"
+            onClick={() => setDrawerOpen(false)}
+            aria-label="Close project navigation"
+          >
+            <CloseIcon />
+          </button>
+        </div>
+        {/* Drawer is always expanded; collapsing only applies to the docked rail. */}
+        <SidebarBody collapsed={false} onNavigate={() => setDrawerOpen(false)} />
+      </aside>
+
+      <aside
+        className="hidden shrink-0 border-r transition-[width] duration-200 ease-out lg:sticky lg:top-[var(--devdoc-topbar-h)] lg:flex lg:h-[calc(100vh-var(--devdoc-topbar-h))] lg:flex-col"
+        style={{
+          width: collapsed ? "var(--devdoc-sidebar-w-collapsed)" : "var(--devdoc-sidebar-w)",
+          borderColor: "var(--devdoc-border)",
+          backgroundColor: "var(--devdoc-sidebar)",
+        }}
+        aria-label="Project navigation"
+      >
+        <SidebarBody collapsed={collapsed} onToggleCollapse={() => setCollapsed((value) => !value)} />
+      </aside>
+    </>
   );
 }
 
