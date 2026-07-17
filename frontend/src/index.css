@@ -171,6 +171,19 @@ body {
   line-height: 1.6;
 }
 
+/* Keyboard navigation must look intentional: every interactive element gets a
+   ring unless it opts out with .devdoc-focus-none. Mouse clicks are unaffected
+   (:focus-visible, not :focus). */
+:where(a[href], button, input, select, textarea, summary, [tabindex]:not([tabindex="-1"])):focus-visible {
+  outline: 2px solid var(--devdoc-border-focus);
+  outline-offset: 2px;
+  border-radius: var(--devdoc-radius-sm);
+}
+
+.devdoc-focus-none:focus-visible {
+  outline: none;
+}
+
 :where(h1, h2, h3, h4),
 .font-headline {
   color: var(--devdoc-text);

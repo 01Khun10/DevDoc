@@ -65,7 +65,7 @@ export function Button({
   return (
     <button
       type="button"
-      className={`inline-flex items-center justify-center gap-2 rounded-lg font-bold transition hover:-translate-y-0.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[var(--devdoc-primary)] disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:translate-y-0 ${BUTTON_SIZES[size] || BUTTON_SIZES.md} ${className}`}
+      className={`inline-flex items-center justify-center gap-2 rounded-lg font-bold shadow-[var(--devdoc-shadow-xs)] transition-[transform,box-shadow,background-color,opacity] duration-150 ease-out hover:-translate-y-px hover:shadow-[var(--devdoc-shadow)] active:translate-y-0 active:shadow-none disabled:cursor-not-allowed disabled:opacity-40 disabled:shadow-none disabled:hover:translate-y-0 ${BUTTON_SIZES[size] || BUTTON_SIZES.md} ${className}`}
       style={{ ...BUTTON_VARIANTS[variant], ...style }}
       disabled={disabled || loading}
       aria-busy={loading || undefined}
@@ -77,10 +77,12 @@ export function Button({
   );
 }
 
-export function Card({ className = "", style, children, ...props }) {
+export function Card({ interactive = false, header, footer, className = "", style, children, ...props }) {
   return (
     <div
-      className={`rounded-xl border p-4 ${className}`}
+      className={`rounded-xl border shadow-[var(--devdoc-shadow-xs)] ${
+        interactive ? "devdoc-hover-lift" : ""
+      } ${header || footer ? "" : "p-4"} ${className}`}
       style={{
         borderColor: "var(--devdoc-border)",
         backgroundColor: "var(--devdoc-surface)",
@@ -88,7 +90,20 @@ export function Card({ className = "", style, children, ...props }) {
       }}
       {...props}
     >
-      {children}
+      {header ? (
+        <div className="border-b px-4 py-3" style={{ borderColor: "var(--devdoc-border)" }}>
+          {header}
+        </div>
+      ) : null}
+      {header || footer ? <div className="p-4">{children}</div> : children}
+      {footer ? (
+        <div
+          className="border-t px-4 py-3"
+          style={{ borderColor: "var(--devdoc-border)", backgroundColor: "var(--devdoc-surface-muted)" }}
+        >
+          {footer}
+        </div>
+      ) : null}
     </div>
   );
 }
@@ -447,14 +462,18 @@ export function Modal({ isOpen, title, onClose, children, footer }) {
       aria-label={title}
     >
       <div
-        className="absolute inset-0"
-        style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
+        className="devdoc-fade-in absolute inset-0"
+        style={{ backgroundColor: "rgba(15, 23, 42, 0.45)", backdropFilter: "blur(2px)" }}
         onClick={onClose}
       />
       <div
         ref={panelRef}
-        className="relative max-h-[85vh] w-full max-w-lg overflow-y-auto rounded-2xl border p-6 shadow-xl"
-        style={{ borderColor: "var(--devdoc-border)", backgroundColor: "var(--devdoc-surface)" }}
+        className="devdoc-scale-in relative max-h-[85vh] w-full max-w-lg overflow-y-auto rounded-2xl border p-6"
+        style={{
+          borderColor: "var(--devdoc-border)",
+          backgroundColor: "var(--devdoc-surface)",
+          boxShadow: "var(--devdoc-shadow-lg)"
+        }}
       >
         <div className="flex items-start justify-between gap-4">
           <h2 className="font-headline text-lg font-extrabold" style={{ color: "var(--devdoc-text)" }}>
