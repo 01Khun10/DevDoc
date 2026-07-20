@@ -9,6 +9,7 @@ const {
   getProjects,
   getProjectById,
   updateProject,
+  deleteProject,
   getProjectOverview: getProjectOverviewService,
   listActivityLogs
 } = require("../services/projectService");
@@ -101,11 +102,24 @@ async function getActivity(req, res) {
   }
 }
 
+async function deleteOne(req, res) {
+  try {
+    await deleteProject(req.user.id, req.params.id);
+    return res.status(200).json({ message: "Project deleted" });
+  } catch (error) {
+    if (error.code === PROJECT_NOT_FOUND) {
+      return sendError(res, 404, "Project not found");
+    }
+    return sendUnexpectedError(res, error, "projectController.deleteOne");
+  }
+}
+
 module.exports = {
   create,
   list,
   get,
   update,
+  deleteOne,
   getProjectOverview,
   getActivity
 };

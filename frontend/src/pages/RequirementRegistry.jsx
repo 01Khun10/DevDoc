@@ -1,437 +1,242 @@
-import { useEffect, useMemo, useState } from "react";
-import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Icon } from "../components/ui";
+import { useParams, useSearchParams } from "react-router-dom";
+import { useRequirements, useCreateRequirement, useUpdateRequirement } from "../api/requirements";
 import CreateRequirementForm from "../components/CreateRequirementForm";
-import RequirementCard from "../components/RequirementCard";
-import { RegistryControls, sortAndSearch } from "../components/RegistryControls";
-import { Modal, SkeletonCard } from "../components/ui";
-import useKeyboardNav from "../hooks/useKeyboardNav";
-import { useNotify } from "../context/NotificationContext";
-import { useProject } from "../context/ProjectContext";
-import {
-  useCreateRequirement,
-  useDeleteRequirement,
-  useRequirements,
-  useUpdateRequirement
-} from "../api/requirements";
-import useAuthGuard from "../api/useAuthGuard";
 
-const FILTERS = [
-  ["ALL", "All"],
-  ["FR", "Functional"],
-  ["NFR", "Non-Functional"],
-  ["HIGH", "High Priority"],
-  ["APPROVED_VERIFIED", "Approved / Verified"]
-];
 
-const STATUS_OPTIONS = ["PROPOSED", "APPROVED", "IMPLEMENTED", "VERIFIED"];
+const STATUSES = ["PROPOSED", "APPROVED", "IMPLEMENTED", "VERIFIED"];
+const PRIORITIES = ["HIGH", "MEDIUM", "LOW"];
+const STATUS_COLOR = {
+  PROPOSED: "var(--devdoc-muted)", APPROVED: "var(--devdoc-primary)",
+  IMPLEMENTED: "var(--devdoc-highlight)", VERIFIED: "var(--devdoc-success)",
+};
+const PRIORITY_COLOR = { HIGH: "var(--devdoc-error)", MEDIUM: "var(--devdoc-warning)", LOW: "var(--devdoc-muted)" };
 
-function RequirementRegistry() {
-  const { id } = useParams();
-  const navigate = useNavigate();
-  const { project } = useProject();
-  const { notify } = useNotify();
-  const [searchParams] = useSearchParams();
-  const highlightId = searchParams.get("highlight") || "";
-  const [activeFilter, setActiveFilter] = useState("ALL");
-  const [sort, setSort] = useState("newest");
-  const [search, setSearch] = useState("");
-  const [selectedIds, setSelectedIds] = useState(new Set());
-  const [confirmBulkDelete, setConfirmBulkDelete] = useState(false);
-  const [isBulkWorking, setIsBulkWorking] = useState(false);
-  const { data: requirements = [], isLoading, error, refetch } = useRequirements(id);
-
-  // Validation deep link: scroll the highlighted requirement into view with a 2.5s glow.
+function InlineSelect({ value, options, colorMap, onChange, pending }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
   useEffect(() => {
-    if (!highlightId || isLoading) return;
-    const element = document.getElementById(`artifact-${highlightId}`);
-    if (!element) return;
-    element.scrollIntoView({ behavior: "smooth", block: "center" });
-    element.style.outline = "2px solid var(--devdoc-primary)";
-    element.style.outlineOffset = "3px";
-    const timer = setTimeout(() => {
-      element.style.outline = "";
-      element.style.outlineOffset = "";
-    }, 2500);
-    return () => clearTimeout(timer);
-  }, [highlightId, isLoading]);
-  useAuthGuard(error);
-  const createMutation = useCreateRequirement(id);
-  const updateMutation = useUpdateRequirement(id);
-  const deleteMutation = useDeleteRequirement(id);
-  const errorType = error ? (error.status === 404 ? "not-found" : "load-error") : "";
-
-  const summary = useMemo(
-    () => ({
-      total: requirements.length,
-      fr: requirements.filter((r) => r.type === "FR").length,
-      nfr: requirements.filter((r) => r.type === "NFR").length,
-      highPriority: requirements.filter((r) => r.priority === "HIGH").length,
-      approvedOrVerified: requirements.filter((r) => ["APPROVED", "VERIFIED"].includes(r.status)).length,
-    }),
-    [requirements]
-  );
-
-  const filteredRequirements = useMemo(() => {
-    let list = requirements;
-    if (activeFilter === "FR") list = list.filter((r) => r.type === "FR");
-    else if (activeFilter === "NFR") list = list.filter((r) => r.type === "NFR");
-    else if (activeFilter === "HIGH") list = list.filter((r) => r.priority === "HIGH");
-    else if (activeFilter === "APPROVED_VERIFIED")
-      list = list.filter((r) => ["APPROVED", "VERIFIED"].includes(r.status));
-    return sortAndSearch(list, { sort, search, withPriority: true });
-  }, [activeFilter, requirements, sort, search]);
-
-  async function handleDeleteRequirement(requirement) {
-    if (!window.confirm(`Delete requirement ${requirement.code}?`)) return;
-    try {
-      await deleteMutation.mutateAsync(requirement.id);
-      notify(`Requirement ${requirement.code} deleted.`, { tone: "success" });
-    } catch (mutationError) {
-      notify(mutationError.message || "Could not delete requirement.", { tone: "error" });
-    }
-  }
-
-  const { focusedId } = useKeyboardNav(filteredRequirements, {
-    onEdit: (requirement) =>
-      document.getElementById(`artifact-${requirement.id}`)?.querySelector("input, textarea")?.focus(),
-    onDelete: handleDeleteRequirement
-  });
-
-  async function handleCreateRequirement(input) {
-    return createMutation.mutateAsync(input);
-  }
-
-  function handleRequirementCreated() {
-    setActiveFilter("ALL");
-  }
-
-  async function handleUpdateRequirement(requirementId, input) {
-    return updateMutation.mutateAsync({ requirementId, ...input });
-  }
-
-  function toggleSelected(requirementId) {
-    setSelectedIds((current) => {
-      const next = new Set(current);
-      if (next.has(requirementId)) next.delete(requirementId);
-      else next.add(requirementId);
-      return next;
-    });
-  }
-
-  const selectedRequirements = requirements.filter((r) => selectedIds.has(r.id));
-
-  async function handleBulkStatus(status) {
-    if (!status || isBulkWorking) return;
-    setIsBulkWorking(true);
-    try {
-      // ponytail: serial per-item PUTs; batch endpoint if lists get long
-      for (const requirement of selectedRequirements) {
-        await updateMutation.mutateAsync({ requirementId: requirement.id, status });
-      }
-      notify(`${selectedRequirements.length} requirement(s) set to ${status}.`, { tone: "success" });
-      setSelectedIds(new Set());
-    } catch (mutationError) {
-      notify(mutationError.message || "Bulk status change failed.", { tone: "error" });
-    } finally {
-      setIsBulkWorking(false);
-    }
-  }
-
-  async function handleBulkDelete() {
-    if (isBulkWorking) return;
-    setIsBulkWorking(true);
-    try {
-      for (const requirement of selectedRequirements) {
-        await deleteMutation.mutateAsync(requirement.id);
-      }
-      notify(`${selectedRequirements.length} requirement(s) deleted.`, { tone: "success" });
-      setSelectedIds(new Set());
-      setConfirmBulkDelete(false);
-    } catch (mutationError) {
-      notify(mutationError.message || "Bulk delete failed.", { tone: "error" });
-    } finally {
-      setIsBulkWorking(false);
-    }
-  }
-
-  if (errorType === "not-found") {
-    return (
-      <main className="flex min-h-screen items-center justify-center px-6" style={{ backgroundColor: "var(--devdoc-bg)" }}>
-        <div className="devdoc-card-border max-w-md p-8 text-center">
-          <p className="font-headline text-xl font-extrabold">Project not found</p>
-          <button className="devdoc-gradient-button mt-6" onClick={() => navigate("/dashboard")}>Back to dashboard</button>
-        </div>
-      </main>
-    );
-  }
-
-  if (errorType === "load-error") {
-    return (
-      <main className="flex min-h-screen items-center justify-center px-6" style={{ backgroundColor: "var(--devdoc-bg)" }}>
-        <div className="devdoc-card-border max-w-md p-8 text-center">
-          <p className="font-headline text-xl font-extrabold">Could not load requirements</p>
-          <p className="mt-2 text-sm" style={{ color: "var(--devdoc-muted)" }}>Check your connection and try again.</p>
-          <button className="devdoc-gradient-button mt-6" onClick={() => refetch()}>Retry</button>
-        </div>
-      </main>
-    );
-  }
-
+    function h(e) { if (ref.current && !ref.current.contains(e.target)) setOpen(false); }
+    if (open) document.addEventListener("mousedown", h);
+    return () => document.removeEventListener("mousedown", h);
+  }, [open]);
+  const color = colorMap[value] || "var(--devdoc-muted)";
   return (
-    <main
-      className="min-h-screen devdoc-fade-in"
-      style={{ backgroundColor: "var(--devdoc-bg)", color: "var(--devdoc-text)" }}
-    >
-      {/* Page header */}
-      <div
-        className="border-b px-6 py-5"
-        style={{ borderColor: "var(--devdoc-border)", backgroundColor: "var(--devdoc-surface)" }}
-      >
-        <p className="devdoc-label" style={{ color: "var(--devdoc-primary)" }}>{project.name}</p>
-        <h1 className="font-headline mt-1.5 text-2xl font-extrabold tracking-tight">Requirements Registry</h1>
-        <p className="mt-1 text-sm leading-6" style={{ color: "var(--devdoc-muted)" }}>
-          Capture functional and non-functional requirements, then link them to design, tests, and validation.
-          <span className="ml-2 hidden text-xs sm:inline" style={{ color: "var(--devdoc-muted)" }}>
-            Tip: J/K to navigate, E to edit, D to delete.
-          </span>
-        </p>
-      </div>
-
-      <div className="mx-auto max-w-5xl px-6 py-6">
-        {isLoading ? (
-          <div className="grid gap-3">
-            <SkeletonCard lines={2} />
-            <SkeletonCard lines={4} />
-            <SkeletonCard lines={4} />
-            <SkeletonCard lines={4} />
-          </div>
-        ) : (
-          <>
-            {/* Stats */}
-            <div className="mb-6 grid gap-3 grid-cols-2 sm:grid-cols-5">
-              {[
-                { label: "Total", value: summary.total, color: "var(--devdoc-text)" },
-                { label: "Functional", value: summary.fr, color: "var(--devdoc-primary)" },
-                { label: "Non-Functional", value: summary.nfr, color: "var(--devdoc-info)" },
-                { label: "High Priority", value: summary.highPriority, color: "var(--devdoc-warning)" },
-                { label: "Approved / Verified", value: summary.approvedOrVerified, color: "var(--devdoc-success)" },
-              ].map((stat) => (
-                <div
-                  key={stat.label}
-                  className="rounded-xl border p-4 text-center"
-                  style={{ borderColor: "var(--devdoc-border)", backgroundColor: "var(--devdoc-surface)" }}
-                >
-                  <p className="font-headline text-2xl font-extrabold" style={{ color: stat.color }}>
-                    {stat.value}
-                  </p>
-                  <p className="mt-1 text-xs font-semibold" style={{ color: "var(--devdoc-muted)" }}>
-                    {stat.label}
-                  </p>
-                </div>
-              ))}
-            </div>
-
-            {/* Create form */}
-            <section
-              id="create-requirement"
-              className="mb-6 rounded-xl border p-5"
-              style={{ borderColor: "var(--devdoc-border)", backgroundColor: "var(--devdoc-surface)" }}
-            >
-              <h2 className="font-headline mb-4 text-base font-extrabold">Create requirement</h2>
-              <CreateRequirementForm
-                onCreate={handleCreateRequirement}
-                onCreated={handleRequirementCreated}
-              />
-            </section>
-
-            {/* Filter + list */}
-            <section>
-              <div className="mb-4 flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
-                <div>
-                  <h2 className="font-headline text-lg font-extrabold">Requirements</h2>
-                  <p className="mt-1 text-sm" style={{ color: "var(--devdoc-muted)" }}>
-                    Showing {filteredRequirements.length} of {requirements.length}
-                  </p>
-                </div>
-                <div className="flex flex-wrap items-center gap-3">
-                  <RegistryControls
-                    sort={sort}
-                    onSortChange={setSort}
-                    search={search}
-                    onSearchChange={setSearch}
-                    withPriority
-                  />
-                  <div className="flex flex-wrap gap-1.5">
-                    {FILTERS.map(([value, label]) => (
-                      <button
-                        key={value}
-                        className="rounded-lg px-3 py-1.5 text-xs font-semibold transition-all duration-150"
-                        style={{
-                          backgroundColor: activeFilter === value ? "var(--devdoc-primary)" : "var(--devdoc-surface-muted)",
-                          color: activeFilter === value ? "#ffffff" : "var(--devdoc-muted)",
-                          border: `1px solid ${activeFilter === value ? "var(--devdoc-primary)" : "var(--devdoc-border)"}`,
-                        }}
-                        type="button"
-                        onClick={() => setActiveFilter(value)}
-                      >
-                        {label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              {requirements.length === 0 ? (
-                <div
-                  className="rounded-xl border p-12 text-center"
-                  style={{ borderColor: "var(--devdoc-border)", backgroundColor: "var(--devdoc-surface)" }}
-                >
-                  <div
-                    className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl border"
-                    style={{
-                      backgroundColor: "var(--devdoc-primary-soft)",
-                      borderColor: "var(--devdoc-border)",
-                      color: "var(--devdoc-primary)",
-                    }}
-                  >
-                    <svg className="h-7 w-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.75" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2M9 12l2 2 4-4" />
-                    </svg>
-                  </div>
-                  <p className="font-headline text-lg font-extrabold">No requirements yet.</p>
-                  <p className="mx-auto mt-2 max-w-md text-sm leading-6" style={{ color: "var(--devdoc-muted)" }}>
-                    Start by capturing what the system must do. Use cases help you discover them — or add FRs and NFRs directly.
-                  </p>
-                  <div className="mt-6 flex flex-wrap justify-center gap-3">
-                    <Link className="devdoc-button-secondary" to={`/projects/${id}/use-cases`}>
-                      Browse Use Cases
-                    </Link>
-                    <a className="devdoc-gradient-button" href="#create-requirement">
-                      Add Requirement
-                    </a>
-                  </div>
-                </div>
-              ) : filteredRequirements.length === 0 ? (
-                <div
-                  className="rounded-xl border p-8 text-center text-sm"
-                  style={{ borderColor: "var(--devdoc-border)", color: "var(--devdoc-muted)" }}
-                >
-                  No requirements match this filter.
-                </div>
-              ) : (
-                <div className="grid gap-3">
-                  {filteredRequirements.map((requirement) => {
-                    const isSelected = selectedIds.has(requirement.id);
-                    return (
-                      <div
-                        key={requirement.id}
-                        id={`artifact-${requirement.id}`}
-                        className="group relative rounded-xl"
-                        style={
-                          focusedId === requirement.id
-                            ? { outline: "2px solid var(--devdoc-primary)", outlineOffset: "3px" }
-                            : undefined
-                        }
-                      >
-                        <input
-                          type="checkbox"
-                          className={`absolute -left-7 top-6 h-4 w-4 cursor-pointer accent-[var(--devdoc-primary)] transition-opacity ${
-                            isSelected || selectedIds.size > 0 ? "opacity-100" : "opacity-0 group-hover:opacity-100"
-                          }`}
-                          checked={isSelected}
-                          aria-label={`Select ${requirement.code}`}
-                          onChange={() => toggleSelected(requirement.id)}
-                        />
-                        <RequirementCard
-                          requirement={requirement}
-                          onUpdate={handleUpdateRequirement}
-                        />
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-            </section>
-
-            <div
-              className="mt-6 rounded-xl border px-5 py-4 text-sm"
-              style={{ borderColor: "var(--devdoc-border)", color: "var(--devdoc-muted)" }}
-            >
-              Use the Traceability Matrix to link requirements to document sections after creating them.
-            </div>
-          </>
-        )}
-      </div>
-
-      {/* Bulk action bar */}
-      {selectedIds.size > 0 ? (
-        <div
-          className="fixed bottom-6 left-1/2 z-40 flex -translate-x-1/2 items-center gap-3 rounded-xl border px-4 py-2.5 shadow-xl"
-          style={{ borderColor: "var(--devdoc-border)", backgroundColor: "var(--devdoc-surface)" }}
-        >
-          <span className="text-sm font-bold">{selectedIds.size} selected</span>
-          <select
-            className="devdoc-select h-9 text-sm"
-            value=""
-            disabled={isBulkWorking}
-            aria-label="Change status of selected"
-            onChange={(event) => handleBulkStatus(event.target.value)}
-          >
-            <option value="" disabled>Change status →</option>
-            {STATUS_OPTIONS.map((status) => (
-              <option key={status} value={status}>{status}</option>
-            ))}
-          </select>
-          <button
-            type="button"
-            className="rounded-lg px-3 py-1.5 text-sm font-bold disabled:opacity-40"
-            style={{ backgroundColor: "var(--devdoc-error-soft)", color: "var(--devdoc-error)" }}
-            disabled={isBulkWorking}
-            onClick={() => setConfirmBulkDelete(true)}
-          >
-            Delete selected
-          </button>
-          <button
-            type="button"
-            className="devdoc-icon-button h-7 w-7 text-xs"
-            aria-label="Clear selection"
-            onClick={() => setSelectedIds(new Set())}
-          >
-            ✕
-          </button>
+    <div ref={ref} className="relative">
+      <button onClick={(e) => { e.preventDefault(); setOpen((o) => !o); }} disabled={pending}
+        className="inline-flex items-center gap-1 rounded px-2 py-0.5 text-[11px] font-medium transition-colors disabled:opacity-60"
+        style={{ color, backgroundColor: `color-mix(in srgb, ${color} 14%, transparent)` }}>
+        {pending ? "…" : (value || "—").toLowerCase()}
+        <Icon size={11}><path d="M6 9l6 6 6-6" /></Icon>
+      </button>
+      {open && (
+        <div className="absolute left-0 top-full z-20 mt-1 min-w-[130px] overflow-hidden rounded-md border py-1 shadow-lg"
+          style={{ backgroundColor: "var(--devdoc-surface-2)", borderColor: "var(--devdoc-border)" }}>
+          {options.map((opt) => (
+            <button key={opt} onClick={(e) => { e.preventDefault(); onChange(opt); setOpen(false); }}
+              className="flex w-full items-center gap-2 px-3 py-1.5 text-left text-[12px] transition-colors hover:bg-[var(--devdoc-surface-inset)]">
+              <span className="h-2 w-2 rounded-full" style={{ backgroundColor: colorMap[opt] }} />
+              <span className="capitalize">{opt.toLowerCase()}</span>
+            </button>
+          ))}
         </div>
-      ) : null}
-
-      <Modal
-        isOpen={confirmBulkDelete}
-        title={`Delete ${selectedIds.size} requirement(s)?`}
-        onClose={() => setConfirmBulkDelete(false)}
-        footer={
-          <>
-            <button className="devdoc-button-secondary" type="button" onClick={() => setConfirmBulkDelete(false)}>
-              Cancel
-            </button>
-            <button
-              type="button"
-              className="rounded-lg px-4 py-2 text-sm font-bold disabled:opacity-40"
-              style={{ backgroundColor: "var(--devdoc-error)", color: "#ffffff" }}
-              disabled={isBulkWorking}
-              onClick={handleBulkDelete}
-            >
-              {isBulkWorking ? "Deleting..." : "Delete"}
-            </button>
-          </>
-        }
-      >
-        <p className="text-sm" style={{ color: "var(--devdoc-muted)" }}>
-          This permanently deletes the selected requirements and their traceability links:
-        </p>
-        <p className="mt-2 text-sm font-bold">
-          {selectedRequirements.map((r) => r.code).join(", ")}
-        </p>
-      </Modal>
-    </main>
+      )}
+    </div>
   );
 }
 
-export default RequirementRegistry;
+function Row({ req, highlight, onUpdate, pendingField }) {
+  const ref = useRef(null);
+  useEffect(() => {
+    if (highlight && ref.current) {
+      ref.current.scrollIntoView({ behavior: "smooth", block: "center" });
+      ref.current.style.outline = "2px solid var(--devdoc-primary)";
+      ref.current.style.outlineOffset = "3px";
+      const t = setTimeout(() => { if (ref.current) { ref.current.style.outline = ""; ref.current.style.outlineOffset = ""; } }, 2500);
+      return () => clearTimeout(t);
+    }
+  }, [highlight]);
+
+  const isFR = req.type === "FR";
+  const codeColor = isFR ? "var(--devdoc-artifact-fr)" : "var(--devdoc-artifact-nfr)";
+  const links = req.traceabilityLinks?.length ?? req._count?.traceabilityLinks ?? 0;
+
+  return (
+    <div ref={ref} className="flex items-center gap-3 border-t px-4 py-3 transition-colors first:border-t-0 hover:bg-[var(--devdoc-surface-inset)]"
+      style={{ borderColor: "var(--devdoc-border)" }}>
+      <span className="font-mono text-[12px] font-medium" style={{ color: codeColor }}>{req.code}</span>
+      <div className="min-w-0 flex-1">
+        <p className="truncate text-sm">{req.title}</p>
+        {req.description && <p className="truncate text-[12px] text-[var(--devdoc-muted)]">{req.description}</p>}
+      </div>
+      <InlineSelect value={req.status} options={STATUSES} colorMap={STATUS_COLOR}
+        pending={pendingField === "status"} onChange={(v) => onUpdate({ status: v })} />
+      <InlineSelect value={req.priority} options={PRIORITIES} colorMap={PRIORITY_COLOR}
+        pending={pendingField === "priority"} onChange={(v) => onUpdate({ priority: v })} />
+      {links > 0 ? (
+        <span className="rounded px-2 py-0.5 font-mono text-[11px] text-[var(--devdoc-muted)]"
+          style={{ backgroundColor: "var(--devdoc-surface-inset)" }}>{links} link{links === 1 ? "" : "s"}</span>
+      ) : (
+        <span className="rounded px-2 py-0.5 font-mono text-[11px]"
+          style={{ color: "var(--devdoc-error)", backgroundColor: "var(--devdoc-error-soft)" }}>orphan</span>
+      )}
+    </div>
+  );
+}
+
+function SkeletonRow() {
+  return (
+    <div className="flex items-center gap-3 border-t px-4 py-3" style={{ borderColor: "var(--devdoc-border)" }}>
+      <div className="devdoc-skeleton h-4 w-14 rounded" />
+      <div className="flex-1"><div className="devdoc-skeleton h-4 w-1/2 rounded" /></div>
+      <div className="devdoc-skeleton h-5 w-16 rounded" />
+      <div className="devdoc-skeleton h-5 w-14 rounded" />
+    </div>
+  );
+}
+
+export default function RequirementRegistry() {
+  const { id } = useParams();
+  const [searchParams] = useSearchParams();
+  const highlightId = searchParams.get("highlight");
+
+  const { data: requirements = [], isLoading, error, refetch } = useRequirements(id);
+  const createMutation = useCreateRequirement(id);
+  const updateMutation = useUpdateRequirement(id);
+
+  const [filter, setFilter] = useState("ALL");
+  const [sort, setSort] = useState("newest");
+  const [query, setQuery] = useState("");
+  const [createOpen, setCreateOpen] = useState(false);
+  const [pending, setPending] = useState({}); // { [reqId]: fieldName }
+
+  const counts = useMemo(() => ({
+    all: requirements.length,
+    fr: requirements.filter((r) => r.type === "FR").length,
+    nfr: requirements.filter((r) => r.type === "NFR").length,
+  }), [requirements]);
+
+  const shown = useMemo(() => {
+    let list = [...requirements];
+    if (filter === "FR") list = list.filter((r) => r.type === "FR");
+    if (filter === "NFR") list = list.filter((r) => r.type === "NFR");
+    const q = query.trim().toLowerCase();
+    if (q) list = list.filter((r) => `${r.code} ${r.title} ${r.description || ""}`.toLowerCase().includes(q));
+    if (sort === "code") list.sort((a, b) => (a.code || "").localeCompare(b.code || ""));
+    else if (sort === "priority") {
+      const rank = { HIGH: 0, MEDIUM: 1, LOW: 2 };
+      list.sort((a, b) => (rank[a.priority] ?? 3) - (rank[b.priority] ?? 3));
+    } else if (sort === "oldest") list.sort((a, b) => new Date(a.createdAt || 0) - new Date(b.createdAt || 0));
+    else list.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+    return list;
+  }, [requirements, filter, sort, query]);
+
+  async function updateField(reqId, patch) {
+    const field = Object.keys(patch)[0];
+    setPending((p) => ({ ...p, [reqId]: field }));
+    try {
+      await updateMutation.mutateAsync({ requirementId: reqId, ...patch });
+    } finally {
+      setPending((p) => { const n = { ...p }; delete n[reqId]; return n; });
+    }
+  }
+
+  const TABS = [["ALL", `All ${counts.all}`], ["FR", `FR ${counts.fr}`], ["NFR", `NFR ${counts.nfr}`]];
+
+  return (
+    <main className="min-h-screen text-[var(--devdoc-text)]" style={{ backgroundColor: "var(--devdoc-bg)" }}>
+      <div className="border-b px-6 py-5" style={{ borderColor: "var(--devdoc-border)", backgroundColor: "var(--devdoc-surface)" }}>
+        <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-[var(--devdoc-primary)]">Requirements</p>
+        <div className="mt-1.5 flex items-center justify-between gap-4">
+          <div>
+            <h1 className="font-headline text-2xl font-bold tracking-tight">Requirements</h1>
+            <p className="mt-1 text-sm text-[var(--devdoc-muted)]">
+              {counts.all} requirement{counts.all === 1 ? "" : "s"} · {counts.fr} FR · {counts.nfr} NFR
+            </p>
+          </div>
+          <button onClick={() => setCreateOpen(true)}
+            className="flex shrink-0 items-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium text-white"
+            style={{ backgroundColor: "var(--devdoc-primary)" }}>
+            <Icon><path d="M12 5v14M5 12h14" /></Icon> Add requirement
+          </button>
+        </div>
+      </div>
+
+      <div className="mx-auto max-w-6xl px-6 py-6">
+        {/* filter bar */}
+        <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center">
+          <div className="flex rounded-md border p-0.5" style={{ borderColor: "var(--devdoc-border)", backgroundColor: "var(--devdoc-surface-inset)" }}>
+            {TABS.map(([key, label]) => (
+              <button key={key} onClick={() => setFilter(key)}
+                className="rounded px-3 py-1.5 text-[13px] font-medium transition-colors"
+                style={filter === key
+                  ? { backgroundColor: "var(--devdoc-surface)", color: "var(--devdoc-text)", boxShadow: "0 1px 2px rgba(0,0,0,0.2)" }
+                  : { color: "var(--devdoc-muted)" }}>
+                {label}
+              </button>
+            ))}
+          </div>
+          <div className="relative flex-1">
+            <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-[var(--devdoc-muted)]">
+              <Icon><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></Icon>
+            </span>
+            <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search requirements…"
+              className="w-full rounded-md border py-2 pl-9 pr-3 text-sm outline-none transition-colors placeholder:text-[var(--devdoc-subtle)] focus:border-[var(--devdoc-highlight)]"
+              style={{ backgroundColor: "var(--devdoc-surface-inset)", borderColor: "var(--devdoc-border)", color: "var(--devdoc-text)" }} />
+          </div>
+          <select value={sort} onChange={(e) => setSort(e.target.value)}
+            className="rounded-md border px-3 py-2 text-sm outline-none focus:border-[var(--devdoc-highlight)]"
+            style={{ backgroundColor: "var(--devdoc-surface-inset)", borderColor: "var(--devdoc-border)", color: "var(--devdoc-text)" }}>
+            <option value="newest">Newest</option>
+            <option value="oldest">Oldest</option>
+            <option value="code">Code A–Z</option>
+            <option value="priority">Priority</option>
+          </select>
+        </div>
+
+        {/* list */}
+        <div className="overflow-hidden rounded-lg border" style={{ borderColor: "var(--devdoc-border)", backgroundColor: "var(--devdoc-surface)" }}>
+          {error ? (
+            <div className="p-8 text-center">
+              <p className="text-sm text-[var(--devdoc-muted)]">Could not load requirements.</p>
+              <button onClick={() => refetch()} className="mt-3 rounded-md border px-4 py-2 text-sm" style={{ borderColor: "var(--devdoc-border)" }}>Retry</button>
+            </div>
+          ) : isLoading ? (
+            Array.from({ length: 6 }).map((_, i) => <SkeletonRow key={i} />)
+          ) : shown.length === 0 && counts.all === 0 ? (
+            <div className="flex flex-col items-center px-6 py-16 text-center"
+              style={{
+                backgroundImage: "linear-gradient(var(--devdoc-grid-line) 1px, transparent 1px), linear-gradient(90deg, var(--devdoc-grid-line) 1px, transparent 1px)",
+                backgroundSize: "24px 24px",
+              }}>
+              <p className="mb-1 font-mono text-[11px] uppercase tracking-[0.15em] text-[var(--devdoc-muted)]">No requirements yet</p>
+              <h3 className="font-headline text-xl font-semibold">Capture what the system must do</h3>
+              <p className="mt-2 max-w-sm text-sm text-[var(--devdoc-muted)]">
+                Use cases help you discover requirements — or add FRs and NFRs directly.
+              </p>
+              <button onClick={() => setCreateOpen(true)} className="mt-5 flex items-center gap-2 rounded-lg px-5 py-2.5 text-sm font-medium text-white" style={{ backgroundColor: "var(--devdoc-primary)" }}>
+                <Icon><path d="M12 5v14M5 12h14" /></Icon> Add requirement
+              </button>
+            </div>
+          ) : shown.length === 0 ? (
+            <p className="px-4 py-10 text-center text-sm text-[var(--devdoc-muted)]">No requirements match your filters.</p>
+          ) : (
+            shown.map((req) => (
+              <Row key={req.id} req={req} highlight={req.id === highlightId}
+                pendingField={pending[req.id]} onUpdate={(patch) => updateField(req.id, patch)} />
+            ))
+          )}
+        </div>
+      </div>
+
+      {createOpen && (
+        <CreateRequirementForm
+          onClose={() => setCreateOpen(false)}
+          onCreate={(values) => createMutation.mutateAsync(values)}
+          onCreated={() => { setCreateOpen(false); }}
+        />
+      )}
+    </main>
+  );
+}

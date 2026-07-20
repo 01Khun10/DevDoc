@@ -1,286 +1,194 @@
-import { useEffect, useMemo, useState } from "react";
-import { useNavigate, useParams, useSearchParams } from "react-router-dom";
-import InlineBadgeSelect from "../components/InlineBadgeSelect";
-import { RegistryControls, sortAndSearch } from "../components/RegistryControls";
-import { SkeletonCard } from "../components/ui";
-import { useNotify } from "../context/NotificationContext";
-import { useProject } from "../context/ProjectContext";
-import {
-  useCreateTestCase,
-  useDeleteTestCase,
-  useTestCases,
-  useUpdateTestCase
-} from "../api/testCases";
-import useAuthGuard from "../api/useAuthGuard";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Icon } from "../components/ui";
+import { useParams, useSearchParams } from "react-router-dom";
+import { useTestCases, useCreateTestCase, useUpdateTestCase, useDeleteTestCase } from "../api/testCases";
 
-const STATUSES = ["DRAFT", "READY", "PASSED", "FAILED", "BLOCKED"];
 
-const STATUS_COLORS = {
-  PASSED: "var(--devdoc-success)",
-  FAILED: "var(--devdoc-error)",
-  BLOCKED: "var(--devdoc-warning)",
-  READY: "var(--devdoc-info)",
-  DRAFT: "var(--devdoc-muted)"
+const STATUSES = ["DRAFT", "READY", "PASSED", "FAILED"];
+const STATUS_COLOR = {
+  DRAFT: "var(--devdoc-muted)", READY: "var(--devdoc-primary)",
+  PASSED: "var(--devdoc-success)", FAILED: "var(--devdoc-error)",
 };
 
-function TestCaseRegistry() {
+function StatusSelect({ value, onChange, pending }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
+  useEffect(() => {
+    function h(e) { if (ref.current && !ref.current.contains(e.target)) setOpen(false); }
+    if (open) document.addEventListener("mousedown", h);
+    return () => document.removeEventListener("mousedown", h);
+  }, [open]);
+  const color = STATUS_COLOR[value] || "var(--devdoc-muted)";
+  return (
+    <div ref={ref} className="relative">
+      <button onClick={() => setOpen((o) => !o)} disabled={pending}
+        className="inline-flex items-center gap-1 rounded px-2 py-0.5 text-[11px] font-medium disabled:opacity-60"
+        style={{ color, backgroundColor: `color-mix(in srgb, ${color} 14%, transparent)` }}>
+        {pending ? "…" : (value || "draft").toLowerCase()}
+        <Icon size={11}><path d="M6 9l6 6 6-6" /></Icon>
+      </button>
+      {open && (
+        <div className="absolute left-0 top-full z-20 mt-1 min-w-[120px] overflow-hidden rounded-md border py-1 shadow-lg"
+          style={{ backgroundColor: "var(--devdoc-surface)", borderColor: "var(--devdoc-border)" }}>
+          {STATUSES.map((s) => (
+            <button key={s} onClick={() => { onChange(s); setOpen(false); }}
+              className="flex w-full items-center gap-2 px-3 py-1.5 text-left text-[12px] capitalize transition-colors hover:bg-[var(--devdoc-surface-inset)]">
+              <span className="h-2 w-2 rounded-full" style={{ backgroundColor: STATUS_COLOR[s] }} />{s.toLowerCase()}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function Row({ tc, highlight, onUpdate, onDelete, pending }) {
+  const ref = useRef(null);
+  useEffect(() => {
+    if (highlight && ref.current) {
+      ref.current.scrollIntoView({ behavior: "smooth", block: "center" });
+      ref.current.style.outline = "2px solid var(--devdoc-primary)";
+      ref.current.style.outlineOffset = "3px";
+      const t = setTimeout(() => { if (ref.current) { ref.current.style.outline = ""; ref.current.style.outlineOffset = ""; } }, 2500);
+      return () => clearTimeout(t);
+    }
+  }, [highlight]);
+  const links = tc.traceabilityLinks?.length ?? tc._count?.traceabilityLinks ?? 0;
+  return (
+    <div ref={ref} className="group flex items-center gap-3 border-t px-4 py-3 transition-colors first:border-t-0 hover:bg-[var(--devdoc-surface-inset)]"
+      style={{ borderColor: "var(--devdoc-border)" }}>
+      <span className="font-mono text-[12px] font-medium" style={{ color: "var(--devdoc-artifact-tc)" }}>{tc.code}</span>
+      <div className="min-w-0 flex-1">
+        <p className="truncate text-sm">{tc.title}</p>
+        {tc.description && <p className="truncate text-[12px] text-[var(--devdoc-muted)]">{tc.description}</p>}
+      </div>
+      <StatusSelect value={tc.status} pending={pending === "status"} onChange={(v) => onUpdate({ status: v })} />
+      <span className="rounded px-2 py-0.5 font-mono text-[11px] text-[var(--devdoc-muted)]" style={{ backgroundColor: "var(--devdoc-surface-inset)" }}>
+        {links > 0 ? `verifies ${links}` : "unlinked"}
+      </span>
+      <button onClick={() => onDelete(tc)} aria-label="Delete"
+        className="text-[var(--devdoc-muted)] opacity-0 transition-opacity hover:text-[var(--devdoc-error)] group-hover:opacity-100">
+        <Icon><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" /></Icon>
+      </button>
+    </div>
+  );
+}
+
+function SkeletonRow() {
+  return (
+    <div className="flex items-center gap-3 border-t px-4 py-3" style={{ borderColor: "var(--devdoc-border)" }}>
+      <div className="devdoc-skeleton h-4 w-14 rounded" /><div className="flex-1"><div className="devdoc-skeleton h-4 w-1/2 rounded" /></div>
+      <div className="devdoc-skeleton h-5 w-16 rounded" />
+    </div>
+  );
+}
+
+export default function TestCaseRegistry() {
   const { id } = useParams();
-  const navigate = useNavigate();
-  const { project } = useProject();
-  const { notify } = useNotify();
-  const [form, setForm] = useState({ title: "", description: "", expectedResult: "" });
-  const [formError, setFormError] = useState("");
-  const [isDeletingId, setIsDeletingId] = useState("");
   const [searchParams] = useSearchParams();
-  const highlightId = searchParams.get("highlight") || "";
-  const [sort, setSort] = useState("newest");
-  const [search, setSearch] = useState("");
+  const highlightId = searchParams.get("highlight");
+
   const { data: testCases = [], isLoading, error, refetch } = useTestCases(id);
   const createMutation = useCreateTestCase(id);
   const updateMutation = useUpdateTestCase(id);
   const deleteMutation = useDeleteTestCase(id);
-  useAuthGuard(error, createMutation.error, updateMutation.error, deleteMutation.error);
-  const errorType = error ? (error.status === 404 ? "not-found" : "load-error") : "";
-  const isSubmitting = createMutation.isPending;
 
-  const visibleTestCases = useMemo(
-    () => sortAndSearch(testCases, { sort, search }),
-    [testCases, sort, search]
-  );
+  const [query, setQuery] = useState("");
+  const [sort, setSort] = useState("newest");
+  const [form, setForm] = useState({ title: "", description: "", expectedResult: "" });
+  const [showForm, setShowForm] = useState(false);
+  const [pending, setPending] = useState({});
 
-  // Validation deep link: scroll the highlighted test case into view with a 2.5s glow.
-  useEffect(() => {
-    if (!highlightId || isLoading) return;
-    const element = document.getElementById(`artifact-${highlightId}`);
-    if (!element) return;
-    element.scrollIntoView({ behavior: "smooth", block: "center" });
-    element.style.outline = "2px solid var(--devdoc-primary)";
-    element.style.outlineOffset = "3px";
-    const timer = setTimeout(() => {
-      element.style.outline = "";
-      element.style.outlineOffset = "";
-    }, 2500);
-    return () => clearTimeout(timer);
-  }, [highlightId, isLoading]);
+  const shown = useMemo(() => {
+    let list = [...testCases];
+    const q = query.trim().toLowerCase();
+    if (q) list = list.filter((t) => `${t.code} ${t.title} ${t.description || ""}`.toLowerCase().includes(q));
+    if (sort === "code") list.sort((a, b) => (a.code || "").localeCompare(b.code || ""));
+    else if (sort === "oldest") list.sort((a, b) => new Date(a.createdAt || 0) - new Date(b.createdAt || 0));
+    else list.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+    return list;
+  }, [testCases, query, sort]);
 
-  async function handleSubmit(event) {
-    event.preventDefault();
-    if (isSubmitting) return;
-    setFormError("");
-    if (!form.title.trim()) {
-      setFormError("Title is required.");
-      return;
-    }
-    try {
-      const created = await createMutation.mutateAsync({
-        title: form.title,
-        description: form.description || null,
-        expectedResult: form.expectedResult || null,
-        status: "DRAFT"
-      });
-      setForm({ title: "", description: "", expectedResult: "" });
-      notify(`Test case ${created.code} created.`, { tone: "success" });
-    } catch (mutationError) {
-      setFormError(mutationError.message || "Could not create test case.");
-    }
+  async function submit(e) {
+    e.preventDefault();
+    if (!form.title.trim()) return;
+    await createMutation.mutateAsync({
+      title: form.title, description: form.description || null, expectedResult: form.expectedResult || null, status: "DRAFT",
+    });
+    setForm({ title: "", description: "", expectedResult: "" });
+    setShowForm(false);
   }
-
-  async function handleStatusChange(testCase, status) {
-    try {
-      await updateMutation.mutateAsync({ testCaseId: testCase.id, status });
-    } catch (mutationError) {
-      notify(mutationError.message || "Could not update test case.", { tone: "error" });
-    }
+  async function update(tcId, patch) {
+    setPending((p) => ({ ...p, [tcId]: "status" }));
+    try { await updateMutation.mutateAsync({ testCaseId: tcId, ...patch }); }
+    finally { setPending((p) => { const n = { ...p }; delete n[tcId]; return n; }); }
   }
-
-  async function handleDelete(testCase) {
-    if (!window.confirm(`Delete test case ${testCase.code}?`)) return;
-    setIsDeletingId(testCase.id);
-    try {
-      await deleteMutation.mutateAsync(testCase.id);
-      notify("Test case removed.", { tone: "success" });
-    } catch (mutationError) {
-      notify(mutationError.message || "Could not remove test case.", { tone: "error" });
-    } finally {
-      setIsDeletingId("");
-    }
-  }
-
-  if (isLoading) {
-    return (
-      <main className="min-h-screen px-6 py-8" style={{ backgroundColor: "var(--devdoc-bg)" }}>
-        <div className="mx-auto grid max-w-5xl gap-3">
-          <SkeletonCard lines={2} />
-          <SkeletonCard lines={3} />
-          <SkeletonCard lines={3} />
-        </div>
-      </main>
-    );
-  }
-
-  if (errorType === "not-found") {
-    return (
-      <main className="flex min-h-screen items-center justify-center px-6" style={{ backgroundColor: "var(--devdoc-bg)" }}>
-        <div className="devdoc-card-border max-w-md p-8 text-center">
-          <p className="font-headline text-xl font-extrabold">Project not found</p>
-          <button className="devdoc-gradient-button mt-6" onClick={() => navigate("/dashboard")}>Back to dashboard</button>
-        </div>
-      </main>
-    );
-  }
-
-  if (errorType === "load-error") {
-    return (
-      <main className="flex min-h-screen items-center justify-center px-6" style={{ backgroundColor: "var(--devdoc-bg)" }}>
-        <div className="devdoc-card-border max-w-md p-8 text-center">
-          <p className="font-headline text-xl font-extrabold">Could not load test cases</p>
-          <p className="mt-2 text-sm" style={{ color: "var(--devdoc-muted)" }}>Check your connection and try again.</p>
-          <button className="devdoc-gradient-button mt-6" onClick={() => refetch()}>Retry</button>
-        </div>
-      </main>
-    );
+  async function remove(tc) {
+    if (!window.confirm(`Delete test case ${tc.code}?`)) return;
+    await deleteMutation.mutateAsync(tc.id);
   }
 
   return (
-    <main
-      className="min-h-screen devdoc-fade-in"
-      style={{ backgroundColor: "var(--devdoc-bg)", color: "var(--devdoc-text)" }}
-    >
-      <div
-        className="border-b px-6 py-5"
-        style={{ borderColor: "var(--devdoc-border)", backgroundColor: "var(--devdoc-surface)" }}
-      >
-        <p className="devdoc-label" style={{ color: "var(--devdoc-primary)" }}>{project.name}</p>
-        <h1 className="font-headline mt-1.5 text-2xl font-extrabold tracking-tight">Test Cases</h1>
-        <p className="mt-1 text-sm leading-6" style={{ color: "var(--devdoc-muted)" }}>
-          Define the test cases that verify your requirements, then link them in the Traceability Matrix.
-        </p>
+    <main className="min-h-screen text-[var(--devdoc-text)]" style={{ backgroundColor: "var(--devdoc-bg)" }}>
+      <div className="border-b px-6 py-5" style={{ borderColor: "var(--devdoc-border)", backgroundColor: "var(--devdoc-surface)" }}>
+        <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-[var(--devdoc-primary)]">Test cases</p>
+        <div className="mt-1.5 flex items-center justify-between gap-4">
+          <div>
+            <h1 className="font-headline text-2xl font-bold tracking-tight">Test cases</h1>
+            <p className="mt-1 text-sm text-[var(--devdoc-muted)]">{testCases.length} test case{testCases.length === 1 ? "" : "s"}</p>
+          </div>
+          <button onClick={() => setShowForm((s) => !s)} className="flex shrink-0 items-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium text-white" style={{ backgroundColor: "var(--devdoc-primary)" }}>
+            <Icon><path d="M12 5v14M5 12h14" /></Icon> Add test case
+          </button>
+        </div>
       </div>
 
-      <div className="mx-auto max-w-5xl px-6 py-6">
-        <section
-          className="mb-6 rounded-xl border p-5"
-          style={{ borderColor: "var(--devdoc-border)", backgroundColor: "var(--devdoc-surface)" }}
-        >
-          <h2 className="font-headline mb-4 text-base font-extrabold">Create test case</h2>
-          <form className="grid gap-3" onSubmit={handleSubmit}>
-            <input
-              className="devdoc-input"
-              maxLength={200}
-              placeholder="Title (e.g. Login with valid credentials)"
-              value={form.title}
-              onChange={(e) => setForm((cur) => ({ ...cur, title: e.target.value }))}
-            />
-            <textarea
-              className="devdoc-input min-h-[5rem]"
-              maxLength={5000}
-              placeholder="Steps / description (optional)"
-              value={form.description}
-              onChange={(e) => setForm((cur) => ({ ...cur, description: e.target.value }))}
-            />
-            <textarea
-              className="devdoc-input min-h-[4rem]"
-              maxLength={5000}
-              placeholder="Expected result (optional)"
-              value={form.expectedResult}
-              onChange={(e) => setForm((cur) => ({ ...cur, expectedResult: e.target.value }))}
-            />
-            {formError ? (
-              <p className="text-sm font-semibold" style={{ color: "var(--devdoc-error)" }}>{formError}</p>
-            ) : null}
-            <div>
-              <button className="devdoc-gradient-button" disabled={isSubmitting} type="submit">
-                {isSubmitting ? "Creating..." : "Create test case"}
-              </button>
-            </div>
+      <div className="mx-auto max-w-6xl px-6 py-6">
+        {showForm && (
+          <form onSubmit={submit} className="mb-4 grid gap-3 rounded-lg border p-4 sm:grid-cols-[1fr_1fr_auto]"
+            style={{ borderColor: "var(--devdoc-border)", backgroundColor: "var(--devdoc-surface)" }}>
+            <input autoFocus value={form.title} onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))} placeholder="Test case title"
+              className="rounded-md border px-3 py-2 text-sm outline-none focus:border-[var(--devdoc-highlight)]" style={{ backgroundColor: "var(--devdoc-surface-inset)", borderColor: "var(--devdoc-border)", color: "var(--devdoc-text)" }} />
+            <input value={form.expectedResult} onChange={(e) => setForm((f) => ({ ...f, expectedResult: e.target.value }))} placeholder="Expected result (optional)"
+              className="rounded-md border px-3 py-2 text-sm outline-none focus:border-[var(--devdoc-highlight)]" style={{ backgroundColor: "var(--devdoc-surface-inset)", borderColor: "var(--devdoc-border)", color: "var(--devdoc-text)" }} />
+            <button type="submit" disabled={createMutation.isPending} className="rounded-md px-4 py-2 text-sm font-medium text-white disabled:opacity-70" style={{ backgroundColor: "var(--devdoc-primary)" }}>
+              {createMutation.isPending ? "Saving…" : "Create"}
+            </button>
           </form>
-        </section>
+        )}
 
-        <section>
-          <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <h2 className="font-headline text-lg font-extrabold">Test cases</h2>
-              <span className="text-sm font-semibold" style={{ color: "var(--devdoc-muted)" }}>
-                Showing {visibleTestCases.length} of {testCases.length}
-              </span>
+        {testCases.length > 0 && (
+          <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center">
+            <div className="relative flex-1">
+              <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-[var(--devdoc-muted)]"><Icon><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></Icon></span>
+              <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search test cases…"
+                className="w-full rounded-md border py-2 pl-9 pr-3 text-sm outline-none placeholder:text-[var(--devdoc-subtle)] focus:border-[var(--devdoc-highlight)]" style={{ backgroundColor: "var(--devdoc-surface-inset)", borderColor: "var(--devdoc-border)", color: "var(--devdoc-text)" }} />
             </div>
-            <RegistryControls sort={sort} onSortChange={setSort} search={search} onSearchChange={setSearch} />
+            <select value={sort} onChange={(e) => setSort(e.target.value)} className="rounded-md border px-3 py-2 text-sm outline-none focus:border-[var(--devdoc-highlight)]" style={{ backgroundColor: "var(--devdoc-surface-inset)", borderColor: "var(--devdoc-border)", color: "var(--devdoc-text)" }}>
+              <option value="newest">Newest</option><option value="oldest">Oldest</option><option value="code">Code A–Z</option>
+            </select>
           </div>
+        )}
 
-          {testCases.length === 0 ? (
-            <div
-              className="rounded-xl border p-12 text-center"
-              style={{ borderColor: "var(--devdoc-border)", backgroundColor: "var(--devdoc-surface)" }}
-            >
-              <p className="font-headline text-lg font-extrabold">No test cases yet</p>
-              <p className="mt-2 text-sm" style={{ color: "var(--devdoc-muted)" }}>
-                Create your first test case above, then link it to a requirement with a verified_by link.
-              </p>
+        <div className="overflow-hidden rounded-lg border" style={{ borderColor: "var(--devdoc-border)", backgroundColor: "var(--devdoc-surface)" }}>
+          {error ? (
+            <div className="p-8 text-center"><p className="text-sm text-[var(--devdoc-muted)]">Could not load test cases.</p><button onClick={() => refetch()} className="mt-3 rounded-md border px-4 py-2 text-sm" style={{ borderColor: "var(--devdoc-border)" }}>Retry</button></div>
+          ) : isLoading ? (
+            Array.from({ length: 5 }).map((_, i) => <SkeletonRow key={i} />)
+          ) : testCases.length === 0 ? (
+            <div className="flex flex-col items-center px-6 py-16 text-center" style={{ backgroundImage: "linear-gradient(var(--devdoc-grid-line) 1px, transparent 1px), linear-gradient(90deg, var(--devdoc-grid-line) 1px, transparent 1px)", backgroundSize: "24px 24px" }}>
+              <p className="mb-1 font-mono text-[11px] uppercase tracking-[0.15em] text-[var(--devdoc-muted)]">No test cases yet</p>
+              <h3 className="font-headline text-xl font-semibold">Verify your requirements</h3>
+              <p className="mt-2 max-w-sm text-sm text-[var(--devdoc-muted)]">Register test cases and link them to the requirements they verify.</p>
+              <button onClick={() => setShowForm(true)} className="mt-5 flex items-center gap-2 rounded-lg px-5 py-2.5 text-sm font-medium text-white" style={{ backgroundColor: "var(--devdoc-primary)" }}><Icon><path d="M12 5v14M5 12h14" /></Icon> Add test case</button>
             </div>
+          ) : shown.length === 0 ? (
+            <p className="px-4 py-10 text-center text-sm text-[var(--devdoc-muted)]">No test cases match “{query}”.</p>
           ) : (
-            <div className="grid gap-3">
-              {visibleTestCases.map((testCase) => (
-                <article
-                  key={testCase.id}
-                  id={`artifact-${testCase.id}`}
-                  className="rounded-xl border p-4"
-                  style={{
-                    borderColor: "var(--devdoc-border)",
-                    backgroundColor: "var(--devdoc-surface)"
-                  }}
-                >
-                  <div className="flex items-start justify-between gap-4">
-                    <div className="min-w-0">
-                      <div className="flex flex-wrap items-center gap-2">
-                        <span className="text-sm font-bold" style={{ color: "var(--devdoc-primary)" }}>{testCase.code}</span>
-                        <InlineBadgeSelect
-                          value={testCase.status || "DRAFT"}
-                          options={STATUSES}
-                          badgeStyle={{ color: STATUS_COLORS[testCase.status] || "var(--devdoc-muted)" }}
-                          onSelect={(next) => handleStatusChange(testCase, next)}
-                        />
-                      </div>
-                      <h3 className="mt-2 text-sm font-semibold" style={{ color: "var(--devdoc-text)" }}>{testCase.title}</h3>
-                      {testCase.description ? (
-                        <p className="mt-1 text-sm leading-6" style={{ color: "var(--devdoc-muted)" }}>{testCase.description}</p>
-                      ) : null}
-                      {testCase.expectedResult ? (
-                        <p className="mt-1 text-xs leading-5" style={{ color: "var(--devdoc-muted)" }}>
-                          <span className="font-semibold">Expected:</span> {testCase.expectedResult}
-                        </p>
-                      ) : null}
-                    </div>
-                    <div className="flex shrink-0 items-center gap-2">
-                      <button
-                        className="rounded-lg px-3 py-1.5 text-xs font-bold transition disabled:opacity-40"
-                        style={{
-                          border: "1px solid color-mix(in srgb, var(--devdoc-error) 35%, var(--devdoc-border))",
-                          backgroundColor: "var(--devdoc-error-soft)",
-                          color: "var(--devdoc-error)"
-                        }}
-                        disabled={isDeletingId === testCase.id}
-                        type="button"
-                        onClick={() => handleDelete(testCase)}
-                      >
-                        {isDeletingId === testCase.id ? "Removing..." : "Delete"}
-                      </button>
-                    </div>
-                  </div>
-                </article>
-              ))}
-            </div>
+            shown.map((tc) => <Row key={tc.id} tc={tc} highlight={tc.id === highlightId} pending={pending[tc.id]} onUpdate={(patch) => update(tc.id, patch)} onDelete={remove} />)
           )}
-        </section>
-
-        <div
-          className="mt-6 rounded-xl border px-5 py-4 text-sm"
-          style={{ borderColor: "var(--devdoc-border)", color: "var(--devdoc-muted)" }}
-        >
-          Use the Traceability Matrix (Requirements → Test Cases) to mark which requirement each test verifies.
         </div>
       </div>
     </main>
   );
 }
-
-export default TestCaseRegistry;

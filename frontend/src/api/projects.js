@@ -4,7 +4,9 @@ import {
   getProject,
   getProjectOverview,
   listProjects,
-  updateProject
+  updateProject,
+  deleteProject,
+  createShareLink
 } from "../services/projectService";
 
 export function useProjects(options = {}) {
@@ -50,5 +52,24 @@ export function useUpdateProject(projectId, options = {}) {
       queryClient.invalidateQueries({ queryKey: ["projects"] });
       options.onSuccess?.(...args);
     }
+  });
+}
+
+export function useDeleteProject(options = {}) {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (projectId) => deleteProject(projectId),
+    ...options,
+    onSuccess: (...args) => {
+      queryClient.invalidateQueries({ queryKey: ["projects"] });
+      options.onSuccess?.(...args);
+    }
+  });
+}
+
+export function useCreateShareLink(projectId, options = {}) {
+  return useMutation({
+    mutationFn: () => createShareLink(projectId),
+    ...options
   });
 }

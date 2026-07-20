@@ -745,3 +745,18 @@ body {
   color: var(--devdoc-muted);
   white-space: nowrap;
 }
+
+/* ── Canonical blueprint grid background (one class, one density) ── */
+.devdoc-grid-bg {
+  background-image:
+    linear-gradient(var(--devdoc-grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--devdoc-grid-line) 1px, transparent 1px);
+  background-size: 24px 24px;
+}
+.devdoc-grid-bg-fixed {
+  background-image:
+    linear-gradient(var(--devdoc-grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--devdoc-grid-line) 1px, transparent 1px);
+  background-size: 24px 24px;
+  background-attachment: fixed;
+}

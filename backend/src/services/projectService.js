@@ -290,6 +290,23 @@ async function listActivityLogs(ownerId, projectId, limit = 20) {
   });
 }
 
+async function deleteProject(ownerId, projectId) {
+  const project = await prisma.project.findFirst({
+    where: { id: projectId, ownerId },
+    select: { id: true }
+  });
+
+  if (!project) {
+    throw createProjectError(PROJECT_NOT_FOUND, "Project not found");
+  }
+
+  // All related records (documents, requirements, use cases, etc.) are
+  // cascade-deleted by the database via onDelete: Cascade in the Prisma schema.
+  await prisma.project.delete({ where: { id: project.id } });
+
+  return { deleted: true };
+}
+
 module.exports = {
   PROJECT_NOT_FOUND,
   PROFILE_NOT_FOUND,
@@ -297,6 +314,7 @@ module.exports = {
   getProjects,
   getProjectById,
   updateProject,
+  deleteProject,
   getProjectOverview,
   listActivityLogs
 };

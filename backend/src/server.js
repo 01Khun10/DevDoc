@@ -25,12 +25,16 @@ dotenv.config();
 const app = express();
 
 const PORT = process.env.PORT || 5000;
-const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:5173";
+const FRONTEND_ORIGINS = new Set((process.env.FRONTEND_URL || "").split(",").map((origin) => origin.trim()).filter(Boolean));
+if (process.env.NODE_ENV !== "production") {
+  FRONTEND_ORIGINS.add("http://localhost:5173");
+  FRONTEND_ORIGINS.add("http://127.0.0.1:5173");
+}
 
 app.use(helmet());
 app.use(
   cors({
-    origin: FRONTEND_URL,
+    origin: (origin, callback) => callback(null, !origin || FRONTEND_ORIGINS.has(origin)),
     credentials: true
   })
 );
@@ -45,7 +49,8 @@ const authRateLimiter = rateLimit({
   message: { error: { message: "Too many attempts, please try again later" } }
 });
 
-app.use("/api/auth", authRateLimiter, authRoutes);
+app.use(["/api/auth/login", "/api/auth/register"], authRateLimiter);
+app.use("/api/auth", authRoutes);
 app.use("/api/search", searchRoutes);
 app.use("/api/projects", projectRoutes);
 app.use("/api/projects/:projectId/documents", documentRoutes);
@@ -96,7 +101,8 @@ const ERROR_STATUS_BY_CODE = {
   UNSUPPORTED_LINK_TYPE: 400,
   DUPLICATE_LINK: 409,
   DUPLICATE_EMAIL: 409,
-  INVALID_CREDENTIALS: 401
+  INVALID_CREDENTIALS: 401,
+  WRONG_PASSWORD: 400
 };
 
 app.use((error, req, res, next) => {

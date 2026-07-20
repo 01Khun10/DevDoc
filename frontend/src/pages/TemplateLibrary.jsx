@@ -1,167 +1,119 @@
-import { useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
-import ProfileSelector from "../components/ProfileSelector";
-import TemplateCard from "../components/TemplateCard";
-import TemplatePreview from "../components/TemplatePreview";
-import { useProject } from "../context/ProjectContext";
+import { useEffect, useState } from "react";
+import { Icon } from "../components/ui";
+import { useNavigate, useParams } from "react-router-dom";
 import { useCreateDocumentFromTemplate } from "../api/documents";
 import { useProfiles, useTemplateSections, useTemplatesByProfile } from "../api/templates";
-import useAuthGuard from "../api/useAuthGuard";
 
-function TemplateLibrary() {
+const TYPE_COLOR = { SCOPE: "var(--devdoc-artifact-uc)", SRS: "var(--devdoc-artifact-fr)", SDS: "var(--devdoc-artifact-de)", STP: "var(--devdoc-artifact-sec)" };
+
+export default function TemplateLibrary() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { project } = useProject();
   const [selectedProfile, setSelectedProfile] = useState(null);
   const [selectedTemplate, setSelectedTemplate] = useState(null);
-  const [createDocumentError, setCreateDocumentError] = useState("");
 
   const profilesQuery = useProfiles();
   const templatesQuery = useTemplatesByProfile(selectedProfile?.code);
   const previewQuery = useTemplateSections(selectedTemplate?.code);
-  const createDocumentMutation = useCreateDocumentFromTemplate(id);
-  useAuthGuard(
-    profilesQuery.error,
-    templatesQuery.error,
-    previewQuery.error,
-    createDocumentMutation.error
-  );
+  const createMutation = useCreateDocumentFromTemplate(id);
+
+  useEffect(() => {
+    if (!selectedProfile && profilesQuery.data?.length) setSelectedProfile(profilesQuery.data[0]);
+  }, [profilesQuery.data, selectedProfile]);
+
+  async function create() {
+    if (!selectedTemplate) return;
+    const doc = await createMutation.mutateAsync({ templateCode: selectedTemplate.code });
+    navigate(`/projects/${id}/documents/${doc.id}`);
+  }
 
   const profiles = profilesQuery.data || [];
-  const templates = templatesQuery.data?.templates || [];
-  const previewTemplate =
-    selectedTemplate && previewQuery.data
-      ? { ...selectedTemplate, ...previewQuery.data.template }
-      : null;
-  const previewSections = previewQuery.data?.sections || [];
-
-  function handleProfileSelect(profile) {
-    setSelectedProfile(profile);
-    setSelectedTemplate(null);
-  }
-
-  function handleTemplateSelect(template) {
-    setSelectedTemplate(template);
-    setCreateDocumentError("");
-  }
-
-  async function handleCreateDocument() {
-    if (!selectedTemplate) {
-      return;
-    }
-
-    setCreateDocumentError("");
-
-    try {
-      const document = await createDocumentMutation.mutateAsync({
-        templateCode: selectedTemplate.code
-      });
-
-      navigate(`/projects/${id}/documents/${document.id}`, {
-        state: { document }
-      });
-    } catch (error) {
-      setCreateDocumentError(error.message || "Could not create document.");
-    }
-  }
+  const templates = templatesQuery.data || [];
 
   return (
-    <main className="min-h-screen px-6 py-8" style={{ backgroundColor: "var(--devdoc-bg)", color: "var(--devdoc-text)" }}>
-      <section className="mx-auto max-w-7xl devdoc-fade-in">
-        <div className="devdoc-card-border p-6">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-          <div>
-            <p className="devdoc-label" style={{ color: "var(--devdoc-primary)" }}>Template Library</p>
-            <h1 className="font-headline mt-2 text-3xl font-extrabold tracking-tight">
-              Template Library
-            </h1>
-            <p className="mt-3 text-sm leading-6 text-[var(--devdoc-muted)]">
-              Browsing templates for:{" "}
-              <span className="font-semibold text-[var(--devdoc-text)]">{project.name}</span>
-            </p>
-          </div>
-          <Link className="devdoc-button-secondary" to={`/projects/${id}`}>Project overview</Link>
-        </div>
+    <main className="min-h-screen text-[var(--devdoc-text)]" style={{ backgroundColor: "var(--devdoc-bg)" }}>
+      <div className="border-b px-6 py-5" style={{ borderColor: "var(--devdoc-border)", backgroundColor: "var(--devdoc-surface)" }}>
+        <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-[var(--devdoc-primary)]">Templates</p>
+        <h1 className="mt-1.5 font-headline text-2xl font-bold tracking-tight">Template library</h1>
+        <p className="mt-1 text-sm text-[var(--devdoc-muted)]">Create a document from a structured template.</p>
+      </div>
+
+      <div className="mx-auto max-w-6xl px-6 py-6">
+        {/* profile filter */}
+        <div className="mb-5 flex flex-wrap gap-2">
+          {profilesQuery.isLoading
+            ? Array.from({ length: 3 }).map((_, i) => <div key={i} className="devdoc-skeleton h-9 w-28 rounded-md" />)
+            : profiles.map((p) => (
+              <button key={p.code} onClick={() => { setSelectedProfile(p); setSelectedTemplate(null); }}
+                className="rounded-md border px-4 py-2 text-sm font-medium transition-colors"
+                style={selectedProfile?.code === p.code
+                  ? { borderColor: "var(--devdoc-primary)", backgroundColor: "var(--devdoc-primary-soft)", color: "var(--devdoc-primary)" }
+                  : { borderColor: "var(--devdoc-border)", color: "var(--devdoc-text-secondary)" }}>
+                {p.name || p.code}
+              </button>
+            ))}
         </div>
 
-        <section className="mt-8">
-          <h2 className="font-headline text-lg font-extrabold text-[var(--devdoc-text)]">Documentation profiles</h2>
-          <div className="mt-4">
-            <ProfileSelector
-              profiles={profiles}
-              selectedCode={selectedProfile?.code || ""}
-              isLoading={profilesQuery.isLoading}
-              error={profilesQuery.error ? "Could not load profiles. Check your connection and try again." : ""}
-              onRetry={() => profilesQuery.refetch()}
-              onSelect={handleProfileSelect}
-            />
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_360px]">
+          {/* template cards */}
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+            {templatesQuery.isLoading
+              ? Array.from({ length: 4 }).map((_, i) => (
+                <div key={i} className="rounded-lg border p-5" style={{ borderColor: "var(--devdoc-border)", backgroundColor: "var(--devdoc-surface)" }}>
+                  <div className="devdoc-skeleton mb-3 h-8 w-8 rounded" /><div className="devdoc-skeleton mb-2 h-5 w-2/3 rounded" /><div className="devdoc-skeleton h-3 w-full rounded" />
+                </div>
+              ))
+              : templates.map((t) => {
+                const color = TYPE_COLOR[t.documentType] || "var(--devdoc-primary)";
+                const active = selectedTemplate?.code === t.code;
+                return (
+                  <button key={t.code} onClick={() => setSelectedTemplate(t)}
+                    className="flex flex-col rounded-lg border p-5 text-left transition-all hover:-translate-y-0.5"
+                    style={{ borderColor: active ? "var(--devdoc-primary)" : "var(--devdoc-border)", backgroundColor: "var(--devdoc-surface)", boxShadow: active ? "0 0 0 1px var(--devdoc-primary)" : "none" }}>
+                    <div className="mb-3 flex h-9 w-9 items-center justify-center rounded border font-mono text-[11px]" style={{ borderColor: color, color }}>{t.documentType}</div>
+                    <h3 className="font-headline text-base font-semibold">{t.name}</h3>
+                    <p className="mt-1 font-mono text-[11px] text-[var(--devdoc-muted)]">{t.sectionCount ? `${t.sectionCount} sections` : "structured template"}</p>
+                    {t.description && <p className="mt-2 text-[13px] text-[var(--devdoc-muted)]">{t.description}</p>}
+                  </button>
+                );
+              })}
           </div>
-        </section>
 
-        <div className="mt-8 grid gap-6 lg:grid-cols-[minmax(280px,420px)_minmax(0,1fr)]">
-          <section>
-            <h2 className="font-headline text-lg font-extrabold text-[var(--devdoc-text)]">Templates</h2>
-            <div className="mt-4 grid gap-4">
-              {!selectedProfile ? (
-              <div className="devdoc-card-border p-6 text-sm text-[var(--devdoc-muted)]">
-                Select a profile above to see its templates.
+          {/* preview / create rail */}
+          <aside className="rounded-lg border p-5" style={{ borderColor: "var(--devdoc-border)", backgroundColor: "var(--devdoc-surface)" }}>
+            {!selectedTemplate ? (
+              <div className="flex h-full flex-col items-center justify-center py-10 text-center">
+                <p className="font-mono text-[11px] uppercase tracking-[0.15em] text-[var(--devdoc-muted)]">Preview</p>
+                <p className="mt-2 text-sm text-[var(--devdoc-muted)]">Select a template to preview its structure.</p>
               </div>
-              ) : null}
-
-              {selectedProfile && templatesQuery.isLoading ? (
-                <div className="devdoc-card-border p-6 text-sm text-[var(--devdoc-muted)]">
-                  Loading templates...
+            ) : (
+              <>
+                <p className="font-mono text-[11px] uppercase tracking-[0.15em] text-[var(--devdoc-muted)]">Preview</p>
+                <h3 className="mt-1 font-headline text-lg font-semibold">{selectedTemplate.name}</h3>
+                <div className="mt-4 max-h-[360px] overflow-y-auto pr-1">
+                  {previewQuery.isLoading ? (
+                    <div className="flex flex-col gap-2">{Array.from({ length: 6 }).map((_, i) => <div key={i} className="devdoc-skeleton h-4 w-full rounded" />)}</div>
+                  ) : (
+                    <ul className="flex flex-col gap-1.5 text-[13px]">
+                      {(previewQuery.data || []).map((s) => (
+                        <li key={s.id || s.sectionNumber} className="flex items-start gap-2">
+                          <span className="font-mono text-[11px] text-[var(--devdoc-muted)]">{s.sectionNumber}</span>
+                          <span className="text-[var(--devdoc-text-secondary)]">{s.title}</span>
+                          {s.isRequired && <span className="ml-auto rounded px-1.5 text-[9px] uppercase" style={{ color: "var(--devdoc-primary)", backgroundColor: "var(--devdoc-primary-soft)" }}>req</span>}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                 </div>
-              ) : null}
-
-              {selectedProfile && !templatesQuery.isLoading && templatesQuery.error ? (
-                <div
-                  className="rounded-xl border p-6 text-sm font-medium"
-                  style={{
-                    borderColor: "color-mix(in srgb, var(--devdoc-error) 35%, var(--devdoc-border))",
-                    backgroundColor: "var(--devdoc-error-soft)",
-                    color: "var(--devdoc-error)"
-                  }}
-                >
-                  Could not load templates. Check your connection and try again.
-                </div>
-              ) : null}
-
-              {selectedProfile && !templatesQuery.isLoading && !templatesQuery.error
-                ? templates.map((template) => (
-                    <TemplateCard
-                      key={template.id}
-                      template={template}
-                      isSelected={selectedTemplate?.code === template.code}
-                      onSelect={handleTemplateSelect}
-                    />
-                  ))
-                : null}
-            </div>
-          </section>
-
-          <section>
-            <h2 className="font-headline text-lg font-extrabold text-[var(--devdoc-text)]">Preview</h2>
-            <div className="mt-4">
-              <TemplatePreview
-                template={previewTemplate}
-                sections={previewSections}
-                isLoading={previewQuery.isLoading && Boolean(selectedTemplate)}
-                error={
-                  previewQuery.error
-                    ? "Could not load template preview. Check your connection and try again."
-                    : ""
-                }
-                onCreateDocument={handleCreateDocument}
-                isCreating={createDocumentMutation.isPending}
-                createError={createDocumentError}
-              />
-            </div>
-          </section>
+                <button onClick={create} disabled={createMutation.isPending}
+                  className="mt-5 w-full rounded-md py-2.5 text-sm font-medium text-white disabled:opacity-70" style={{ backgroundColor: "var(--devdoc-primary)" }}>
+                  {createMutation.isPending ? "Creating…" : "Create document"}
+                </button>
+              </>
+            )}
+          </aside>
         </div>
-      </section>
+      </div>
     </main>
   );
 }
-
-export default TemplateLibrary;

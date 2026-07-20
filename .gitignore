@@ -10,6 +10,16 @@ node_modules/
 !*.env.example
 
 # Local agent/tool state
+AGENTS.md
+CLAUDE.md
+claude-skills-knwoledge.md
+critics-views.md
+Enter-DevDoc.ps1
+docs/CONSOLIDATION_PASS.md
+docs/project-control/devdoc-agent-coordination-rules.md
+docs/project-control/devdoc-implementation-roadmap.md
+docs/project-control/devdoc-master-context.md
+backend/tests/projectBenchmark.test.js
 ruvector.db
 .swarm/
 .claude-flow/

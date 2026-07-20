@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
+import { Icon } from "../components/ui";
 import { Link, useParams, useSearchParams } from "react-router-dom";
 import DocumentEditorPanel from "../components/DocumentEditorPanel";
 import DocumentGuidancePanel from "../components/DocumentGuidancePanel";
@@ -9,12 +10,6 @@ import useAuthGuard from "../api/useAuthGuard";
 import useUnsavedChangesWarning from "../hooks/useUnsavedChangesWarning";
 import { useProjectOverview } from "../api/projects";
 
-function Icon({ children, size = 16 }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{children}</svg>
-  );
-}
 
 const TYPE_COLOR = {
   SCOPE: "var(--devdoc-artifact-uc)", SRS: "var(--devdoc-artifact-fr)",

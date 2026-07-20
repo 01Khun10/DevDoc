@@ -1,8 +1,11 @@
 const {
   duplicateEmailCode,
   invalidCredentialsCode,
+  wrongPasswordCode,
   registerUser,
-  loginUser
+  loginUser,
+  updateUserName,
+  changePassword: changePasswordService
 } = require("../services/authService");
 const {
   validateRegisterInput,
@@ -79,9 +82,48 @@ function me(req, res) {
   return res.status(200).json({ user: req.user });
 }
 
+async function updateProfile(req, res) {
+  const name = typeof req.body.name === "string" ? req.body.name.trim() : null;
+
+  try {
+    const user = await updateUserName(req.user.id, name);
+    return res.status(200).json({ user });
+  } catch (error) {
+    return sendUnexpectedError(res, error, "authController.updateProfile");
+  }
+}
+
+async function changePassword(req, res) {
+  const { currentPassword, newPassword } = req.body || {};
+
+  if (!currentPassword || typeof currentPassword !== "string") {
+    return sendError(res, 400, "Validation failed", { currentPassword: "Current password is required" });
+  }
+
+  if (!newPassword || typeof newPassword !== "string") {
+    return sendError(res, 400, "Validation failed", { newPassword: "New password is required" });
+  }
+
+  if (newPassword.length < 8) {
+    return sendError(res, 400, "Validation failed", { newPassword: "New password must be at least 8 characters" });
+  }
+
+  try {
+    await changePasswordService(req.user.id, currentPassword, newPassword);
+    return res.status(200).json({ message: "Password changed successfully" });
+  } catch (error) {
+    if (error.code === wrongPasswordCode) {
+      return sendError(res, 400, "Current password is incorrect");
+    }
+    return sendUnexpectedError(res, error, "authController.changePassword");
+  }
+}
+
 module.exports = {
   register,
   login,
   logout,
-  me
+  me,
+  updateProfile,
+  changePassword
 };

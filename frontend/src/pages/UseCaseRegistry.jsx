@@ -1,239 +1,133 @@
-import { useEffect, useMemo, useState } from "react";
-import { useNavigate, useParams, useSearchParams } from "react-router-dom";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Icon } from "../components/ui";
+import { useParams, useSearchParams } from "react-router-dom";
+import { useUseCases, useCreateUseCase } from "../api/useCases";
 import CreateUseCaseForm from "../components/CreateUseCaseForm";
-import UseCaseCard from "../components/UseCaseCard";
-import { RegistryControls, sortAndSearch } from "../components/RegistryControls";
-import { SkeletonCard } from "../components/ui";
-import useKeyboardNav from "../hooks/useKeyboardNav";
-import { useNotify } from "../context/NotificationContext";
-import { useProject } from "../context/ProjectContext";
-import { useCreateUseCase, useDeleteUseCase, useUpdateUseCase, useUseCases } from "../api/useCases";
-import useAuthGuard from "../api/useAuthGuard";
 
-function UseCaseRegistry() {
-  const { id } = useParams();
-  const navigate = useNavigate();
-  const { project } = useProject();
-  const { notify } = useNotify();
-  const [searchParams] = useSearchParams();
-  const highlightId = searchParams.get("highlight") || "";
-  const [sort, setSort] = useState("newest");
-  const [search, setSearch] = useState("");
-  const { data: useCases = [], isLoading, error, refetch } = useUseCases(id);
-  useAuthGuard(error);
 
-  // Validation deep link: scroll the highlighted use case into view with a 2.5s glow.
+function Row({ uc, highlight }) {
+  const ref = useRef(null);
   useEffect(() => {
-    if (!highlightId || isLoading) return;
-    const element = document.getElementById(`artifact-${highlightId}`);
-    if (!element) return;
-    element.scrollIntoView({ behavior: "smooth", block: "center" });
-    element.style.outline = "2px solid var(--devdoc-primary)";
-    element.style.outlineOffset = "3px";
-    const timer = setTimeout(() => {
-      element.style.outline = "";
-      element.style.outlineOffset = "";
-    }, 2500);
-    return () => clearTimeout(timer);
-  }, [highlightId, isLoading]);
-  const createMutation = useCreateUseCase(id);
-  const updateMutation = useUpdateUseCase(id);
-  const deleteMutation = useDeleteUseCase(id);
-  const errorType = error ? (error.status === 404 ? "not-found" : "load-error") : "";
-
-  const visibleUseCases = useMemo(
-    () => sortAndSearch(useCases, { sort, search }),
-    [useCases, sort, search]
-  );
-
-  async function handleCreateUseCase(input) {
-    return createMutation.mutateAsync(input);
-  }
-
-  function handleUseCaseCreated() {}
-
-  async function handleUpdateUseCase(useCaseId, input) {
-    return updateMutation.mutateAsync({ useCaseId, ...input });
-  }
-
-  async function handleDeleteUseCase(useCase) {
-    if (!window.confirm(`Delete use case ${useCase.code}?`)) return;
-    try {
-      await deleteMutation.mutateAsync(useCase.id);
-      notify(`Use case ${useCase.code} deleted.`, { tone: "success" });
-    } catch (mutationError) {
-      notify(mutationError.message || "Could not delete use case.", { tone: "error" });
+    if (highlight && ref.current) {
+      ref.current.scrollIntoView({ behavior: "smooth", block: "center" });
+      ref.current.style.outline = "2px solid var(--devdoc-primary)";
+      ref.current.style.outlineOffset = "3px";
+      const t = setTimeout(() => { if (ref.current) { ref.current.style.outline = ""; ref.current.style.outlineOffset = ""; } }, 2500);
+      return () => clearTimeout(t);
     }
-  }
-
-  const { focusedId } = useKeyboardNav(visibleUseCases, {
-    onEdit: (useCase) =>
-      document.getElementById(`artifact-${useCase.id}`)?.querySelector("input, textarea")?.focus(),
-    onDelete: handleDeleteUseCase
-  });
-
-  if (isLoading) {
-    return (
-      <main className="min-h-screen px-6 py-8" style={{ backgroundColor: "var(--devdoc-bg)" }}>
-        <div className="mx-auto grid max-w-5xl gap-3">
-          <SkeletonCard lines={2} />
-          <SkeletonCard lines={3} />
-          <SkeletonCard lines={3} />
-        </div>
-      </main>
-    );
-  }
-
-  if (errorType === "not-found") {
-    return (
-      <main className="flex min-h-screen items-center justify-center px-6" style={{ backgroundColor: "var(--devdoc-bg)" }}>
-        <div className="devdoc-card-border max-w-md p-8 text-center">
-          <p className="font-headline text-xl font-extrabold">Project not found</p>
-          <button className="devdoc-gradient-button mt-6" onClick={() => navigate("/dashboard")}>Back to dashboard</button>
-        </div>
-      </main>
-    );
-  }
-
-  if (errorType === "load-error") {
-    return (
-      <main className="flex min-h-screen items-center justify-center px-6" style={{ backgroundColor: "var(--devdoc-bg)" }}>
-        <div className="devdoc-card-border max-w-md p-8 text-center">
-          <p className="font-headline text-xl font-extrabold">Could not load use cases</p>
-          <p className="mt-2 text-sm" style={{ color: "var(--devdoc-muted)" }}>Check your connection and try again.</p>
-          <button className="devdoc-gradient-button mt-6" onClick={() => refetch()}>Retry</button>
-        </div>
-      </main>
-    );
-  }
-
+  }, [highlight]);
+  const links = uc.traceabilityLinks?.length ?? uc._count?.traceabilityLinks ?? 0;
   return (
-    <main
-      className="min-h-screen devdoc-fade-in"
-      style={{ backgroundColor: "var(--devdoc-bg)", color: "var(--devdoc-text)" }}
-    >
-      {/* Page header */}
-      <div
-        className="border-b px-6 py-5"
-        style={{ borderColor: "var(--devdoc-border)", backgroundColor: "var(--devdoc-surface)" }}
-      >
-        <p className="devdoc-label" style={{ color: "var(--devdoc-primary)" }}>{project.name}</p>
-        <div className="mt-1.5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <h1 className="font-headline text-2xl font-extrabold tracking-tight">Use Case Registry</h1>
-            <p className="mt-1 text-sm leading-6" style={{ color: "var(--devdoc-muted)" }}>
-              Capture user goals and scenarios before linking them to requirements and document sections.
-            </p>
-          </div>
-          <div
-            className="flex items-center gap-3 rounded-lg border px-4 py-2 shrink-0"
-            style={{ borderColor: "var(--devdoc-border)", backgroundColor: "var(--devdoc-surface-muted)" }}
-          >
-            <span className="font-headline text-2xl font-extrabold" style={{ color: "var(--devdoc-text)" }}>
-              {useCases.length}
-            </span>
-            <span className="text-xs font-semibold" style={{ color: "var(--devdoc-muted)" }}>
-              use case{useCases.length !== 1 ? "s" : ""}
-            </span>
-          </div>
-        </div>
+    <div ref={ref} className="flex items-center gap-3 border-t px-4 py-3 transition-colors first:border-t-0 hover:bg-[var(--devdoc-surface-inset)]"
+      style={{ borderColor: "var(--devdoc-border)" }}>
+      <span className="font-mono text-[12px] font-medium" style={{ color: "var(--devdoc-artifact-uc)" }}>{uc.code}</span>
+      <div className="min-w-0 flex-1">
+        <p className="truncate text-sm">{uc.title}</p>
+        {uc.description && <p className="truncate text-[12px] text-[var(--devdoc-muted)]">{uc.description}</p>}
       </div>
-
-      <div className="mx-auto max-w-5xl px-6 py-6">
-        {/* Context card */}
-        <div
-          className="mb-6 rounded-xl border p-4 text-sm leading-6"
-          style={{ borderColor: "var(--devdoc-border)", backgroundColor: "var(--devdoc-surface)", color: "var(--devdoc-muted)" }}
-        >
-          <span className="font-semibold" style={{ color: "var(--devdoc-text)" }}>Why this matters: </span>
-          Use cases describe user intent before the system is mapped into requirements, traceability links, and diagrams.
-        </div>
-
-        {/* Create form */}
-        <section
-          id="create-use-case"
-          className="mb-6 rounded-xl border p-5"
-          style={{ borderColor: "var(--devdoc-border)", backgroundColor: "var(--devdoc-surface)" }}
-        >
-          <h2 className="font-headline mb-4 text-base font-extrabold">Create use case</h2>
-          <CreateUseCaseForm onCreate={handleCreateUseCase} onCreated={handleUseCaseCreated} />
-        </section>
-
-        {/* Use case list */}
-        <section>
-          <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div>
-              <h2 className="font-headline text-lg font-extrabold">Use cases</h2>
-              <span className="text-sm" style={{ color: "var(--devdoc-muted)" }}>
-                Showing {visibleUseCases.length} of {useCases.length}
-              </span>
-            </div>
-            <RegistryControls sort={sort} onSortChange={setSort} search={search} onSearchChange={setSearch} />
-          </div>
-
-          {useCases.length === 0 ? (
-            <div
-              className="rounded-xl border p-12 text-center"
-              style={{ borderColor: "var(--devdoc-border)", backgroundColor: "var(--devdoc-surface)" }}
-            >
-              <div
-                className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl border"
-                style={{
-                  backgroundColor: "var(--devdoc-primary-soft)",
-                  borderColor: "var(--devdoc-border)",
-                  color: "var(--devdoc-primary)",
-                }}
-              >
-                <svg className="h-7 w-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.75" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                </svg>
-              </div>
-              <p className="font-headline text-lg font-extrabold">No use cases yet.</p>
-              <p className="mx-auto mt-2 max-w-md text-sm leading-6" style={{ color: "var(--devdoc-muted)" }}>
-                Use cases describe how actors interact with the system. Add them before registering requirements.
-              </p>
-              <div className="mt-6">
-                <a className="devdoc-gradient-button" href="#create-use-case">Add Use Case</a>
-              </div>
-              <div
-                className="mx-auto mt-6 max-w-xs rounded-xl border p-4 text-left text-xs"
-                style={{ borderColor: "var(--devdoc-border)", backgroundColor: "var(--devdoc-surface-muted)" }}
-              >
-                <p className="font-bold" style={{ color: "var(--devdoc-text)" }}>Example</p>
-                <p className="mt-1" style={{ color: "var(--devdoc-muted)" }}>
-                  User logs in and reaches the dashboard.
-                </p>
-              </div>
-            </div>
-          ) : (
-            <div className="grid gap-3">
-              {visibleUseCases.map((useCase) => (
-                <div
-                  key={useCase.id}
-                  id={`artifact-${useCase.id}`}
-                  className="rounded-xl"
-                  style={
-                    focusedId === useCase.id
-                      ? { outline: "2px solid var(--devdoc-primary)", outlineOffset: "3px" }
-                      : undefined
-                  }
-                >
-                  <UseCaseCard useCase={useCase} onUpdate={handleUpdateUseCase} />
-                </div>
-              ))}
-            </div>
-          )}
-        </section>
-
-        <div
-          className="mt-6 rounded-xl border px-5 py-4 text-sm"
-          style={{ borderColor: "var(--devdoc-border)", color: "var(--devdoc-muted)" }}
-        >
-          Link these use cases to requirements and document sections in the Traceability Matrix.
-        </div>
-      </div>
-    </main>
+      {links > 0 ? (
+        <span className="rounded px-2 py-0.5 font-mono text-[11px] text-[var(--devdoc-muted)]" style={{ backgroundColor: "var(--devdoc-surface-inset)" }}>{links} link{links === 1 ? "" : "s"}</span>
+      ) : (
+        <span className="rounded px-2 py-0.5 font-mono text-[11px]" style={{ color: "var(--devdoc-muted)", backgroundColor: "var(--devdoc-surface-inset)" }}>no links</span>
+      )}
+    </div>
   );
 }
 
-export default UseCaseRegistry;
+function SkeletonRow() {
+  return (
+    <div className="flex items-center gap-3 border-t px-4 py-3" style={{ borderColor: "var(--devdoc-border)" }}>
+      <div className="devdoc-skeleton h-4 w-14 rounded" />
+      <div className="flex-1"><div className="devdoc-skeleton h-4 w-1/2 rounded" /></div>
+      <div className="devdoc-skeleton h-5 w-14 rounded" />
+    </div>
+  );
+}
+
+export default function UseCaseRegistry() {
+  const { id } = useParams();
+  const [searchParams] = useSearchParams();
+  const highlightId = searchParams.get("highlight");
+
+  const { data: useCases = [], isLoading, error, refetch } = useUseCases(id);
+  const createMutation = useCreateUseCase(id);
+
+  const [query, setQuery] = useState("");
+  const [sort, setSort] = useState("newest");
+  const [createOpen, setCreateOpen] = useState(false);
+
+  const shown = useMemo(() => {
+    let list = [...useCases];
+    const q = query.trim().toLowerCase();
+    if (q) list = list.filter((u) => `${u.code} ${u.title} ${u.description || ""}`.toLowerCase().includes(q));
+    if (sort === "code") list.sort((a, b) => (a.code || "").localeCompare(b.code || ""));
+    else if (sort === "oldest") list.sort((a, b) => new Date(a.createdAt || 0) - new Date(b.createdAt || 0));
+    else list.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+    return list;
+  }, [useCases, query, sort]);
+
+  return (
+    <main className="min-h-screen text-[var(--devdoc-text)]" style={{ backgroundColor: "var(--devdoc-bg)" }}>
+      <div className="border-b px-6 py-5" style={{ borderColor: "var(--devdoc-border)", backgroundColor: "var(--devdoc-surface)" }}>
+        <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-[var(--devdoc-primary)]">Use cases</p>
+        <div className="mt-1.5 flex items-center justify-between gap-4">
+          <div>
+            <h1 className="font-headline text-2xl font-bold tracking-tight">Use cases</h1>
+            <p className="mt-1 text-sm text-[var(--devdoc-muted)]">{useCases.length} use case{useCases.length === 1 ? "" : "s"}</p>
+          </div>
+          <button onClick={() => setCreateOpen(true)} className="flex shrink-0 items-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium text-white" style={{ backgroundColor: "var(--devdoc-primary)" }}>
+            <Icon><path d="M12 5v14M5 12h14" /></Icon> Add use case
+          </button>
+        </div>
+      </div>
+
+      <div className="mx-auto max-w-6xl px-6 py-6">
+        {useCases.length > 0 && (
+          <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center">
+            <div className="relative flex-1">
+              <span className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-[var(--devdoc-muted)]">
+                <Icon><circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" /></Icon>
+              </span>
+              <input value={query} onChange={(e) => setQuery(e.target.value)} placeholder="Search use cases…"
+                className="w-full rounded-md border py-2 pl-9 pr-3 text-sm outline-none transition-colors placeholder:text-[var(--devdoc-subtle)] focus:border-[var(--devdoc-highlight)]"
+                style={{ backgroundColor: "var(--devdoc-surface-inset)", borderColor: "var(--devdoc-border)", color: "var(--devdoc-text)" }} />
+            </div>
+            <select value={sort} onChange={(e) => setSort(e.target.value)} className="rounded-md border px-3 py-2 text-sm outline-none focus:border-[var(--devdoc-highlight)]"
+              style={{ backgroundColor: "var(--devdoc-surface-inset)", borderColor: "var(--devdoc-border)", color: "var(--devdoc-text)" }}>
+              <option value="newest">Newest</option><option value="oldest">Oldest</option><option value="code">Code A–Z</option>
+            </select>
+          </div>
+        )}
+
+        <div className="overflow-hidden rounded-lg border" style={{ borderColor: "var(--devdoc-border)", backgroundColor: "var(--devdoc-surface)" }}>
+          {error ? (
+            <div className="p-8 text-center">
+              <p className="text-sm text-[var(--devdoc-muted)]">Could not load use cases.</p>
+              <button onClick={() => refetch()} className="mt-3 rounded-md border px-4 py-2 text-sm" style={{ borderColor: "var(--devdoc-border)" }}>Retry</button>
+            </div>
+          ) : isLoading ? (
+            Array.from({ length: 5 }).map((_, i) => <SkeletonRow key={i} />)
+          ) : useCases.length === 0 ? (
+            <div className="flex flex-col items-center px-6 py-16 text-center"
+              style={{ backgroundImage: "linear-gradient(var(--devdoc-grid-line) 1px, transparent 1px), linear-gradient(90deg, var(--devdoc-grid-line) 1px, transparent 1px)", backgroundSize: "24px 24px" }}>
+              <p className="mb-1 font-mono text-[11px] uppercase tracking-[0.15em] text-[var(--devdoc-muted)]">No use cases yet</p>
+              <h3 className="font-headline text-xl font-semibold">Describe how actors use the system</h3>
+              <p className="mt-2 max-w-sm text-sm text-[var(--devdoc-muted)]">Use cases come before requirements — add the first one.</p>
+              <button onClick={() => setCreateOpen(true)} className="mt-5 flex items-center gap-2 rounded-lg px-5 py-2.5 text-sm font-medium text-white" style={{ backgroundColor: "var(--devdoc-primary)" }}>
+                <Icon><path d="M12 5v14M5 12h14" /></Icon> Add use case
+              </button>
+            </div>
+          ) : shown.length === 0 ? (
+            <p className="px-4 py-10 text-center text-sm text-[var(--devdoc-muted)]">No use cases match “{query}”.</p>
+          ) : (
+            shown.map((uc) => <Row key={uc.id} uc={uc} highlight={uc.id === highlightId} />)
+          )}
+        </div>
+      </div>
+
+      {createOpen && (
+        <CreateUseCaseForm onClose={() => setCreateOpen(false)} onCreate={(v) => createMutation.mutateAsync(v)} onCreated={() => setCreateOpen(false)} />
+      )}
+    </main>
+  );
+}

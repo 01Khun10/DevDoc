@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { NavLink, useLocation } from "react-router-dom";
+import { NavLink, useLocation, useMatch, useResolvedPath } from "react-router-dom";
 import { useProject } from "../../context/ProjectContext";
 import { Tooltip } from "../ui";
 
@@ -152,33 +152,34 @@ function readCollapsed() {
 }
 
 function NavItem({ to, exact, path, Icon, label, collapsed, onNavigate }) {
+  // Resolve active state here rather than via NavLink's render props: the
+  // collapsed rail wraps this in a Radix tooltip, whose asChild Slot clones the
+  // element and would overwrite a function className, dropping the active style.
+  const end = exact || !path;
+  const resolved = useResolvedPath(to);
+  const isActive = Boolean(useMatch({ path: resolved.pathname, end }));
+
   const link = (
     <NavLink
       to={to}
-      end={exact || !path}
+      end={end}
       onClick={onNavigate}
-      className={({ isActive }) =>
-        `devdoc-focus-ring group relative flex h-9 items-center gap-2.5 rounded-md text-[13px] font-medium transition-colors duration-150 ${
-          collapsed ? "justify-center px-0" : "px-2.5"
-        } ${
-          isActive
-            ? "bg-[var(--devdoc-primary-soft)] text-[var(--devdoc-primary)]"
-            : "text-[var(--devdoc-muted)] hover:bg-[var(--devdoc-surface-muted)] hover:text-[var(--devdoc-text-secondary)]"
-        }`
-      }
+      className={`devdoc-focus-ring group relative flex h-9 items-center gap-2.5 rounded-md text-[13px] font-medium transition-colors duration-150 ${
+        collapsed ? "justify-center px-0" : "px-2.5"
+      } ${
+        isActive
+          ? "bg-[var(--devdoc-primary-soft)] text-[var(--devdoc-primary)]"
+          : "text-[var(--devdoc-muted)] hover:bg-[var(--devdoc-surface-muted)] hover:text-[var(--devdoc-text-secondary)]"
+      }`}
     >
-      {({ isActive }) => (
-        <>
-          {isActive && (
-            <span
-              className="absolute left-0 top-1/2 h-5 w-0.5 -translate-y-1/2 rounded-full"
-              style={{ backgroundColor: "var(--devdoc-primary)" }}
-            />
-          )}
-          <Icon />
-          {collapsed ? null : <span className="truncate leading-none">{label}</span>}
-        </>
+      {isActive && (
+        <span
+          className="absolute left-0 top-1/2 h-5 w-0.5 -translate-y-1/2 rounded-full"
+          style={{ backgroundColor: "var(--devdoc-primary)" }}
+        />
       )}
+      <Icon />
+      {collapsed ? null : <span className="truncate leading-none">{label}</span>}
     </NavLink>
   );
 

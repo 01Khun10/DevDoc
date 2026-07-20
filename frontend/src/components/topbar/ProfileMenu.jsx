@@ -106,6 +106,7 @@ function ProfileMenu() {
               ["/settings", "Settings"],
               ["/docs", "Documentation"],
               ["/help", "Help & FAQ"],
+              ["/accessibility", "Accessibility"],
               ["/about", "About DevDoc"],
             ].map(([to, label]) => (
               <Link

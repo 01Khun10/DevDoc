@@ -3,6 +3,28 @@ import { useEffect, useId, useRef } from "react";
 
 export { default as Tooltip } from "./Tooltip";
 
+/* The one canonical inline-SVG icon wrapper. Pages must import this
+ * instead of declaring their own. Pass lucide-style paths as children. */
+export function Icon({ children, size = 16, className = "", ...props }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.5"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+      className={className}
+      {...props}
+    >
+      {children}
+    </svg>
+  );
+}
+
 const BUTTON_VARIANTS = {
   primary: {
     backgroundColor: "var(--devdoc-primary)",

@@ -57,15 +57,18 @@ function AuthProvider({ children }) {
     }
   }, []);
 
+  const updateUser = useCallback((nextUser) => setUser(nextUser), []);
+
   const value = useMemo(
     () => ({
       user,
       isLoading,
       login,
       register,
-      logout
+      logout,
+      updateUser
     }),
-    [user, isLoading, login, register, logout]
+    [user, isLoading, login, register, logout, updateUser]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

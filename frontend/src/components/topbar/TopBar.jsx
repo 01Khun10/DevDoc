@@ -1,4 +1,3 @@
-import { useEffect, useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTheme } from "../../context/ThemeContext";
 import BackButton from "./BackButton";
@@ -24,34 +23,11 @@ const MonitorIcon = () => (
   </svg>
 );
 
-const BellIcon = () => (
-  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.7} stroke="currentColor" className="h-4 w-4">
-    <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 0 0 5.454-1.31A8.967 8.967 0 0 1 18 9.75V9A6 6 0 0 0 6 9v.75a8.967 8.967 0 0 1-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 0 1-5.714 0m5.714 0a3 3 0 1 1-5.714 0" />
-  </svg>
-);
-
 const THEME_ICONS = { light: <SunIcon />, dark: <MoonIcon />, system: <MonitorIcon /> };
 const THEME_CYCLE = ["light", "dark", "system"];
 
 function TopBar() {
   const { theme, setTheme } = useTheme();
-  const [openMenu, setOpenMenu] = useState("");
-  const menuRef = useRef(null);
-
-  useEffect(() => {
-    if (!openMenu) return;
-    function handleClickOutside(event) {
-      if (menuRef.current && !menuRef.current.contains(event.target)) {
-        setOpenMenu("");
-      }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [openMenu]);
-
-  function toggleMenu(name) {
-    setOpenMenu((current) => (current === name ? "" : name));
-  }
 
   function cycleTheme() {
     const idx = THEME_CYCLE.indexOf(theme);
@@ -94,37 +70,10 @@ function TopBar() {
         </div>
 
         {/* Right: Search + Actions */}
-        <div className="flex min-w-0 flex-1 items-center justify-end gap-2" ref={menuRef}>
+        <div className="flex min-w-0 flex-1 items-center justify-end gap-2">
           <GlobalSearch />
 
           <div className="flex shrink-0 items-center gap-1">
-            {/* Bell */}
-            <div className="relative">
-              <button
-                className="devdoc-icon-button"
-                type="button"
-                title="Notifications"
-                onClick={() => toggleMenu("alerts")}
-              >
-                <BellIcon />
-              </button>
-              {openMenu === "alerts" ? (
-                <div
-                  className="devdoc-scale-in absolute right-0 z-40 mt-1.5 w-72 rounded-xl border p-4 text-sm shadow-lg"
-                  style={{
-                    borderColor: "var(--devdoc-border)",
-                    backgroundColor: "var(--devdoc-surface)",
-                    color: "var(--devdoc-text)",
-                  }}
-                >
-                  <p className="font-bold">No notifications yet.</p>
-                  <p className="mt-2 leading-6" style={{ color: "var(--devdoc-muted)" }}>
-                    Document saves, validation results, and traceability updates will appear here.
-                  </p>
-                </div>
-              ) : null}
-            </div>
-
             {/* Theme toggle - compact single button */}
             <button
               className="devdoc-icon-button"

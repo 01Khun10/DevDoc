@@ -1,4 +1,5 @@
 import { Component } from "react";
+import { Icon } from "../components/ui";
 
 /* Global Error — Blueprint edition. Converted from Stitch "global_error_blueprint_edition_1".
  *
@@ -11,12 +12,6 @@ import { Component } from "react";
  * You can also render <ErrorScreen/> directly as a route element if you want a static error page.
  */
 
-function Icon({ children, size = 20 }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor"
-      strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{children}</svg>
-  );
-}
 
 export function ErrorScreen({ error, onReload, inline = false }) {
   const stamp = new Date().toISOString();

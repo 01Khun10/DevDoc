@@ -254,7 +254,7 @@ const validationChecks = {
     sections,
     requirements,
     useCases,
-    businessObjectives,
+    businessObjectives = [],
     designElements,
     testCases,
     traceabilityLinks

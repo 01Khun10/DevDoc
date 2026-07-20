@@ -36,4 +36,18 @@ async function getProjectOverview(id) {
   return response.overview;
 }
 
-export { listProjects, createProject, getProject, updateProject, getProjectOverview };
+async function deleteProject(id) {
+  const response = await apiRequest(`/api/projects/${id}`, {
+    method: "DELETE"
+  });
+  return response;
+}
+
+async function createShareLink(id) {
+  const response = await apiRequest(`/api/projects/${id}/share`, {
+    method: "POST"
+  });
+  return response;
+}
+
+export { listProjects, createProject, getProject, updateProject, getProjectOverview, deleteProject, createShareLink };

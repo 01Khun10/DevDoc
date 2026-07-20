@@ -218,7 +218,7 @@ function LandingPage() {
                 Get started free
               </Link>
               <Link to="/login" className="devdoc-button-secondary px-7 py-3 text-base font-bold">
-                View demo project →
+                Sign in →
               </Link>
             </div>
 
@@ -337,7 +337,7 @@ function LandingPage() {
                 Get started free
               </Link>
               <Link to="/login" className="devdoc-button-secondary px-8 py-3 text-base font-bold">
-                View demo project
+                Sign in
               </Link>
             </div>
           </div>
@@ -367,7 +367,6 @@ function LandingPage() {
           <div className="flex items-center gap-4">
             <Link to="/register" className="text-xs font-medium transition hover:opacity-70" style={{ color: "var(--devdoc-muted)" }}>Register</Link>
             <Link to="/login" className="text-xs font-medium transition hover:opacity-70" style={{ color: "var(--devdoc-muted)" }}>Login</Link>
-            <a href="#" className="text-xs font-medium transition hover:opacity-70" style={{ color: "var(--devdoc-muted)" }}>GitHub</a>
           </div>
         </div>
       </footer>

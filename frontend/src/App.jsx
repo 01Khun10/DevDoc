@@ -1,25 +1,27 @@
 import { lazy, Suspense } from "react";
 import { Navigate, Route, Routes } from "react-router-dom";
 import useAuth from "./hooks/useAuth";
-import AppShell from "./layouts/AppShell";
-import ProjectShell from "./layouts/ProjectShell";
 import { PageSkeleton } from "./components/ui";
-import AboutPlaceholder from "./pages/AboutPlaceholder";
-import Dashboard from "./pages/Dashboard";
-import DocsPlaceholder from "./pages/DocsPlaceholder";
-import HelpPlaceholder from "./pages/HelpPlaceholder";
 import LandingPage from "./pages/LandingPage";
 import Login from "./pages/Login";
-import ProfilePlaceholder from "./pages/ProfilePlaceholder";
 import Register from "./pages/Register";
-import SettingsPlaceholder from "./pages/SettingsPlaceholder";
 
+const AppShell = lazy(() => import("./layouts/AppShell"));
+const ProjectShell = lazy(() => import("./layouts/ProjectShell"));
+const About = lazy(() => import("./pages/About"));
+const Accessibility = lazy(() => import("./pages/Accessibility"));
+const Dashboard = lazy(() => import("./pages/Dashboard"));
+const Documentation = lazy(() => import("./pages/Documentation"));
+const Help = lazy(() => import("./pages/Help"));
+const NotFound = lazy(() => import("./pages/NotFound"));
+const Profile = lazy(() => import("./pages/Profile"));
+const AppSettings = lazy(() => import("./pages/AppSettings"));
 const DocumentEditor = lazy(() => import("./pages/DocumentEditor"));
 const ProjectAnalytics = lazy(() => import("./pages/ProjectAnalytics"));
 const ProjectDiagrams = lazy(() => import("./pages/ProjectDiagrams"));
-const ProjectDocumentsPlaceholder = lazy(() => import("./pages/ProjectDocumentsPlaceholder"));
-const ProjectSettingsPlaceholder = lazy(() => import("./pages/ProjectSettingsPlaceholder"));
-const ProjectVersionsPlaceholder = lazy(() => import("./pages/ProjectVersionsPlaceholder"));
+const DocumentsLibrary = lazy(() => import("./pages/DocumentsLibrary"));
+const ProjectSettings = lazy(() => import("./pages/ProjectSettings"));
+const ProjectVersions = lazy(() => import("./pages/ProjectVersions"));
 const ProjectWorkspace = lazy(() => import("./pages/ProjectWorkspace"));
 const RequirementRegistry = lazy(() => import("./pages/RequirementRegistry"));
 const BusinessObjectiveRegistry = lazy(() => import("./pages/BusinessObjectiveRegistry"));
@@ -59,7 +61,7 @@ function App() {
         <Route path="/projects/:id" element={<ProjectShell />}>
           <Route index element={<ProjectWorkspace />} />
           <Route path="business-objectives" element={<BusinessObjectiveRegistry />} />
-          <Route path="documents" element={<ProjectDocumentsPlaceholder />} />
+          <Route path="documents" element={<DocumentsLibrary />} />
           <Route path="documents/:documentId" element={<DocumentEditor />} />
           <Route path="documents/:documentId/print" element={<DocumentPrint />} />
           <Route path="templates" element={<TemplateLibrary />} />
@@ -70,17 +72,18 @@ function App() {
           <Route path="traceability" element={<TraceabilityMatrix />} />
           <Route path="validation" element={<ValidationEngine />} />
           <Route path="diagrams" element={<ProjectDiagrams />} />
-          <Route path="versions" element={<ProjectVersionsPlaceholder />} />
+          <Route path="versions" element={<ProjectVersions />} />
           <Route path="analytics" element={<ProjectAnalytics />} />
-          <Route path="settings" element={<ProjectSettingsPlaceholder />} />
+          <Route path="settings" element={<ProjectSettings />} />
         </Route>
-        <Route path="/profile" element={<ProfilePlaceholder />} />
-        <Route path="/settings" element={<SettingsPlaceholder />} />
-        <Route path="/help" element={<HelpPlaceholder />} />
-        <Route path="/docs" element={<DocsPlaceholder />} />
-        <Route path="/about" element={<AboutPlaceholder />} />
+        <Route path="/profile" element={<Profile />} />
+        <Route path="/settings" element={<AppSettings />} />
+        <Route path="/help" element={<Help />} />
+        <Route path="/accessibility" element={<Accessibility />} />
+        <Route path="/docs" element={<Documentation />} />
+        <Route path="/about" element={<About />} />
       </Route>
-      <Route path="*" element={<Navigate to="/" replace />} />
+      <Route path="*" element={<NotFound />} />
     </Routes>
     </Suspense>
   );
