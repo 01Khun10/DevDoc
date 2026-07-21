@@ -1,6 +1,4 @@
-Set-Location "E:\DevDoc"
 
-@'
 # DevDoc
 
 DevDoc is a structured documentation and traceability platform for software projects. It helps users create, organize, validate, connect, review, and maintain project documentation and related software artefacts in one system.
