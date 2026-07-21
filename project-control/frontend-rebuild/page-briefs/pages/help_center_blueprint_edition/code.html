@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Help - DevDoc Support Center</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500;700&amp;family=Space+Grotesk:wght@500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-bright": "#363941",
+                        "surface-variant": "#32353c",
+                        "surface-container": "#1d2027",
+                        "on-tertiary-container": "#461f00",
+                        "secondary": "#5de6ff",
+                        "tertiary-fixed-dim": "#ffb786",
+                        "tertiary-container": "#df7412",
+                        "on-tertiary": "#502400",
+                        "on-primary-fixed": "#001a42",
+                        "primary-container": "#4d8eff",
+                        "secondary-fixed-dim": "#2fd9f4",
+                        "surface-container-low": "#191b23",
+                        "outline-variant": "#424754",
+                        "on-primary-fixed-variant": "#004395",
+                        "on-background": "#e1e2ec",
+                        "surface": "#10131a",
+                        "inverse-on-surface": "#2e3038",
+                        "outline": "#8c909f",
+                        "error": "#ffb4ab",
+                        "on-error": "#690005",
+                        "inverse-surface": "#e1e2ec",
+                        "on-primary": "#002e6a",
+                        "primary-fixed": "#d8e2ff",
+                        "inverse-primary": "#005ac2",
+                        "surface-tint": "#adc6ff",
+                        "secondary-container": "#00cbe6",
+                        "surface-container-highest": "#32353c",
+                        "surface-container-lowest": "#0b0e15",
+                        "on-surface": "#e1e2ec",
+                        "on-surface-variant": "#c2c6d6",
+                        "on-secondary": "#00363e",
+                        "surface-container-high": "#272a31",
+                        "on-tertiary-fixed": "#311400",
+                        "on-secondary-fixed-variant": "#004e5a",
+                        "tertiary-fixed": "#ffdcc6",
+                        "primary-fixed-dim": "#adc6ff",
+                        "error-container": "#93000a",
+                        "on-error-container": "#ffdad6",
+                        "surface-dim": "#10131a",
+                        "secondary-fixed": "#a2eeff",
+                        "on-tertiary-fixed-variant": "#723600",
+                        "background": "#10131a",
+                        "tertiary": "#ffb786",
+                        "on-secondary-fixed": "#001f25",
+                        "on-primary-container": "#00285d",
+                        "primary": "#adc6ff",
+                        "on-secondary-container": "#00515d"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "base": "4px",
+                        "margin-mobile": "16px",
+                        "margin-desktop": "32px",
+                        "gutter": "16px",
+                        "grid-pattern": "24px"
+                    },
+                    "fontFamily": {
+                        "body-sm": ["Inter"],
+                        "headline-md": ["Space Grotesk"],
+                        "headline-lg": ["Space Grotesk"],
+                        "body-lg": ["Inter"],
+                        "headline-sm": ["Space Grotesk"],
+                        "eyebrow-mono": ["JetBrains Mono"],
+                        "code": ["JetBrains Mono"],
+                        "body-md": ["Inter"]
+                    },
+                    "fontSize": {
+                        "body-sm": ["13px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "headline-md": ["24px", { "lineHeight": "1.3", "fontWeight": "600" }],
+                        "headline-lg": ["32px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-lg": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "headline-sm": ["18px", { "lineHeight": "1.4", "fontWeight": "500" }],
+                        "eyebrow-mono": ["11px", { "lineHeight": "16px", "letterSpacing": "0.15em", "fontWeight": "500" }],
+                        "code": ["13px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "body-md": ["14px", { "lineHeight": "1.5", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: #0b0e15; /* Fallback for map to dark canvas */
+        }
+        .blueprint-canvas {
+            background-color: #0b0e15;
+            background-image: 
+                linear-gradient(rgba(51, 81, 126, 0.05) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(51, 81, 126, 0.05) 1px, transparent 1px);
+            background-size: 24px 24px;
+            background-position: center center;
+        }
+        .hairline-border {
+            border: 1px solid rgba(51, 81, 126, 0.5); /* #33517E */
+        }
+        .technical-card {
+            background-color: #16273f; /* Closest config color is surface, but manual per prompt */
+            border: 1px solid rgba(51, 81, 126, 0.5);
+            border-radius: 6px;
+        }
+        .tech-shadow {
+            box-shadow: 2px 2px 0px rgba(51, 81, 126, 0.3);
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-surface-container-lowest text-on-surface font-body-md h-screen flex flex-col md:flex-row overflow-hidden blueprint-canvas">
+<!-- TopAppBar (Mobile only) -->
+<header class="md:hidden bg-surface-container border-b border-outline-variant flex justify-between items-center w-full px-margin-mobile h-16 z-50 shrink-0">
+<div class="font-headline-sm text-headline-sm font-bold text-on-surface">DevDoc</div>
+<div class="flex items-center gap-4">
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">search</span>
+</button>
+<button class="text-primary hover:text-primary transition-colors">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">help</span>
+</button>
+<button class="text-on-surface-variant hover:text-primary transition-colors">
+<span class="material-symbols-outlined">menu</span>
+</button>
+</div>
+</header>
+<!-- SideNavBar (Desktop) -->
+<nav class="hidden md:flex flex-col h-screen left-0 w-64 bg-surface-container-low border-r border-outline-variant py-6 gap-2 shrink-0 z-40 overflow-y-auto">
+<div class="px-6 mb-6">
+<div class="flex items-center gap-3">
+<div class="w-10 h-10 rounded-full bg-surface-container-high border border-outline-variant flex items-center justify-center overflow-hidden">
+<img alt="Project Avatar" class="w-full h-full object-cover" data-alt="A macro shot of a sleek, brushed titanium server rack glowing with subtle cyan LEDs, signifying active processing in a high-tech data center environment. The lighting is low-key with sharp highlights on the metal edges, creating a clinical, precise, and secure mood." src="https://lh3.googleusercontent.com/aida-public/AB6AXuB0zEqLrwGfx8Neow88o4iy6sDAOTQ5xy2OKGZ-cVbzn2JFEoiG8V4lMo0a1MCPNkctUxW_Cirr0aa-kNqpgrjfD0pl6CzD5-798j2B6zm6_-vCHXmT-9kGkGEFkFlpJUNVMixVOP14GwgTb2x9tPvJRGituIpDnd1QT0HYPsvXWVE7JbJy9tCGSL55UnOMV34VgpCkEKY0o3lk3fMWYj80YVMSk1SsBD8KP-LWUEUAMv7H3T4sDLbWH9q3PbYi8dRdvdow6gk4Rm0"/>
+</div>
+<div>
+<div class="font-headline-sm text-headline-sm text-on-surface">Project Name</div>
+<div class="font-eyebrow-mono text-eyebrow-mono text-on-surface-variant opacity-70">Active Workspace</div>
+</div>
+</div>
+</div>
+<div class="flex flex-col gap-1 px-4">
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-body-sm text-body-sm" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+                Overview
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-body-sm text-body-sm" href="#">
+<span class="material-symbols-outlined">target</span>
+                Objectives
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-body-sm text-body-sm" href="#">
+<span class="material-symbols-outlined">description</span>
+                Documents
+            </a>
+<div class="h-px bg-outline-variant my-2 mx-2"></div>
+<!-- Settings & Help typically bottom -->
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-body-sm text-body-sm mt-auto" href="#">
+<span class="material-symbols-outlined">settings</span>
+                Settings
+            </a>
+<!-- Help is active intent -->
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-secondary font-medium bg-secondary-container/10 border-r-2 border-secondary transition-transform duration-200 translate-x-1 font-body-sm text-body-sm" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">help</span>
+                Help
+            </a>
+</div>
+</nav>
+<!-- Main Canvas -->
+<main class="flex-1 overflow-y-auto relative h-full">
+<!-- Title Block Stamp -->
+<div class="absolute top-4 right-4 md:top-margin-desktop md:right-margin-desktop text-right opacity-60 z-10 hidden sm:block">
+<div class="font-eyebrow-mono text-eyebrow-mono text-secondary">HELP_REV_1.0.0</div>
+<div class="font-eyebrow-mono text-eyebrow-mono text-on-surface-variant mt-1 flex items-center justify-end gap-1">
+<span class="w-2 h-2 rounded-full bg-secondary inline-block animate-pulse"></span>
+                STATUS: OPERATIONAL
+            </div>
+</div>
+<div class="max-w-[1200px] mx-auto px-margin-mobile md:px-margin-desktop py-8 md:py-12 flex flex-col gap-12 relative z-20">
+<!-- Header Section -->
+<header class="flex flex-col gap-2 max-w-2xl">
+<span class="font-eyebrow-mono text-eyebrow-mono text-secondary uppercase tracking-widest">SUPPORT CENTER</span>
+<h1 class="font-headline-lg text-headline-lg text-on-surface">Help</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant mt-2">Find technical documentation, access support resources, and view operational guides.</p>
+</header>
+<!-- Search Field -->
+<section class="relative max-w-3xl">
+<div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+<span class="material-symbols-outlined text-outline">search</span>
+</div>
+<input class="w-full bg-[#16273f]/50 hairline-border rounded-[6px] py-4 pl-12 pr-12 text-on-surface font-code text-code placeholder:text-outline-variant focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary transition-all tech-shadow backdrop-blur-sm" placeholder="How can we help?" type="text"/>
+<div class="absolute inset-y-0 right-0 pr-4 flex items-center pointer-events-none">
+<span class="font-eyebrow-mono text-[10px] text-outline-variant px-2 py-1 hairline-border rounded bg-surface/50">⌘K</span>
+</div>
+</section>
+<!-- Quick-Help Grid -->
+<section>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+<!-- Card 1 -->
+<a class="technical-card p-6 flex flex-col gap-4 hover:-translate-y-1 hover:border-secondary/50 transition-all group tech-shadow backdrop-blur-md" href="#">
+<div class="w-10 h-10 rounded hairline-border bg-surface-container flex items-center justify-center text-primary group-hover:text-secondary group-hover:border-secondary/30 transition-colors">
+<span class="material-symbols-outlined">rocket_launch</span>
+</div>
+<div>
+<h3 class="font-headline-sm text-headline-sm font-semibold text-on-surface mb-1">Getting Started</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">Initial setup and configuration protocols.</p>
+</div>
+</a>
+<!-- Card 2 -->
+<a class="technical-card p-6 flex flex-col gap-4 hover:-translate-y-1 hover:border-secondary/50 transition-all group tech-shadow backdrop-blur-md" href="#">
+<div class="w-10 h-10 rounded hairline-border bg-surface-container flex items-center justify-center text-primary group-hover:text-secondary group-hover:border-secondary/30 transition-colors">
+<span class="material-symbols-outlined">keyboard</span>
+</div>
+<div>
+<h3 class="font-headline-sm text-headline-sm font-semibold text-on-surface mb-1">Keyboard Shortcuts</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">Efficiency bindings for terminal interface.</p>
+</div>
+</a>
+<!-- Card 3 -->
+<a class="technical-card p-6 flex flex-col gap-4 hover:-translate-y-1 hover:border-secondary/50 transition-all group tech-shadow backdrop-blur-md" href="#">
+<div class="w-10 h-10 rounded hairline-border bg-surface-container flex items-center justify-center text-primary group-hover:text-secondary group-hover:border-secondary/30 transition-colors">
+<span class="material-symbols-outlined">account_tree</span>
+</div>
+<div>
+<h3 class="font-headline-sm text-headline-sm font-semibold text-on-surface mb-1">Traceability Guide</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">Mapping requirements across project schemas.</p>
+</div>
+</a>
+</div>
+</section>
+</div>
+</main>
+<script>
+        // Simple FAQ toggle logic
+        document.querySelectorAll('.faq-button').forEach(button => {
+            button.addEventListener('click', () => {
+                const content = button.nextElementSibling;
+                const icon = button.querySelector('.material-symbols-outlined');
+                
+                const isExpanded = content.classList.contains('hidden');
+                
+                // Close all others
+                document.querySelectorAll('.faq-content').forEach(c => c.classList.add('hidden'));
+                document.querySelectorAll('.faq-button .material-symbols-outlined').forEach(i => i.textContent = 'add');
+                
+                if (isExpanded) {
+                    content.classList.remove('hidden');
+                    icon.textContent = 'remove';
+                }
+            });
+        });
+    </script>
+</body></html>

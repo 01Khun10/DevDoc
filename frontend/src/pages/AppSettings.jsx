@@ -19,9 +19,6 @@ function applyRoot() {
   r.setAttribute("data-text-scale", readScale());
 }
 
-function Planned() {
-  return <span className="rounded px-1.5 py-0.5 text-[10px] font-medium" style={{ color: "var(--devdoc-warning)", backgroundColor: "var(--devdoc-warning-soft)" }}>planned</span>;
-}
 function Card({ title, children }) {
   return (
     <section className="rounded-lg border p-6" style={{ borderColor: "var(--devdoc-border)", backgroundColor: "var(--devdoc-surface)" }}>
@@ -51,9 +48,6 @@ function Row({ label, hint, children }) {
 
 const SHORTCUTS = [
   ["Global search / palette", ["⌘", "K"]],
-  ["Navigate list / tree", ["J", "K"]],
-  ["Edit current document", ["E"]],
-  ["Delete focused item", ["D"]],
   ["Close overlay", ["Esc"]],
 ];
 
@@ -124,11 +118,6 @@ export default function AppSettings() {
           <Row label="Autosave" hint="Documents autosave a few seconds after you stop typing">
             <span className="text-[13px] text-[var(--devdoc-success)]">Always on</span>
           </Row>
-        </Card>
-
-        <Card title="Notifications">
-          <Row label="Validation complete"><Planned /></Row>
-          <Row label="Share link opened"><Planned /></Row>
         </Card>
 
         <Card title="Keyboard shortcuts">

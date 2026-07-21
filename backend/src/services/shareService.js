@@ -11,25 +11,40 @@ function createShareError(code, message) {
 }
 
 // Owner-only: mint (or reuse) a read-only share token for the project.
-async function createShareToken(ownerId, projectId) {
+async function createShareToken(ownerId, projectId, requestedExpiresAt) {
   const project = await prisma.project.findFirst({
     where: { id: projectId, ownerId },
     select: { id: true }
   });
   if (!project) throw createShareError(PROJECT_NOT_FOUND, "Project not found");
 
-  const existing = await prisma.shareToken.findFirst({
-    where: { projectId: project.id, expiresAt: null },
-    select: { token: true }
+  const now = new Date();
+  const hasRequestedExpiry = requestedExpiresAt !== undefined;
+  if (hasRequestedExpiry && typeof requestedExpiresAt !== "string") {
+    throw createShareError("INVALID_EXPIRY", "Expiry must be an ISO date string");
+  }
+  const expiresAt = hasRequestedExpiry ? new Date(requestedExpiresAt) : new Date(now.getTime() + 30 * 24 * 60 * 60 * 1000);
+  if (Number.isNaN(expiresAt.getTime()) || expiresAt <= now) {
+    throw createShareError("INVALID_EXPIRY", "Expiry must be a future date");
+  }
+  if (expiresAt > new Date(now.getTime() + 365 * 24 * 60 * 60 * 1000)) {
+    throw createShareError("INVALID_EXPIRY", "Expiry cannot be more than 365 days away");
+  }
+
+  const existing = hasRequestedExpiry ? null : await prisma.shareToken.findFirst({
+    where: { projectId: project.id, expiresAt: { gt: now } },
+    orderBy: { expiresAt: "desc" },
+    select: { token: true, expiresAt: true }
   });
   if (existing) return existing;
 
   return prisma.shareToken.create({
     data: {
       projectId: project.id,
-      token: crypto.randomBytes(24).toString("base64url")
+      token: crypto.randomBytes(24).toString("base64url"),
+      expiresAt
     },
-    select: { token: true }
+    select: { token: true, expiresAt: true }
   });
 }
 
@@ -40,7 +55,7 @@ async function getSharedReport(token) {
     where: { token },
     select: { projectId: true, expiresAt: true }
   });
-  if (!shareToken || (shareToken.expiresAt && shareToken.expiresAt < new Date())) {
+  if (!shareToken || shareToken.expiresAt <= new Date()) {
     throw createShareError(SHARE_TOKEN_NOT_FOUND, "Share link not found or expired");
   }
 

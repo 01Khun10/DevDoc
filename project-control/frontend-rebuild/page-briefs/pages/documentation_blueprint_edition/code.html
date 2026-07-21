@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>DevDoc - Understanding Traceability</title>
+<!-- Fonts & Icons -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&amp;family=JetBrains+Mono:wght@400;500&amp;family=Space+Grotesk:wght@500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Theme Configuration -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "tertiary": "#ffb786",
+                    "on-background": "#e1e2ec",
+                    "on-tertiary": "#502400",
+                    "on-primary-fixed": "#001a42",
+                    "on-primary-container": "#00285d",
+                    "surface-bright": "#363941",
+                    "on-tertiary-fixed-variant": "#723600",
+                    "on-secondary-fixed": "#001f25",
+                    "on-tertiary-container": "#461f00",
+                    "primary-fixed-dim": "#adc6ff",
+                    "surface-container-low": "#191b23",
+                    "surface": "#10131a",
+                    "on-secondary-container": "#00515d",
+                    "surface-tint": "#adc6ff",
+                    "on-secondary-fixed-variant": "#004e5a",
+                    "surface-dim": "#10131a",
+                    "primary": "#adc6ff",
+                    "error-container": "#93000a",
+                    "tertiary-fixed": "#ffdcc6",
+                    "tertiary-fixed-dim": "#ffb786",
+                    "on-error": "#690005",
+                    "on-secondary": "#00363e",
+                    "surface-variant": "#32353c",
+                    "outline-variant": "#424754",
+                    "inverse-primary": "#005ac2",
+                    "surface-container-lowest": "#0b0e15",
+                    "secondary": "#5de6ff",
+                    "primary-container": "#4d8eff",
+                    "error": "#ffb4ab",
+                    "background": "#10131a",
+                    "on-tertiary-fixed": "#311400",
+                    "surface-container-high": "#272a31",
+                    "on-surface-variant": "#c2c6d6",
+                    "surface-container-highest": "#32353c",
+                    "on-error-container": "#ffdad6",
+                    "surface-container": "#1d2027",
+                    "secondary-container": "#00cbe6",
+                    "tertiary-container": "#df7412",
+                    "inverse-surface": "#e1e2ec",
+                    "on-surface": "#e1e2ec",
+                    "secondary-fixed-dim": "#2fd9f4",
+                    "primary-fixed": "#d8e2ff",
+                    "outline": "#8c909f",
+                    "on-primary-fixed-variant": "#004395",
+                    "on-primary": "#002e6a",
+                    "inverse-on-surface": "#2e3038",
+                    "secondary-fixed": "#a2eeff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "base": "4px",
+                    "gutter": "16px",
+                    "grid-pattern": "24px",
+                    "margin-mobile": "16px",
+                    "margin-desktop": "32px"
+            },
+            "fontFamily": {
+                    "eyebrow-mono": ["JetBrains Mono"],
+                    "code": ["JetBrains Mono"],
+                    "body-md": ["Inter"],
+                    "headline-sm": ["Space Grotesk"],
+                    "headline-lg": ["Space Grotesk"],
+                    "body-sm": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "headline-md": ["Space Grotesk"]
+            },
+            "fontSize": {
+                    "eyebrow-mono": ["11px", {"lineHeight": "16px", "letterSpacing": "0.15em", "fontWeight": "500"}],
+                    "code": ["13px", {"lineHeight": "20px", "fontWeight": "400"}],
+                    "body-md": ["14px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                    "headline-sm": ["18px", {"lineHeight": "1.4", "fontWeight": "500"}],
+                    "headline-lg": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                    "body-sm": ["13px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                    "body-lg": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                    "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        /* Blueprint Pattern */
+        .blueprint-bg {
+            background-color: #10131a; /* bg-background fallback */
+            background-size: 24px 24px;
+            background-image:
+                linear-gradient(to right, rgba(66, 71, 84, 0.15) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(66, 71, 84, 0.15) 1px, transparent 1px);
+        }
+        
+        /* Custom Scrollbar for technical feel */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #424754; /* outline-variant */
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #8c909f; /* outline */
+        }
+    </style>
+</head>
+<body class="blueprint-bg text-on-surface h-screen flex flex-col overflow-hidden font-body-md antialiased selection:bg-secondary/30 selection:text-secondary-fixed">
+<!-- TopAppBar -->
+<header class="bg-surface-container border-b border-outline-variant flex justify-between items-center w-full px-margin-desktop h-16 z-50 shrink-0">
+<div class="flex items-center gap-8">
+<div class="flex items-center gap-3">
+<span class="material-symbols-outlined text-primary text-2xl" style="font-variation-settings: 'FILL' 1;">architecture</span>
+<span class="font-headline-sm text-headline-sm font-bold text-on-surface tracking-tight">DevDoc</span>
+</div>
+<!-- Search Bar (on_left as per JSON) -->
+<div class="relative hidden md:block w-96 group">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline group-focus-within:text-secondary transition-colors text-[20px]">search</span>
+<input class="w-full bg-surface-container-lowest border border-outline-variant rounded pl-10 pr-4 py-1.5 font-body-sm text-body-sm text-on-surface placeholder-outline focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary transition-all" placeholder="Search documentation..." type="text"/>
+<div class="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-1">
+<kbd class="font-eyebrow-mono text-[10px] text-outline border border-outline-variant rounded px-1.5 py-0.5 bg-surface-container">⌘</kbd>
+<kbd class="font-eyebrow-mono text-[10px] text-outline border border-outline-variant rounded px-1.5 py-0.5 bg-surface-container">K</kbd>
+</div>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 text-on-surface-variant hover:bg-surface-variant hover:text-on-surface rounded transition-colors" title="Toggle Dark Mode">
+<span class="material-symbols-outlined text-[20px]">dark_mode</span>
+</button>
+<button class="p-2 text-on-surface-variant hover:bg-surface-variant hover:text-on-surface rounded transition-colors" title="Help">
+<span class="material-symbols-outlined text-[20px]">help</span>
+</button>
+<div class="w-px h-6 bg-outline-variant mx-2"></div>
+<button class="w-8 h-8 rounded-full border border-outline-variant overflow-hidden hover:border-primary transition-colors focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2 focus:ring-offset-surface-container">
+<img class="w-full h-full object-cover" data-alt="A minimalist, futuristic avatar of a network engineer or architect, rendered in high-contrast cyan and deep blue tones, reflecting a highly technical software workspace." src="https://lh3.googleusercontent.com/aida-public/AB6AXuD-ZS1GX6fVydHT2NjeWGf9u-yQaGpoLtStK8TrnsnwT9rvmSlH1yn8fVEoBUxI15coOobawNk3pKKkSaJBwrHfx-mWyd_GHcL5papnImgOkSR67Y7S5H4m_4GB7koZq6ulWVEF0ojjl68ZvhMFD60f_cUVOAsBAMPb-Rm8rCmfEDLmJ1ZQ2l2p6VYa11oCUGDusfPVOy-NMYYLdMLbfL89hnfqzJPr9j7S5Gh3O0zvBSiC4LoN-ud4t1DwQlMVmyUdSC5MBxm6YYg"/>
+</button>
+</div>
+</header>
+<!-- Main Workspace Layout -->
+<div class="flex flex-1 overflow-hidden">
+<!-- Left Sidebar (Docs Tree) -->
+<aside class="w-72 bg-surface-container-low border-r border-outline-variant flex flex-col shrink-0 overflow-y-auto">
+<div class="p-4 border-b border-outline-variant bg-surface-container/50">
+<span class="font-eyebrow-mono text-eyebrow-mono text-outline uppercase tracking-wider block mb-1">Knowledge Base</span>
+<span class="font-headline-sm text-headline-sm text-on-surface">v4.2 Documentation</span>
+</div>
+<nav class="flex-1 p-4 space-y-6">
+<!-- Group -->
+<div>
+<h3 class="font-eyebrow-mono text-eyebrow-mono text-outline mb-3 px-2">GETTING STARTED</h3>
+<ul class="space-y-1">
+<li>
+<a class="flex items-center gap-3 px-2 py-1.5 text-on-surface-variant font-body-sm text-body-sm hover:bg-surface-container-high hover:text-on-surface rounded transition-colors group" href="#">
+<span class="material-symbols-outlined text-[18px] text-outline group-hover:text-on-surface">rocket_launch</span>
+                                Introduction
+                            </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-2 py-1.5 text-on-surface-variant font-body-sm text-body-sm hover:bg-surface-container-high hover:text-on-surface rounded transition-colors group" href="#">
+<span class="material-symbols-outlined text-[18px] text-outline group-hover:text-on-surface">install_desktop</span>
+                                Installation
+                            </a>
+</li>
+</ul>
+</div>
+<!-- Group (Active) -->
+<div>
+<h3 class="font-eyebrow-mono text-eyebrow-mono text-outline mb-3 px-2 flex justify-between items-center">
+                        CORE CONCEPTS
+                        <span class="material-symbols-outlined text-[16px]">expand_less</span>
+</h3>
+<ul class="space-y-1 relative before:content-[''] before:absolute before:left-4 before:top-2 before:bottom-2 before:w-px before:bg-outline-variant">
+<!-- Indented items -->
+<li class="pl-8 relative">
+<div class="absolute left-4 top-1/2 w-3 h-px bg-outline-variant"></div>
+<a class="flex items-center px-2 py-1.5 text-on-surface-variant font-body-sm text-body-sm hover:bg-surface-container-high hover:text-on-surface rounded transition-colors" href="#">
+                                Business Objectives
+                            </a>
+</li>
+<li class="pl-8 relative">
+<div class="absolute left-4 top-1/2 w-3 h-px bg-outline-variant"></div>
+<a class="flex items-center px-2 py-1.5 text-on-surface-variant font-body-sm text-body-sm hover:bg-surface-container-high hover:text-on-surface rounded transition-colors" href="#">
+                                Use Cases
+                            </a>
+</li>
+<li class="pl-8 relative">
+<div class="absolute left-4 top-1/2 w-3 h-px bg-outline-variant"></div>
+<a class="flex items-center px-2 py-1.5 text-on-surface-variant font-body-sm text-body-sm hover:bg-surface-container-high hover:text-on-surface rounded transition-colors" href="#">
+                                Requirements
+                            </a>
+</li>
+<!-- Active Item -->
+<li class="pl-8 relative">
+<div class="absolute left-4 top-1/2 w-3 h-px bg-secondary"></div>
+<a class="flex items-center px-2 py-1.5 text-secondary font-medium bg-secondary/10 border-l-2 border-secondary rounded-r transition-colors -ml-[2px]" href="#">
+                                Traceability
+                            </a>
+</li>
+<li class="pl-8 relative">
+<div class="absolute left-4 top-1/2 w-3 h-px bg-outline-variant"></div>
+<a class="flex items-center px-2 py-1.5 text-on-surface-variant font-body-sm text-body-sm hover:bg-surface-container-high hover:text-on-surface rounded transition-colors" href="#">
+                                Doc-Linter
+                            </a>
+</li>
+<li class="pl-8 relative">
+<div class="absolute left-4 top-1/2 w-3 h-px bg-outline-variant"></div>
+<a class="flex items-center px-2 py-1.5 text-on-surface-variant font-body-sm text-body-sm hover:bg-surface-container-high hover:text-on-surface rounded transition-colors" href="#">
+                                Diagrams
+                            </a>
+</li>
+</ul>
+</div>
+<!-- Group -->
+<div>
+<h3 class="font-eyebrow-mono text-eyebrow-mono text-outline mb-3 px-2">GUIDES</h3>
+<ul class="space-y-1">
+<li>
+<a class="flex items-center gap-3 px-2 py-1.5 text-on-surface-variant font-body-sm text-body-sm hover:bg-surface-container-high hover:text-on-surface rounded transition-colors group" href="#">
+<span class="material-symbols-outlined text-[18px] text-outline group-hover:text-on-surface">school</span>
+                                Tutorials
+                            </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-2 py-1.5 text-on-surface-variant font-body-sm text-body-sm hover:bg-surface-container-high hover:text-on-surface rounded transition-colors group" href="#">
+<span class="material-symbols-outlined text-[18px] text-outline group-hover:text-on-surface">help_center</span>
+                                FAQ
+                            </a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-2 py-1.5 text-on-surface-variant font-body-sm text-body-sm hover:bg-surface-container-high hover:text-on-surface rounded transition-colors group" href="#">
+<span class="material-symbols-outlined text-[18px] text-outline group-hover:text-on-surface">keyboard</span>
+                                Keyboard Shortcuts
+                            </a>
+</li>
+</ul>
+</div>
+</nav>
+</aside>
+<!-- Center Content Area -->
+<main class="flex-1 overflow-y-auto relative scroll-smooth focus:outline-none" id="main-content" tabindex="-1">
+<!-- Floating Technical Stamps (Top Right of Canvas) -->
+<div class="absolute top-8 right-8 flex flex-col items-end gap-2 pointer-events-none z-10 hidden xl:flex">
+<div class="border border-outline-variant px-3 py-1 font-eyebrow-mono text-[10px] text-outline tracking-widest uppercase bg-surface/50 backdrop-blur">
+                    REV 4.2.1
+                </div>
+<div class="border border-secondary px-3 py-1 font-eyebrow-mono text-[10px] text-secondary tracking-widest uppercase flex items-center gap-1.5 bg-secondary/5 backdrop-blur shadow-[0_0_10px_rgba(93,230,255,0.1)]">
+<span class="material-symbols-outlined text-[14px]" style="font-variation-settings: 'FILL' 1;">verified</span>
+                    STATUS: VERIFIED
+                </div>
+</div>
+<article class="max-w-4xl mx-auto py-16 px-8 lg:px-16">
+<!-- Article Header -->
+<header class="mb-12 relative">
+<!-- Decorative architectural lines -->
+<div class="absolute -left-8 top-2 bottom-0 w-px bg-gradient-to-b from-secondary/50 to-transparent"></div>
+<div class="absolute -left-[35px] top-2 w-2 h-px bg-secondary/50"></div>
+<div class="flex items-center gap-2 mb-4">
+<span class="font-eyebrow-mono text-eyebrow-mono text-secondary tracking-widest uppercase">CORE CONCEPTS</span>
+<div class="h-px w-8 bg-outline-variant"></div>
+<span class="font-eyebrow-mono text-eyebrow-mono text-outline">DOC-ID: TRC-091</span>
+</div>
+<h1 class="font-headline-lg text-headline-lg text-on-surface mb-6 tracking-tight">Understanding traceability</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant leading-relaxed max-w-3xl">
+                        Traceability is the structural backbone of high-precision documentation. In DevDoc, it ensures that every line of code, every architectural decision, and every test case is directly wired back to a verified business objective. It prevents documentation drift by treating relationships as validated code.
+                    </p>
+</header>
+<!-- Article Body -->
+<div class="space-y-10 text-on-surface-variant font-body-md text-body-md leading-relaxed">
+<section>
+<h2 class="font-headline-md text-headline-md text-on-surface mb-4 mt-8 pt-4 border-t border-outline-variant">The Anatomy of a Trace</h2>
+<p class="mb-4">
+                            A trace in DevDoc is not merely a hyperlink. It is a typed, bidirectional relationship enforced by the internal validation schema. When you reference a Business Objective like 
+                            <span class="inline-flex items-center px-1.5 py-0.5 rounded border border-tertiary-container bg-tertiary-container/10 text-tertiary font-eyebrow-mono text-[11px] mx-1">BO-01</span>, 
+                            the system verifies its status and automatically updates dependent Functional Requirements such as 
+                            <span class="inline-flex items-center px-1.5 py-0.5 rounded border border-primary-container bg-primary-container/10 text-primary font-eyebrow-mono text-[11px] mx-1">FR-12</span>.
+                        </p>
+<!-- Callout: Info -->
+<div class="relative group mt-8 mb-6">
+<!-- Faux-3D Lift Base -->
+<div class="absolute inset-0 bg-secondary/20 translate-x-1 translate-y-1 rounded"></div>
+<!-- Card Content -->
+<div class="relative bg-surface border border-outline-variant border-l-4 border-l-secondary p-5 rounded transition-transform group-hover:-translate-y-0.5 group-hover:-translate-x-0.5 flex gap-4">
+<span class="material-symbols-outlined text-secondary shrink-0 mt-0.5">info</span>
+<div>
+<h4 class="font-headline-sm text-headline-sm text-on-surface mb-1">Bidirectional Updates</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+                                        If an upstream artifact changes state (e.g., BO-01 moves from 'Approved' to 'Under Review'), all downstream artifacts connected via a "satisfies" trace will immediately be flagged by the Doc-Linter as 'Stale'.
+                                    </p>
+</div>
+</div>
+</div>
+</section>
+<section>
+<h2 class="font-headline-md text-headline-md text-on-surface mb-4 mt-8 pt-4 border-t border-outline-variant">Implementing Traces via Code</h2>
+<p class="mb-4">
+                            While traces can be created via the GUI, power users embed them directly into Markdown using our custom syntax block. This ensures that relationships are version-controlled alongside the content.
+                        </p>
+<!-- Code Block -->
+<div class="my-6 relative group pt-4">
+<div class="absolute top-0 left-4 bg-surface px-2 border border-outline-variant border-b-0 rounded-t flex items-center gap-2">
+<span class="material-symbols-outlined text-[14px] text-outline">description</span>
+<span class="font-eyebrow-mono text-eyebrow-mono text-on-surface">authentication_flow.md</span>
+</div>
+<div class="bg-surface-container-lowest border border-outline-variant rounded rounded-tl-none p-4 overflow-x-auto shadow-inner relative">
+<!-- Blueprint grid subtle overlay inside code block -->
+<div class="absolute inset-0 pointer-events-none opacity-5 bg-[linear-gradient(to_right,#8c909f_1px,transparent_1px),linear-gradient(to_bottom,#8c909f_1px,transparent_1px)] bg-[size:12px_12px]"></div>
+<pre class="font-code text-code text-on-surface-variant relative z-10"><code><span class="text-secondary">---</span>
+<span class="text-primary">title</span>: "OAuth2 Authentication Flow"
+<span class="text-primary">type</span>: "DESIGN_ELEMENT"
+<span class="text-primary">id</span>: "DE-402"
+<span class="text-primary">traces</span>:
+  <span class="text-secondary">satisfies</span>: [<span class="text-tertiary">"FR-12"</span>, <span class="text-tertiary">"SEC-05"</span>]
+  <span class="text-secondary">verified_by</span>: [<span class="text-tertiary">"TC-15"</span>]
+<span class="text-secondary">---</span>
+
+# Flow Diagram
+The system utilizes a standard authorization code grant...</code></pre>
+</div>
+</div>
+</section>
+<section>
+<h2 class="font-headline-md text-headline-md text-on-surface mb-4 mt-8 pt-4 border-t border-outline-variant">Handling Broken Traces</h2>
+<p class="mb-4">
+                            When an artifact is deleted or its ID changes, DevDoc's engine detects orphaned references. These appear as validation errors in your pipeline.
+                        </p>
+<!-- Callout: Warning -->
+<div class="flex gap-4 p-5 my-6 bg-error-container/10 border border-outline-variant border-l-4 border-l-error rounded">
+<span class="material-symbols-outlined text-error shrink-0 mt-0.5">warning</span>
+<div>
+<h4 class="font-headline-sm text-headline-sm text-on-surface mb-1">Build Failure Risk</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant">
+                                    If strict mode is enabled in your `devdoc.config.yml`, broken traces will cause the documentation build to fail with a non-zero exit code. Always run the Doc-Linter locally before committing.
+                                </p>
+</div>
+</div>
+</section>
+</div>
+<!-- Bottom Navigation (Next/Prev) -->
+<div class="mt-20 pt-8 border-t border-outline-variant flex justify-between items-center">
+<a class="group flex flex-col items-start gap-1 p-4 rounded border border-transparent hover:border-outline-variant hover:bg-surface-container-low transition-all w-1/2 max-w-[280px]" href="#">
+<span class="font-eyebrow-mono text-eyebrow-mono text-outline flex items-center gap-1 group-hover:text-primary transition-colors">
+<span class="material-symbols-outlined text-[16px]">arrow_back</span> PREVIOUS
+                        </span>
+<span class="font-headline-sm text-headline-sm text-on-surface truncate w-full">Use Cases</span>
+</a>
+<a class="group flex flex-col items-end gap-1 p-4 rounded border border-transparent hover:border-outline-variant hover:bg-surface-container-low transition-all text-right w-1/2 max-w-[280px]" href="#">
+<span class="font-eyebrow-mono text-eyebrow-mono text-outline flex items-center gap-1 group-hover:text-primary transition-colors">
+                            NEXT <span class="material-symbols-outlined text-[16px]">arrow_forward</span>
+</span>
+<span class="font-headline-sm text-headline-sm text-on-surface truncate w-full">The Doc-Linter</span>
+</a>
+</div>
+<div class="h-24"></div> <!-- Bottom padding -->
+</article>
+</main>
+<!-- Right Sidebar (On this page) -->
+<aside class="hidden lg:flex w-64 bg-surface-container-lowest border-l border-outline-variant flex-col shrink-0">
+<div class="p-6 sticky top-0">
+<h4 class="font-eyebrow-mono text-eyebrow-mono text-outline uppercase tracking-widest mb-4 flex items-center gap-2">
+<span class="material-symbols-outlined text-[14px]">format_list_bulleted</span>
+                    On this page
+                </h4>
+<nav class="relative border-l border-outline-variant pl-4 py-1 space-y-3">
+<!-- Active Indicator Line -->
+<div class="absolute left-[-1px] top-[4px] h-4 w-[2px] bg-secondary transition-all duration-300"></div>
+<a class="block font-body-sm text-body-sm text-secondary hover:text-secondary transition-colors line-clamp-1" href="#">
+                        The Anatomy of a Trace
+                    </a>
+<a class="block font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors line-clamp-1" href="#">
+                        Implementing Traces via Code
+                    </a>
+<a class="block font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface transition-colors line-clamp-1" href="#">
+                        Handling Broken Traces
+                    </a>
+</nav>
+<div class="mt-12 pt-6 border-t border-outline-variant">
+<a class="flex items-center gap-2 font-body-sm text-body-sm text-outline hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined text-[16px]">edit_document</span>
+                        Edit this page
+                    </a>
+<a class="flex items-center gap-2 font-body-sm text-body-sm text-outline hover:text-on-surface transition-colors mt-3" href="#">
+<span class="material-symbols-outlined text-[16px]">bug_report</span>
+                        Report an issue
+                    </a>
+</div>
+</div>
+</aside>
+</div>
+</body></html>

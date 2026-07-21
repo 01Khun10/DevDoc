@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Business Objective Registry - DevDoc</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&amp;family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "tertiary-fixed-dim": "#ffb786",
+                        "on-primary": "#002e6a",
+                        "primary-container": "#4d8eff",
+                        "background": "#10131a",
+                        "on-secondary-container": "#00515d",
+                        "surface-tint": "#adc6ff",
+                        "primary-fixed-dim": "#adc6ff",
+                        "inverse-primary": "#005ac2",
+                        "on-primary-fixed": "#001a42",
+                        "surface": "#10131a",
+                        "secondary-fixed": "#a2eeff",
+                        "inverse-surface": "#e1e2ec",
+                        "on-surface": "#e1e2ec",
+                        "on-error-container": "#ffdad6",
+                        "on-surface-variant": "#c2c6d6",
+                        "on-tertiary-fixed": "#311400",
+                        "surface-container-highest": "#32353c",
+                        "on-secondary": "#00363e",
+                        "primary": "#adc6ff",
+                        "tertiary": "#ffb786",
+                        "secondary-fixed-dim": "#2fd9f4",
+                        "surface-container-lowest": "#0b0e15",
+                        "on-error": "#690005",
+                        "surface-container-high": "#272a31",
+                        "secondary": "#5de6ff",
+                        "primary-fixed": "#d8e2ff",
+                        "outline": "#8c909f",
+                        "on-primary-container": "#00285d",
+                        "surface-container": "#1d2027",
+                        "tertiary-container": "#df7412",
+                        "on-primary-fixed-variant": "#004395",
+                        "on-tertiary-fixed-variant": "#723600",
+                        "on-secondary-fixed-variant": "#004e5a",
+                        "surface-variant": "#32353c",
+                        "error-container": "#93000a",
+                        "on-tertiary-container": "#461f00",
+                        "surface-container-low": "#191b23",
+                        "tertiary-fixed": "#ffdcc6",
+                        "outline-variant": "#424754",
+                        "secondary-container": "#00cbe6",
+                        "surface-bright": "#363941",
+                        "on-tertiary": "#502400",
+                        "on-secondary-fixed": "#001f25",
+                        "on-background": "#e1e2ec",
+                        "inverse-on-surface": "#2e3038",
+                        "error": "#ffb4ab",
+                        "surface-dim": "#10131a"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    spacing: {
+                        "base": "4px",
+                        "margin-mobile": "16px",
+                        "margin-desktop": "32px",
+                        "gutter": "16px",
+                        "grid-pattern": "24px"
+                    },
+                    fontFamily: {
+                        "headline-sm": ["Space Grotesk"],
+                        "headline-lg": ["Space Grotesk"],
+                        "body-md": ["Inter"],
+                        "code": ["JetBrains Mono"],
+                        "body-lg": ["Inter"],
+                        "eyebrow-mono": ["JetBrains Mono"],
+                        "headline-md": ["Space Grotesk"],
+                        "body-sm": ["Inter"]
+                    },
+                    fontSize: {
+                        "headline-sm": ["18px", { "lineHeight": "1.4", "fontWeight": "500" }],
+                        "headline-lg": ["32px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-md": ["14px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "code": ["13px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "body-lg": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "eyebrow-mono": ["11px", { "lineHeight": "16px", "letterSpacing": "0.15em", "fontWeight": "500" }],
+                        "headline-md": ["24px", { "lineHeight": "1.3", "fontWeight": "600" }],
+                        "body-sm": ["13px", { "lineHeight": "1.5", "fontWeight": "400" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .blueprint-bg {
+            background-image: linear-gradient(to right, rgba(66, 71, 84, 0.1) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(66, 71, 84, 0.1) 1px, transparent 1px);
+            background-size: 24px 24px;
+            background-color: #0b0e15; /* Using surface-container-lowest */
+        }
+        .isometric-lift {
+            box-shadow: 2px 2px 0px rgba(140, 144, 159, 0.2);
+        }
+    </style>
+</head>
+<body class="bg-surface-container-lowest text-on-surface h-screen overflow-hidden flex font-body-md blueprint-bg">
+<!-- SideNavBar -->
+<nav class="bg-surface-container-low dark:bg-surface-container-low text-secondary dark:text-secondary docked h-screen left-0 w-64 border-r border-outline-variant dark:border-outline-variant flat no shadows flex flex-col h-full py-6 gap-2 z-40 relative flex-shrink-0">
+<div class="px-6 pb-6 border-b border-outline-variant mb-4">
+<div class="flex items-center gap-3">
+<img class="w-10 h-10 rounded bg-surface-container-high object-cover border border-outline-variant" data-alt="A small, stylized digital avatar representing a high-tech engineering project workspace. Minimalist flat design, deep blues and glowing neon accents. Dark background, crisp vector style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuClYBXL39Z6YRyZOTbulibOpGF0IVaUzmnCM2lYC5BnMmS-juNI7wmGOr3BLlbPGkf59EPuenn8TVWaNwiQq6FnW8VyxdGD_liJ_JBwiWFMYpGbYYfc-A9F7O7YoKQaWa9TIuQtsohpwVJOdXnGa0gN2rRG5pwfRg4Xcqjah94gPe7zWGhy8stIsr65N__NrP_I0nR5meM-kvf7MCto1MbHkkvqpcgr1dzyQg32u9yYtTOwaoVSub91Z_bDO_38ngTYoQz2LeRaYfQ"/>
+<div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Project Name</h2>
+<p class="font-eyebrow-mono text-eyebrow-mono text-on-surface-variant">Active Workspace</p>
+</div>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto px-4 flex flex-col gap-1">
+<!-- Nav Items -->
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high hover:text-on-surface transition-colors font-body-sm text-body-sm" href="#">
+<span class="material-symbols-outlined text-[20px]">dashboard</span>
+                Overview
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-secondary font-medium bg-secondary-container/10 border-r-2 border-secondary translate-x-1 transition-transform duration-200 font-body-sm text-body-sm" href="#">
+<span class="material-symbols-outlined text-[20px]">target</span>
+                Objectives
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high hover:text-on-surface transition-colors font-body-sm text-body-sm" href="#">
+<span class="material-symbols-outlined text-[20px]">description</span>
+                Documents
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high hover:text-on-surface transition-colors font-body-sm text-body-sm" href="#">
+<span class="material-symbols-outlined text-[20px]">topic</span>
+                Templates
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high hover:text-on-surface transition-colors font-body-sm text-body-sm" href="#">
+<span class="material-symbols-outlined text-[20px]">account_tree</span>
+                Use Cases
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high hover:text-on-surface transition-colors font-body-sm text-body-sm" href="#">
+<span class="material-symbols-outlined text-[20px]">rule</span>
+                Requirements
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high hover:text-on-surface transition-colors font-body-sm text-body-sm" href="#">
+<span class="material-symbols-outlined text-[20px]">architecture</span>
+                Design Elements
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high hover:text-on-surface transition-colors font-body-sm text-body-sm" href="#">
+<span class="material-symbols-outlined text-[20px]">fact_check</span>
+                Test Cases
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high hover:text-on-surface transition-colors font-body-sm text-body-sm" href="#">
+<span class="material-symbols-outlined text-[20px]">hub</span>
+                Traceability
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high hover:text-on-surface transition-colors font-body-sm text-body-sm" href="#">
+<span class="material-symbols-outlined text-[20px]">verified</span>
+                Validation
+            </a>
+</div>
+</nav>
+<!-- Main Content Area -->
+<div class="flex-1 flex flex-col relative w-full h-full overflow-hidden">
+<!-- TopAppBar -->
+<header class="bg-surface-container dark:bg-surface-container docked full-width top-0 border-b border-outline-variant dark:border-outline-variant flat no shadows flex justify-between items-center w-full px-margin-desktop h-16 z-30 relative shrink-0">
+<div class="flex items-center gap-4">
+<div class="font-headline-sm text-headline-sm font-bold text-on-surface dark:text-on-surface">DevDoc</div>
+</div>
+<div class="flex-1 flex justify-center max-w-xl px-4">
+<div class="relative w-full max-w-md">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm">search</span>
+<input class="w-full bg-surface-container-highest border border-outline-variant rounded-full py-1.5 pl-9 pr-4 text-sm focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary text-on-surface placeholder:text-on-surface-variant transition-colors" placeholder="Search artifacts..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="text-on-surface-variant hover:bg-surface-variant dark:hover:bg-surface-variant transition-colors p-2 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined">dark_mode</span>
+</button>
+<button class="text-on-surface-variant hover:bg-surface-variant dark:hover:bg-surface-variant transition-colors p-2 rounded-full flex items-center justify-center">
+<span class="material-symbols-outlined">help</span>
+</button>
+<div class="w-8 h-8 rounded-full bg-surface-variant border border-outline-variant overflow-hidden cursor-pointer">
+<img alt="User Profile Avatar" class="w-full h-full object-cover" data-alt="A small, professional user avatar placeholder for a technical dashboard. Subtle lighting, abstract dark background, sharp focus." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDdfT_bW-crk8vXTYIz3pjisdqFzbFgpWa9FhXe1MjvYCFQbzEaH3eRITTWYHdPRiZ24Pt-bzy0L08ErUYcjOIX24CQNYoS6AK2DtXNRV0cpu9GqqORggekLD7V4xUCBpUvx4NU1sLwzyC07GpOHTqhjqCdj4vFkSsSBO9kepn2CCF9h9sJn-O55Q5Rw6ME0UrBRVW-YQyUVkI-oAU1S0NA-YmL41nPuHk-QYbMK_97ZYmShxQZLM8T9sv_Qr8bKICs0nLvlgQoLF0"/>
+</div>
+</div>
+</header>
+<!-- Page Content Canvas -->
+<main class="flex-1 overflow-y-auto p-margin-desktop relative">
+<div class="max-w-[1440px] mx-auto">
+<!-- Page Header -->
+<div class="flex justify-between items-end mb-8">
+<div>
+<div class="font-eyebrow-mono text-eyebrow-mono text-on-surface-variant mb-2">BUSINESS ARCHITECTURE</div>
+<h1 class="font-headline-lg text-headline-lg text-on-surface mb-1">Business Objectives</h1>
+<p class="font-body-md text-body-md text-on-surface-variant">5 objectives · 12 linked use cases</p>
+</div>
+<div class="flex gap-3">
+<button class="px-4 py-2 bg-surface-container border border-outline-variant text-on-surface rounded-lg font-body-sm text-body-sm hover:bg-surface-variant transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">filter_list</span>
+                            Filter/Sort
+                        </button>
+<button class="px-4 py-2 bg-primary text-on-primary font-medium rounded-lg font-body-sm text-body-sm hover:opacity-90 transition-opacity flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">add</span>
+                            Add objective
+                        </button>
+</div>
+</div>
+<!-- Registry Table Card -->
+<div class="bg-[#16273f] border border-[#33517e] rounded-xl overflow-hidden isometric-lift">
+<div class="px-4 py-2 border-b border-[#33517e] bg-surface-container-high flex justify-between items-center">
+<div class="font-eyebrow-mono text-eyebrow-mono text-on-surface-variant">REGISTRY_DATA</div>
+<div class="font-eyebrow-mono text-eyebrow-mono text-on-surface-variant">REV 1.4 / STABLE</div>
+</div>
+<div class="overflow-x-auto w-full">
+<table class="w-full text-left border-collapse">
+<thead>
+<tr class="border-b border-[#33517e] bg-[#16273f]/50">
+<th class="py-3 px-4 font-eyebrow-mono text-eyebrow-mono text-on-surface-variant font-medium w-24">ID</th>
+<th class="py-3 px-4 font-eyebrow-mono text-eyebrow-mono text-on-surface-variant font-medium">Objective &amp; Description</th>
+<th class="py-3 px-4 font-eyebrow-mono text-eyebrow-mono text-on-surface-variant font-medium w-32">Impact</th>
+<th class="py-3 px-4 font-eyebrow-mono text-eyebrow-mono text-on-surface-variant font-medium w-32 text-right">Traceability</th>
+</tr>
+</thead>
+<tbody class="font-body-sm text-body-sm">
+<tr class="border-b border-[#33517e]/50 hover:bg-surface-container-high transition-colors group cursor-pointer h-[52px]">
+<td class="py-2 px-4">
+<span class="font-code text-[11px] bg-teal-900/30 text-teal-400 px-2 py-1 rounded border border-teal-800/50">BO-01</span>
+</td>
+<td class="py-2 px-4">
+<div class="font-medium text-on-surface mb-0.5">Improve System Uptime</div>
+<div class="text-on-surface-variant text-xs truncate max-w-md">Reduce unplanned downtime from 4% to &lt;0.5% globally.</div>
+</td>
+<td class="py-2 px-4">
+<span class="inline-flex items-center gap-1 text-error">
+<span class="material-symbols-outlined text-[14px]">arrow_upward</span>
+                                            High
+                                        </span>
+</td>
+<td class="py-2 px-4 text-right">
+<span class="font-code text-[11px] bg-[#B4C6E0] text-[#001a42] px-2 py-0.5 rounded-full font-medium">4 links</span>
+</td>
+</tr>
+<tr class="border-b border-[#33517e]/50 hover:bg-surface-container-high transition-colors group cursor-pointer h-[52px]">
+<td class="py-2 px-4">
+<span class="font-code text-[11px] bg-teal-900/30 text-teal-400 px-2 py-1 rounded border border-teal-800/50">BO-02</span>
+</td>
+<td class="py-2 px-4">
+<div class="font-medium text-on-surface mb-0.5">Streamline Onboarding</div>
+<div class="text-on-surface-variant text-xs truncate max-w-md">Reduce time-to-first-document for new engineers by 30%.</div>
+</td>
+<td class="py-2 px-4">
+<span class="inline-flex items-center gap-1 text-tertiary">
+<span class="material-symbols-outlined text-[14px]">remove</span>
+                                            Medium
+                                        </span>
+</td>
+<td class="py-2 px-4 text-right">
+<span class="font-code text-[11px] bg-[#B4C6E0] text-[#001a42] px-2 py-0.5 rounded-full font-medium">3 links</span>
+</td>
+</tr>
+<tr class="border-b border-[#33517e]/50 hover:bg-surface-container-high transition-colors group cursor-pointer h-[52px]">
+<td class="py-2 px-4">
+<span class="font-code text-[11px] bg-teal-900/30 text-teal-400 px-2 py-1 rounded border border-teal-800/50">BO-03</span>
+</td>
+<td class="py-2 px-4">
+<div class="font-medium text-on-surface mb-0.5">Compliance Automation</div>
+<div class="text-on-surface-variant text-xs truncate max-w-md">Automate 90% of ISO-27001 documentation requirements.</div>
+</td>
+<td class="py-2 px-4">
+<span class="inline-flex items-center gap-1 text-error">
+<span class="material-symbols-outlined text-[14px]">arrow_upward</span>
+                                            High
+                                        </span>
+</td>
+<td class="py-2 px-4 text-right">
+<span class="font-code text-[11px] bg-[#B4C6E0] text-[#001a42] px-2 py-0.5 rounded-full font-medium">5 links</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="mt-6 text-center font-body-sm text-body-sm text-on-surface-variant/70 italic flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[16px]">info</span>
+                    Business objectives sit at the top of the chain — every use case traces back to one.
+                </div>
+</div>
+</main>
+</div>
+<!-- Edit Objective Drawer (Right side) -->
+<div class="absolute inset-y-0 right-0 w-[400px] bg-surface border-l border-outline-variant flex flex-col z-50 shadow-2xl transform transition-transform translate-x-0">
+<!-- Drawer Header -->
+<div class="px-6 py-4 border-b border-outline-variant flex justify-between items-center bg-surface-container-high">
+<div class="flex items-center gap-3">
+<h2 class="font-headline-md text-headline-md font-semibold text-on-surface">Edit Objective</h2>
+<span class="font-code text-[11px] bg-teal-900/30 text-teal-400 px-2 py-1 rounded border border-teal-800/50">BO-01</span>
+</div>
+<button class="text-on-surface-variant hover:text-on-surface p-1 rounded transition-colors">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+</div>
+<!-- Drawer Body -->
+<div class="flex-1 overflow-y-auto px-6 py-6 space-y-6">
+<div class="space-y-2">
+<label class="block font-eyebrow-mono text-eyebrow-mono text-on-surface-variant">TITLE</label>
+<input class="w-full bg-surface border border-outline-variant rounded-lg px-3 py-2 text-sm font-body-md text-on-surface focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary transition-all" type="text" value="Improve System Uptime"/>
+</div>
+<div class="space-y-2">
+<label class="block font-eyebrow-mono text-eyebrow-mono text-on-surface-variant flex justify-between">
+                    DESCRIPTION
+                    <span class="text-primary text-[10px]">REQUIRED</span>
+</label>
+<textarea class="w-full bg-surface border border-outline-variant rounded-lg px-3 py-2 text-sm font-body-md text-on-surface focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary transition-all resize-none" rows="3">Reduce unplanned downtime from 4% to &lt;0.5% globally.</textarea>
+</div>
+<div class="space-y-2">
+<label class="block font-eyebrow-mono text-eyebrow-mono text-on-surface-variant">PRIORITY</label>
+<div class="relative">
+<select class="w-full bg-surface border border-outline-variant rounded-lg px-3 py-2 text-sm font-body-md text-on-surface appearance-none focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary">
+<option>High Impact</option>
+<option>Medium Impact</option>
+<option>Low Impact</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none text-[18px]">expand_more</span>
+</div>
+</div>
+<hr class="border-outline-variant"/>
+<div class="space-y-3">
+<label class="block font-eyebrow-mono text-eyebrow-mono text-on-surface-variant">INITIATES (TRACEABILITY)</label>
+<div class="border border-outline-variant rounded-lg p-3 bg-surface-container-lowest space-y-2 relative">
+<!-- Traceability line visual -->
+<div class="absolute left-4 top-4 bottom-4 w-px bg-outline-variant/30"></div>
+<div class="flex items-center gap-3 relative pl-6">
+<div class="absolute left-[3px] top-1/2 -translate-y-1/2 w-2 h-px bg-outline-variant"></div>
+<span class="font-code text-[11px] bg-purple-900/30 text-purple-400 px-2 py-0.5 rounded border border-purple-800/50">UC-01</span>
+<span class="font-body-sm text-body-sm text-on-surface truncate">Automated Failover Protocol</span>
+</div>
+<div class="flex items-center gap-3 relative pl-6">
+<div class="absolute left-[3px] top-1/2 -translate-y-1/2 w-2 h-px bg-outline-variant"></div>
+<span class="font-code text-[11px] bg-purple-900/30 text-purple-400 px-2 py-0.5 rounded border border-purple-800/50">UC-04</span>
+<span class="font-body-sm text-body-sm text-on-surface truncate">Incident Response Dashboard</span>
+</div>
+</div>
+<button class="text-secondary font-body-sm text-body-sm hover:underline flex items-center gap-1 mt-2">
+<span class="material-symbols-outlined text-[16px]">add_link</span>
+                    Link another use case
+                </button>
+</div>
+</div>
+<!-- Drawer Footer -->
+<div class="px-6 py-4 border-t border-outline-variant bg-surface-container flex justify-end gap-3">
+<button class="px-4 py-2 border border-outline-variant text-on-surface rounded-lg font-body-sm text-body-sm hover:bg-surface-variant transition-colors">
+                Cancel
+            </button>
+<button class="px-4 py-2 bg-primary text-on-primary font-medium rounded-lg font-body-sm text-body-sm hover:opacity-90 transition-opacity">
+                Save Objective
+            </button>
+</div>
+</div>
+</body></html>

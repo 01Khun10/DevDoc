@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Validation Engine — Blueprint Edition</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500&amp;family=Inter:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "secondary-fixed": "#a2eeff",
+                      "surface-dim": "#10131a",
+                      "secondary": "#5de6ff",
+                      "inverse-primary": "#005ac2",
+                      "surface-variant": "#32353c",
+                      "inverse-surface": "#e1e2ec",
+                      "surface-container-highest": "#32353c",
+                      "secondary-fixed-dim": "#2fd9f4",
+                      "on-surface-variant": "#c2c6d6",
+                      "error-container": "#93000a",
+                      "surface": "#10131a",
+                      "inverse-on-surface": "#2e3038",
+                      "primary": "#adc6ff",
+                      "on-tertiary-container": "#461f00",
+                      "error": "#ffb4ab",
+                      "on-tertiary": "#502400",
+                      "background": "#10131a",
+                      "outline-variant": "#424754",
+                      "on-error": "#690005",
+                      "surface-container": "#1d2027",
+                      "surface-container-low": "#191b23",
+                      "tertiary-container": "#df7412",
+                      "secondary-container": "#00cbe6",
+                      "tertiary": "#ffb786",
+                      "surface-container-lowest": "#0b0e15",
+                      "on-secondary-container": "#00515d",
+                      "on-surface": "#e1e2ec",
+                      "on-secondary-fixed-variant": "#004e5a",
+                      "on-primary": "#002e6a",
+                      "on-error-container": "#ffdad6",
+                      "tertiary-fixed": "#ffdcc6",
+                      "surface-container-high": "#272a31",
+                      "on-tertiary-fixed": "#311400",
+                      "surface-tint": "#adc6ff",
+                      "on-primary-fixed": "#001a42",
+                      "on-primary-container": "#00285d",
+                      "primary-fixed-dim": "#adc6ff",
+                      "on-secondary": "#00363e",
+                      "primary-container": "#4d8eff",
+                      "on-secondary-fixed": "#001f25",
+                      "tertiary-fixed-dim": "#ffb786",
+                      "surface-bright": "#363941",
+                      "primary-fixed": "#d8e2ff",
+                      "outline": "#8c909f",
+                      "on-background": "#e1e2ec",
+                      "on-tertiary-fixed-variant": "#723600",
+                      "on-primary-fixed-variant": "#004395"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "margin-desktop": "32px",
+                      "margin-mobile": "16px",
+                      "grid-pattern": "24px",
+                      "gutter": "16px",
+                      "base": "4px"
+              },
+              "fontFamily": {
+                      "headline-md": [
+                              "Space Grotesk"
+                      ],
+                      "headline-lg": [
+                              "Space Grotesk"
+                      ],
+                      "code": [
+                              "JetBrains Mono"
+                      ],
+                      "body-sm": [
+                              "Inter"
+                      ],
+                      "eyebrow-mono": [
+                              "JetBrains Mono"
+                      ],
+                      "body-md": [
+                              "Inter"
+                      ],
+                      "headline-sm": [
+                              "Space Grotesk"
+                      ],
+                      "body-lg": [
+                              "Inter"
+                      ]
+              },
+              "fontSize": {
+                      "headline-md": [
+                              "24px",
+                              {
+                                      "lineHeight": "1.3",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "headline-lg": [
+                              "32px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "code": [
+                              "13px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "body-sm": [
+                              "13px",
+                              {
+                                      "lineHeight": "1.5",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "eyebrow-mono": [
+                              "11px",
+                              {
+                                      "lineHeight": "16px",
+                                      "letterSpacing": "0.15em",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "body-md": [
+                              "14px",
+                              {
+                                      "lineHeight": "1.5",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-sm": [
+                              "18px",
+                              {
+                                      "lineHeight": "1.4",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "body-lg": [
+                              "16px",
+                              {
+                                      "lineHeight": "1.6",
+                                      "fontWeight": "400"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+      </script>
+<style>
+        body {
+            background-color: #0B1526;
+            background-image: 
+                linear-gradient(to right, rgba(51, 81, 126, 0.1) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(51, 81, 126, 0.1) 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+        
+        .blueprint-border {
+            border: 1px solid #33517E;
+        }
+
+        .blueprint-card {
+            background-color: #16273F;
+            border: 1px solid #33517E;
+        }
+
+        .isometric-lift {
+            box-shadow: 2px 2px 0px #3B82F6;
+            transform: translate(-2px, -2px);
+            transition: all 0.2s ease;
+        }
+
+        .isometric-lift:active {
+            box-shadow: 0px 0px 0px #3B82F6;
+            transform: translate(0px, 0px);
+        }
+
+        .scan-container {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .scan-line {
+            position: absolute;
+            top: -10px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: #22D3EE;
+            box-shadow: 0 0 10px #22D3EE;
+            animation: scan 2s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+            pointer-events: none;
+            z-index: 10;
+        }
+
+        @keyframes scan {
+            0% { top: -10px; opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { top: 100%; opacity: 0; }
+        }
+
+        /* Traceability Lines */
+        .trace-line-v {
+            position: absolute;
+            left: 24px;
+            top: 0;
+            bottom: 0;
+            width: 1px;
+            background-color: #33517E;
+            z-index: 0;
+        }
+    </style>
+</head>
+<body class="text-on-surface min-h-screen flex flex-col font-body-md overflow-x-hidden">
+<!-- TopNavBar -->
+<nav class="flex justify-between items-center w-full px-margin-desktop h-16 border-b border-outline-variant bg-surface dark:bg-surface sticky top-0 z-50">
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-primary" data-icon="square" style="font-variation-settings: 'FILL' 1;">square</span>
+<span class="font-headline-sm text-headline-sm font-bold text-primary dark:text-primary tracking-tight">DevDoc</span>
+</div>
+<div class="hidden md:flex h-full">
+<!-- Simulated Nav Links based on context -->
+<a class="h-full flex items-center px-4 text-on-surface-variant hover:bg-surface-variant transition-colors border-b-2 border-transparent" href="#">Docs</a>
+<a class="h-full flex items-center px-4 text-primary font-bold border-b-2 border-primary hover:bg-surface-variant transition-colors" href="#">Validation</a>
+<a class="h-full flex items-center px-4 text-on-surface-variant hover:bg-surface-variant transition-colors border-b-2 border-transparent" href="#">Export</a>
+</div>
+<div class="flex items-center gap-4">
+<button class="p-2 hover:bg-surface-variant rounded-full text-on-surface-variant transition-colors">
+<span class="material-symbols-outlined" data-icon="settings">settings</span>
+</button>
+<button class="p-2 hover:bg-surface-variant rounded-full text-on-surface-variant transition-colors">
+<span class="material-symbols-outlined" data-icon="notifications">notifications</span>
+</button>
+<button class="p-2 hover:bg-surface-variant rounded-full text-on-surface-variant transition-colors">
+<span class="material-symbols-outlined" data-icon="account_tree">account_tree</span>
+</button>
+<img alt="User Engineering Profile" class="w-8 h-8 rounded-full border border-outline-variant" data-alt="A small circular avatar placeholder image showing a generic profile silhouette in a technical style, 50-100 words." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCXmL9yJNG0gLJFgZX0malrd4qCI0G2-pgVAgkFjtJqzzvWIGJPuSFIPtpuxcjfAIN4fLdKgpsgljWQd69ffgXFM6Fe3MzFD-NuQ0laHoZuUqIXU4No_JYk_ag9Vk8AiI7qkSbbUApyv-1QOa9lYV0-IFSJvUcR3rscZH_s_79eSblXSM1ihGRSz_ADmMSo57nC6Rn0ZnYCkxH8YV5Sxv_Z1xycWjYihn2bwIoo6LYlwyAo5ALvYhpeWBUc0q5CAmDp7dwsmbwFiX0"/>
+</div>
+</nav>
+<div class="flex flex-1">
+<!-- SideNavBar -->
+<aside class="hidden md:flex flex-col h-[calc(100vh-4rem)] w-64 border-r border-outline-variant bg-surface-container sticky top-16 z-40 shrink-0">
+<div class="p-6 border-b border-outline-variant">
+<div class="flex items-center gap-3 mb-2">
+<img alt="DevDoc Logo" class="w-8 h-8 rounded blueprint-border" data-alt="A small square logo placeholder for Project Alpha, blueprint style, 50-100 words." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDCE7_SL7UHUumZfNNiOypYFohMN1gGlSYanPgVwJ-4TCzU6e16F4Ff3hOo201ZtVZI14jX-uyU2D7FKkfpIqOhKI8EQeiY1vGdmP6X-H1ofEmVbdhsDPaKYqRtt0Un3sdv7d2LKH9H812AsGyB666BffPr_XIRVQTX4AfGWd8RAK-D5rq9Irrpn0yB_vO-s3xEFOF1suJrtCl6nzRpduwbuXGUMNms-d1ikAipUIWBW-CiO8a1mi2NwHTplVPY2Ldkq9CMc0rMS8I"/>
+<div>
+<div class="font-headline-sm text-headline-sm text-primary">Project Alpha</div>
+<div class="font-eyebrow-mono text-eyebrow-mono text-on-surface-variant">v2.4.0-STABLE</div>
+</div>
+</div>
+</div>
+<nav class="flex-1 py-4 flex flex-col gap-1 px-3">
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant opacity-70 hover:bg-surface-container-high hover:text-on-surface transition-all duration-200 ease-in-out font-code text-code" href="#">
+<span class="material-symbols-outlined" data-icon="terminal">terminal</span>
+                    Workspace
+                </a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant opacity-70 hover:bg-surface-container-high hover:text-on-surface transition-all duration-200 ease-in-out font-code text-code" href="#">
+<span class="material-symbols-outlined" data-icon="category">category</span>
+                    Artifacts
+                </a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg bg-primary-container text-on-primary-container border-l-2 border-secondary transition-all duration-200 ease-in-out font-code text-code" href="#">
+<span class="material-symbols-outlined" data-icon="verified">verified</span>
+                    Validation
+                </a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant opacity-70 hover:bg-surface-container-high hover:text-on-surface transition-all duration-200 ease-in-out font-code text-code" href="#">
+<span class="material-symbols-outlined" data-icon="alt_route">alt_route</span>
+                    Traceability
+                </a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant opacity-70 hover:bg-surface-container-high hover:text-on-surface transition-all duration-200 ease-in-out font-code text-code" href="#">
+<span class="material-symbols-outlined" data-icon="ios_share">ios_share</span>
+                    Export
+                </a>
+</nav>
+<div class="p-4 border-t border-outline-variant flex flex-col gap-1 px-3">
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant opacity-70 hover:bg-surface-container-high hover:text-on-surface transition-all duration-200 ease-in-out font-code text-code" href="#">
+<span class="material-symbols-outlined" data-icon="description">description</span>
+                    Docs
+                </a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant opacity-70 hover:bg-surface-container-high hover:text-on-surface transition-all duration-200 ease-in-out font-code text-code" href="#">
+<span class="material-symbols-outlined" data-icon="help_outline">help_outline</span>
+                    Help
+                </a>
+</div>
+</aside>
+<!-- Main Content Canvas -->
+<main class="flex-1 p-margin-mobile md:p-margin-desktop overflow-y-auto max-w-[1440px] mx-auto w-full">
+<!-- Corner Stamps -->
+<div class="fixed top-20 right-6 font-eyebrow-mono text-eyebrow-mono text-[#33517E] pointer-events-none z-10 hidden lg:block">
+                REV 2.4.1
+            </div>
+<div class="fixed bottom-6 right-6 font-eyebrow-mono text-eyebrow-mono text-[#ef4444] pointer-events-none z-10 hidden lg:block flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-[#ef4444] inline-block animate-pulse"></span>
+                SYS_STATUS: DEGRADED
+            </div>
+<!-- Page Header -->
+<header class="flex flex-col md:flex-row justify-between items-start md:items-end mb-8 gap-4">
+<div>
+<h1 class="font-headline-lg text-headline-lg text-on-surface mb-2">Validation</h1>
+<p class="font-code text-code text-on-surface-variant">Last run 2 minutes ago · 3 errors, 5 warnings</p>
+</div>
+<button class="bg-[#3B82F6] hover:bg-[#2563eb] text-white px-6 py-2 rounded font-code text-code flex items-center gap-2 isometric-lift">
+<span class="material-symbols-outlined text-[18px]" data-icon="play_arrow">play_arrow</span>
+                    Run validation
+                </button>
+</header>
+<!-- Instruments Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+<!-- Readiness Gauge -->
+<div class="blueprint-card p-4 rounded flex flex-col items-center justify-center relative min-h-[140px]">
+<div class="font-eyebrow-mono text-eyebrow-mono text-outline absolute top-3 left-3">METRIC_01</div>
+<div class="relative w-24 h-24 mt-4">
+<svg class="w-full h-full transform -rotate-90" viewbox="0 0 100 100">
+<circle cx="50" cy="50" fill="none" r="40" stroke="#33517E" stroke-width="8"></circle>
+<circle cx="50" cy="50" fill="none" r="40" stroke="#22D3EE" stroke-dasharray="251.2" stroke-dashoffset="40.192" stroke-linecap="square" stroke-width="8"></circle>
+</svg>
+<div class="absolute inset-0 flex items-center justify-center font-headline-md text-headline-md">
+                            84<span class="text-sm">%</span>
+</div>
+</div>
+<div class="font-code text-code text-on-surface-variant mt-2">Readiness</div>
+</div>
+<!-- Stat Cards -->
+<div class="blueprint-card p-4 rounded flex flex-col justify-between min-h-[140px]">
+<div class="font-eyebrow-mono text-eyebrow-mono text-outline mb-2">FINDING_COUNTS</div>
+<div class="flex-1 flex flex-col justify-center gap-3">
+<div class="flex justify-between items-center">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-none bg-[#ef4444]"></span>
+<span class="font-code text-code">Errors</span>
+</div>
+<span class="font-code text-code text-[#ef4444]">3</span>
+</div>
+<div class="flex justify-between items-center">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-none bg-[#f59e0b]"></span>
+<span class="font-code text-code">Warnings</span>
+</div>
+<span class="font-code text-code text-[#f59e0b]">5</span>
+</div>
+<div class="flex justify-between items-center">
+<div class="flex items-center gap-2">
+<span class="w-2 h-2 rounded-none bg-[#3B82F6]"></span>
+<span class="font-code text-code">Info</span>
+</div>
+<span class="font-code text-code text-[#3B82F6]">12</span>
+</div>
+</div>
+</div>
+<!-- Severity Donut -->
+<div class="blueprint-card p-4 rounded flex flex-col items-center justify-center relative min-h-[140px]">
+<div class="font-eyebrow-mono text-eyebrow-mono text-outline absolute top-3 left-3">DISTRIBUTION</div>
+<div class="relative w-20 h-20 mt-4">
+<!-- CSS Conic Gradient Approximation -->
+<div class="w-full h-full rounded-full" style="background: conic-gradient(#ef4444 0% 15%, #f59e0b 15% 40%, #3B82F6 40% 100%);"></div>
+<div class="absolute inset-2 bg-[#16273F] rounded-full"></div>
+</div>
+</div>
+<!-- Readiness Trend -->
+<div class="blueprint-card p-4 rounded flex flex-col relative min-h-[140px]">
+<div class="font-eyebrow-mono text-eyebrow-mono text-outline absolute top-3 left-3">TREND_30D</div>
+<div class="flex-1 mt-6 flex items-end">
+<!-- Faux Sparkline using SVG -->
+<svg class="w-full h-16" preserveaspectratio="none" viewbox="0 0 100 40">
+<path d="M 0 35 L 10 32 L 20 38 L 30 25 L 40 28 L 50 15 L 60 20 L 70 5 L 80 10 L 90 2 L 100 5" fill="none" stroke="#22D3EE" stroke-width="2" vector-effect="non-scaling-stroke"></path>
+<path d="M 0 35 L 10 32 L 20 38 L 30 25 L 40 28 L 50 15 L 60 20 L 70 5 L 80 10 L 90 2 L 100 5 L 100 40 L 0 40 Z" fill="rgba(34, 211, 238, 0.1)" stroke="none"></path>
+</svg>
+</div>
+</div>
+</div>
+<!-- Main Split Layout -->
+<div class="flex flex-col lg:flex-row gap-6">
+<!-- Findings List -->
+<div class="flex-1 blueprint-card rounded p-1 scan-container">
+<div class="scan-line"></div>
+<div class="p-3 border-b border-[#33517E] flex justify-between items-center bg-[#0B1526]">
+<span class="font-eyebrow-mono text-eyebrow-mono">ACTIVE_FINDINGS</span>
+<span class="font-code text-code text-on-surface-variant text-xs">Total: 20</span>
+</div>
+<div class="relative p-4 flex flex-col gap-4">
+<div class="trace-line-v hidden md:block"></div>
+<!-- Row 1: Error -->
+<div class="flex gap-4 relative z-10 pl-0 md:pl-10 group">
+<div class="absolute left-0 top-3 w-8 h-[1px] bg-[#33517E] hidden md:block group-hover:bg-[#ef4444] transition-colors"></div>
+<div class="w-3 h-3 rounded-none bg-[#ef4444] mt-1.5 shrink-0 shadow-[0_0_8px_rgba(239,68,68,0.5)]"></div>
+<div class="flex-1 blueprint-border p-3 rounded bg-[#0B1526]">
+<div class="flex flex-wrap justify-between items-start gap-2 mb-2">
+<div class="flex items-center gap-2">
+<span class="font-code text-code bg-[#ef4444]/20 text-[#ef4444] px-1 border border-[#ef4444]/30">TRC-001</span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">FR-003 has no traceability links</h3>
+</div>
+</div>
+<p class="font-code text-code text-on-surface-variant text-sm mb-3">Suggested: Link to a Test Case or Design Element</p>
+<div class="flex gap-2">
+<button class="px-3 py-1 text-xs font-code blueprint-border hover:bg-[#33517E]/30 transition-colors rounded">Open in matrix</button>
+<button class="px-3 py-1 text-xs font-code bg-[#3B82F6] hover:bg-[#2563eb] text-white rounded">Quick fix</button>
+</div>
+</div>
+</div>
+<!-- Row 2: Warning -->
+<div class="flex gap-4 relative z-10 pl-0 md:pl-10 group">
+<div class="absolute left-0 top-3 w-8 h-[1px] bg-[#33517E] hidden md:block group-hover:bg-[#f59e0b] transition-colors"></div>
+<div class="w-3 h-3 rounded-none bg-[#f59e0b] mt-1.5 shrink-0 shadow-[0_0_8px_rgba(245,158,11,0.5)]"></div>
+<div class="flex-1 blueprint-border p-3 rounded bg-[#0B1526]">
+<div class="flex flex-wrap justify-between items-start gap-2 mb-2">
+<div class="flex items-center gap-2">
+<span class="font-code text-code bg-[#f59e0b]/20 text-[#f59e0b] px-1 border border-[#f59e0b]/30">FMT-012</span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">UC-042 is missing mandatory section</h3>
+</div>
+</div>
+<p class="font-code text-code text-on-surface-variant text-sm mb-3">Suggested: Apply Template v2.1</p>
+<div class="flex gap-2">
+<button class="px-3 py-1 text-xs font-code blueprint-border hover:bg-[#33517E]/30 transition-colors rounded">Open editor</button>
+</div>
+</div>
+</div>
+<!-- Row 3: Info -->
+<div class="flex gap-4 relative z-10 pl-0 md:pl-10 group">
+<div class="absolute left-0 top-3 w-8 h-[1px] bg-[#33517E] hidden md:block group-hover:bg-[#3B82F6] transition-colors"></div>
+<div class="w-3 h-3 rounded-none bg-[#3B82F6] mt-1.5 shrink-0 shadow-[0_0_8px_rgba(59,130,246,0.5)]"></div>
+<div class="flex-1 blueprint-border p-3 rounded bg-[#0B1526]">
+<div class="flex flex-wrap justify-between items-start gap-2 mb-2">
+<div class="flex items-center gap-2">
+<span class="font-code text-code bg-[#3B82F6]/20 text-[#3B82F6] px-1 border border-[#3B82F6]/30">AMB-004</span>
+<h3 class="font-headline-sm text-headline-sm text-on-surface">NFR-011 contains vague phrasing</h3>
+</div>
+</div>
+<p class="font-code text-code text-on-surface-variant text-sm mb-3">Suggested: Use measurable metrics</p>
+<div class="flex gap-2">
+<button class="px-3 py-1 text-xs font-code blueprint-border hover:bg-[#33517E]/30 transition-colors rounded">Edit</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Coverage Panel -->
+<aside class="w-full lg:w-80 blueprint-card rounded p-4 flex flex-col h-fit sticky top-[88px]">
+<div class="font-eyebrow-mono text-eyebrow-mono text-outline mb-6 pb-2 border-b border-[#33517E]">COVERAGE_METRICS</div>
+<div class="flex flex-col gap-5">
+<div class="flex flex-col gap-1">
+<div class="flex justify-between font-code text-code text-sm">
+<span>Sections</span>
+<span>92%</span>
+</div>
+<div class="h-1.5 w-full bg-[#0B1526] border border-[#33517E] rounded-none overflow-hidden">
+<div class="h-full bg-[#22D3EE]" style="width: 92%"></div>
+</div>
+</div>
+<div class="flex flex-col gap-1">
+<div class="flex justify-between font-code text-code text-sm">
+<span>Traced</span>
+<span>68%</span>
+</div>
+<div class="h-1.5 w-full bg-[#0B1526] border border-[#33517E] rounded-none overflow-hidden">
+<div class="h-full bg-[#3B82F6]" style="width: 68%"></div>
+</div>
+</div>
+<div class="flex flex-col gap-1">
+<div class="flex justify-between font-code text-code text-sm">
+<span>Covered</span>
+<span class="text-[#22D3EE]">100%</span>
+</div>
+<div class="h-1.5 w-full bg-[#0B1526] border border-[#33517E] rounded-none overflow-hidden">
+<div class="h-full bg-[#22D3EE]" style="width: 100%"></div>
+</div>
+</div>
+<div class="flex flex-col gap-1">
+<div class="flex justify-between font-code text-code text-sm">
+<span>Implemented</span>
+<span>45%</span>
+</div>
+<div class="h-1.5 w-full bg-[#0B1526] border border-[#33517E] rounded-none overflow-hidden">
+<div class="h-full bg-[#f59e0b]" style="width: 45%"></div>
+</div>
+</div>
+<div class="flex flex-col gap-1">
+<div class="flex justify-between font-code text-code text-sm">
+<span>Verified</span>
+<span class="text-[#ef4444]">12%</span>
+</div>
+<div class="h-1.5 w-full bg-[#0B1526] border border-[#33517E] rounded-none overflow-hidden">
+<div class="h-full bg-[#ef4444]" style="width: 12%"></div>
+</div>
+</div>
+</div>
+</aside>
+</div>
+</main>
+</div>
+</body></html>

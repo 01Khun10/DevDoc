@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>DevDoc - 404 Error</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&amp;family=Inter:wght@400&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-container": "#461f00",
+                        "on-surface-variant": "#c2c6d6",
+                        "inverse-on-surface": "#2e3038",
+                        "surface-container-highest": "#32353c",
+                        "on-tertiary": "#502400",
+                        "secondary-container": "#00cbe6",
+                        "outline-variant": "#424754",
+                        "tertiary-fixed-dim": "#ffb786",
+                        "surface-container-low": "#191b23",
+                        "primary": "#adc6ff",
+                        "on-tertiary-fixed-variant": "#723600",
+                        "surface": "#10131a",
+                        "on-primary-fixed": "#001a42",
+                        "surface-tint": "#adc6ff",
+                        "surface-container-lowest": "#0b0e15",
+                        "on-secondary-fixed": "#001f25",
+                        "inverse-primary": "#005ac2",
+                        "tertiary": "#ffb786",
+                        "surface-dim": "#10131a",
+                        "on-secondary-container": "#00515d",
+                        "on-primary-container": "#00285d",
+                        "inverse-surface": "#e1e2ec",
+                        "secondary": "#5de6ff",
+                        "on-tertiary-fixed": "#311400",
+                        "secondary-fixed-dim": "#2fd9f4",
+                        "tertiary-fixed": "#ffdcc6",
+                        "tertiary-container": "#df7412",
+                        "error": "#ffb4ab",
+                        "surface-bright": "#363941",
+                        "primary-fixed": "#d8e2ff",
+                        "primary-container": "#4d8eff",
+                        "on-secondary": "#00363e",
+                        "primary-fixed-dim": "#adc6ff",
+                        "on-background": "#e1e2ec",
+                        "outline": "#8c909f",
+                        "on-secondary-fixed-variant": "#004e5a",
+                        "surface-variant": "#32353c",
+                        "surface-container-high": "#272a31",
+                        "surface-container": "#1d2027",
+                        "error-container": "#93000a",
+                        "on-surface": "#e1e2ec",
+                        "on-error-container": "#ffdad6",
+                        "secondary-fixed": "#a2eeff",
+                        "on-primary-fixed-variant": "#004395",
+                        "on-primary": "#002e6a",
+                        "on-error": "#690005",
+                        "background": "#10131a"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "gutter": "16px",
+                        "margin-mobile": "16px",
+                        "margin-desktop": "32px",
+                        "grid-pattern": "24px",
+                        "base": "4px"
+                    },
+                    "fontFamily": {
+                        "eyebrow-mono": ["JetBrains Mono"],
+                        "body-sm": ["Inter"],
+                        "headline-md": ["Space Grotesk"],
+                        "body-md": ["Inter"],
+                        "headline-lg": ["Space Grotesk"],
+                        "code": ["JetBrains Mono"],
+                        "body-lg": ["Inter"],
+                        "headline-sm": ["Space Grotesk"]
+                    },
+                    "fontSize": {
+                        "eyebrow-mono": ["11px", { "lineHeight": "16px", "letterSpacing": "0.15em", "fontWeight": "500" }],
+                        "body-sm": ["13px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "headline-md": ["24px", { "lineHeight": "1.3", "fontWeight": "600" }],
+                        "body-md": ["14px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "headline-lg": ["32px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "code": ["13px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "body-lg": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "headline-sm": ["18px", { "lineHeight": "1.4", "fontWeight": "500" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .blueprint-grid {
+            background-size: 24px 24px;
+            background-image:
+                linear-gradient(to right, rgba(66, 71, 84, 0.1) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(66, 71, 84, 0.1) 1px, transparent 1px);
+        }
+        .vignette {
+            box-shadow: inset 0 0 100px rgba(0,0,0,0.5);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background min-h-screen flex items-center justify-center relative overflow-hidden blueprint-grid vignette selection:bg-primary-container selection:text-on-primary-container">
+<!-- Top Left Branding -->
+<div class="absolute top-margin-desktop left-margin-desktop z-10 hidden md:block border border-outline-variant p-4 bg-surface/50 backdrop-blur-sm rounded">
+<h1 class="font-headline-sm text-headline-sm font-bold text-on-surface">DevDoc</h1>
+<p class="font-eyebrow-mono text-eyebrow-mono text-on-surface-variant mt-2">v.1.0.4-rc</p>
+</div>
+<!-- Bottom Right Title Block Stamp -->
+<div class="absolute bottom-margin-desktop right-margin-desktop z-10 border border-outline-variant bg-surface/50 backdrop-blur-sm rounded p-4 text-right">
+<div class="flex flex-col gap-2">
+<span class="font-eyebrow-mono text-eyebrow-mono text-error">ERR_CODE: 404</span>
+<span class="font-eyebrow-mono text-eyebrow-mono text-on-surface-variant">STATUS: NOT_FOUND</span>
+</div>
+</div>
+<!-- Main Content Container -->
+<main class="relative z-20 w-full max-w-[600px] px-margin-mobile md:px-0">
+<div class="flex flex-col items-center text-center">
+<!-- Technical 404 Visual -->
+<div class="relative mb-12 flex justify-center w-full">
+<!-- Leader lines -->
+<div class="absolute top-1/2 left-0 w-[20%] h-[1px] bg-outline-variant transform -translate-y-1/2 before:content-[''] before:absolute before:right-0 before:top-[-4px] before:w-[1px] before:h-[9px] before:bg-outline-variant"></div>
+<div class="absolute top-1/2 right-0 w-[20%] h-[1px] bg-outline-variant transform -translate-y-1/2 before:content-[''] before:absolute before:left-0 before:top-[-4px] before:w-[1px] before:h-[9px] before:bg-outline-variant"></div>
+<h2 class="font-code text-[120px] leading-none font-bold text-primary opacity-80 tracking-tighter" style="text-shadow: 2px 2px 0px rgba(0,0,0,0.3);">
+                    404
+                </h2>
+<!-- Dimension markers -->
+<div class="absolute -top-6 left-1/2 transform -translate-x-1/2 font-eyebrow-mono text-eyebrow-mono text-outline-variant">
+                    Ø ERROR_DIMENSION
+                </div>
+</div>
+<h1 class="font-headline-lg text-headline-lg mb-4 text-on-surface">This page isn't on the blueprint.</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant mb-10 max-w-md mx-auto">
+                The requested resource could not be located in the current repository schema. It may have been moved, deleted, or never existed.
+            </p>
+<!-- Actions -->
+<div class="flex flex-col sm:flex-row gap-4 justify-center">
+<a class="inline-flex items-center justify-center gap-2 px-6 py-3 bg-primary-container text-on-primary-container rounded-xl font-body-md text-body-md font-medium border border-primary-container hover:bg-primary transition-colors focus:outline-none focus:ring-2 focus:ring-secondary-container focus:ring-offset-2 focus:ring-offset-background" href="#">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">dashboard</span>
+                    Back to dashboard
+                </a>
+<a class="inline-flex items-center justify-center gap-2 px-6 py-3 bg-transparent text-on-surface rounded-xl font-body-md text-body-md border border-outline-variant hover:bg-surface-variant transition-colors focus:outline-none focus:ring-2 focus:ring-secondary-container focus:ring-offset-2 focus:ring-offset-background" href="#">
+<span class="material-symbols-outlined text-[20px]">home</span>
+                    Go home
+                </a>
+</div>
+<!-- Traceability Line -->
+<div class="mt-16 w-[1px] h-24 bg-gradient-to-b from-outline-variant to-transparent mx-auto"></div>
+</div>
+</main>
+<!-- Faint Isometric Background Illustration -->
+<div class="absolute inset-0 z-0 opacity-[0.03] pointer-events-none flex items-center justify-center overflow-hidden">
+<svg height="100%" preserveaspectratio="xMidYMid slice" viewbox="0 0 800 600" width="100%" xmlns="http://www.w3.org/2000/svg">
+<g transform="scale(1.5) translate(100, 100)">
+<path d="M200 100 L400 200 L200 300 L0 200 Z" fill="none" stroke="currentColor" stroke-width="1"></path>
+<path d="M200 300 L200 500 L400 400 L400 200 Z" fill="none" stroke="currentColor" stroke-width="1"></path>
+<path d="M0 200 L0 400 L200 500 L200 300 Z" fill="none" stroke="currentColor" stroke-width="1"></path>
+<!-- Broken fragments -->
+<path d="M150 150 L250 200 L150 250 L50 200 Z" fill="none" stroke="currentColor" stroke-width="1" transform="translate(0, -50)"></path>
+<path d="M300 250 L350 275 L300 300 L250 275 Z" fill="none" stroke="currentColor" stroke-width="1" transform="translate(50, 0)"></path>
+</g>
+</svg>
+</div>
+</body></html>

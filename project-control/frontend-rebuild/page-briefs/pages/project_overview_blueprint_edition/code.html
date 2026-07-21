@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>DevDoc - Project Overview</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Space+Grotesk:wght@500;600;700&amp;family=JetBrains+Mono:wght@400;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "primary-fixed": "#d8e2ff",
+                    "surface-container-lowest": "#0b0f12",
+                    "surface-tint": "#adc6ff",
+                    "secondary-container": "#00cbe6",
+                    "inverse-surface": "#e0e3e7",
+                    "primary-fixed-dim": "#adc6ff",
+                    "on-tertiary-fixed-variant": "#374761",
+                    "on-tertiary-container": "#192a42",
+                    "on-background": "#e0e3e7",
+                    "surface-bright": "#363a3d",
+                    "on-error": "#690005",
+                    "surface-container-highest": "#313538",
+                    "on-primary-fixed-variant": "#004395",
+                    "tertiary-container": "#8191ae",
+                    "primary": "#adc6ff",
+                    "surface-container-high": "#262a2e",
+                    "on-secondary-container": "#00515d",
+                    "outline": "#8c909f",
+                    "on-error-container": "#ffdad6",
+                    "surface-dim": "#101417",
+                    "inverse-on-surface": "#2d3134",
+                    "secondary-fixed-dim": "#2fd9f4",
+                    "on-surface-variant": "#c2c6d6",
+                    "secondary": "#5de6ff",
+                    "surface-container": "#1c2023",
+                    "surface": "#101417",
+                    "secondary-fixed": "#a2eeff",
+                    "on-tertiary": "#203149",
+                    "surface-variant": "#313538",
+                    "on-secondary-fixed-variant": "#004e5a",
+                    "on-secondary": "#00363e",
+                    "outline-variant": "#424754",
+                    "tertiary-fixed-dim": "#b6c7e6",
+                    "tertiary-fixed": "#d5e3ff",
+                    "on-secondary-fixed": "#001f25",
+                    "on-surface": "#e0e3e7",
+                    "on-primary-fixed": "#001a42",
+                    "error": "#ffb4ab",
+                    "surface-container-low": "#181c1f",
+                    "on-tertiary-fixed": "#0a1c33",
+                    "on-primary": "#002e6a",
+                    "tertiary": "#b6c7e6",
+                    "inverse-primary": "#005ac2",
+                    "background": "#101417",
+                    "error-container": "#93000a",
+                    "primary-container": "#4d8eff",
+                    "on-primary-container": "#00285d"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.25rem",
+                    "lg": "0.5rem",
+                    "xl": "0.75rem",
+                    "full": "9999px"
+            },
+            "spacing": {
+                    "margin-mobile": "16px",
+                    "margin-desktop": "32px",
+                    "gutter": "24px",
+                    "container-max": "1440px",
+                    "unit": "4px"
+            },
+            "fontFamily": {
+                    "eyebrow-mono": [
+                            "JetBrains Mono"
+                    ],
+                    "body-sm": [
+                            "Inter"
+                    ],
+                    "body-lg": [
+                            "Inter"
+                    ],
+                    "label-sm": [
+                            "Inter"
+                    ],
+                    "headline-md": [
+                            "Space Grotesk"
+                    ],
+                    "body-md": [
+                            "Inter"
+                    ],
+                    "headline-xl": [
+                            "Space Grotesk"
+                    ],
+                    "headline-lg": [
+                            "Space Grotesk"
+                    ],
+                    "code-md": [
+                            "JetBrains Mono"
+                    ]
+            },
+            "fontSize": {
+                    "eyebrow-mono": [
+                            "11px",
+                            {
+                                    "lineHeight": "16px",
+                                    "letterSpacing": "0.1em",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "body-sm": [
+                            "14px",
+                            {
+                                    "lineHeight": "20px",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "body-lg": [
+                            "18px",
+                            {
+                                    "lineHeight": "28px",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "label-sm": [
+                            "12px",
+                            {
+                                    "lineHeight": "16px",
+                                    "fontWeight": "500"
+                            }
+                    ],
+                    "headline-md": [
+                            "24px",
+                            {
+                                    "lineHeight": "32px",
+                                    "fontWeight": "500"
+                            }
+                    ],
+                    "body-md": [
+                            "16px",
+                            {
+                                    "lineHeight": "24px",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "headline-xl": [
+                            "40px",
+                            {
+                                    "lineHeight": "48px",
+                                    "letterSpacing": "-0.02em",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "headline-lg": [
+                            "32px",
+                            {
+                                    "lineHeight": "40px",
+                                    "letterSpacing": "-0.01em",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "code-md": [
+                            "14px",
+                            {
+                                    "lineHeight": "20px",
+                                    "fontWeight": "400"
+                            }
+                    ]
+            }
+    },
+        },
+      }
+    </script>
+<style>
+        /* Blueprint Grid Background */
+        body {
+            background-color: #0B1526;
+            background-image: linear-gradient(#16273F 1px, transparent 1px),
+                              linear-gradient(90deg, #16273F 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+
+        /* Lifted Card Style */
+        .tech-card {
+            background-color: #16273F;
+            border: 1px solid #33517E;
+            box-shadow: 0px 8px 24px rgba(0, 0, 0, 0.4);
+            transition: border-color 0.2s ease;
+        }
+        
+        .tech-card:hover {
+            border-color: #4A6E9B;
+        }
+
+        /* Gauge Animation */
+        @keyframes sweep {
+            0% { stroke-dasharray: 0 100; }
+            100% { stroke-dasharray: 74 100; }
+        }
+        
+        .gauge-circle {
+            stroke-dasharray: 74 100;
+            animation: sweep 1.5s ease-out forwards;
+        }
+    </style>
+</head>
+<body class="text-on-surface min-h-screen flex flex-col font-body-md overflow-x-hidden">
+<!-- TopAppBar -->
+<header class="bg-surface-container dark:bg-surface-container border-b border-outline-variant dark:border-outline-variant flex justify-between items-center w-full px-margin-desktop h-16 z-50 fixed top-0 w-full">
+<div class="flex items-center gap-4">
+<div class="font-headline-sm text-headline-sm font-bold text-on-surface dark:text-on-surface">
+                DevDoc
+            </div>
+</div>
+<div class="flex items-center gap-4">
+<button class="text-primary dark:text-primary hover:bg-surface-variant dark:hover:bg-surface-variant transition-colors p-2 rounded-full">
+<span class="material-symbols-outlined">dark_mode</span>
+</button>
+<button class="text-primary dark:text-primary hover:bg-surface-variant dark:hover:bg-surface-variant transition-colors p-2 rounded-full">
+<span class="material-symbols-outlined">help</span>
+</button>
+<img alt="User Profile Avatar" class="w-8 h-8 rounded-full object-cover" data-alt="A small circular avatar image representing a user profile, rendered in a hyper-realistic digital art style. The user is a young professional with a neutral expression, set against a dark blue gradient background. Soft cinematic lighting highlights their features, matching a modern UI dark theme aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuC5aOPZHxWd1bwkaigYzqynPyJR8hWZgEHJ7cKQs8A8o_2XFaW7Swllt5hfWSAbWeHbdKmiGBdQaYG29jacsjLGYYxr0TDl5mxWeN3FV54NqhfxpWmM06I1jJYBU_PpMhilcIdXlNMXXfNSUpn7VKt7L60kYi43JDa5jHPP4d5d_K8Eqt80dlT0QV0rPf-tm33i1M_Ih8lYQqqG3ArSmPBv9Gjihd7XoM6t2l6LZ23H5hHBtL4MxtgfZHqv-NJyNCz7lPFKip_sJ48"/>
+</div>
+</header>
+<div class="flex flex-1 pt-16">
+<!-- SideNavBar -->
+<nav class="hidden md:flex bg-surface-container-low dark:bg-surface-container-low border-r border-outline-variant dark:border-outline-variant docked h-screen left-0 w-64 fixed flex-col py-6 gap-2 z-40 overflow-y-auto">
+<div class="px-6 mb-6">
+<div class="flex items-center gap-3 mb-1">
+<img alt="Project Avatar" class="w-10 h-10 rounded object-cover" data-alt="A sleek, minimalist icon representing a digital project workspace. It features geometric shapes like overlapping rectangles and nodes connected by thin lines, rendered in neon cyan and primary blue on a dark navy background. The style is modern, technical, and high-contrast, fitting a dark mode developer tool interface." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDG5FEXuWWvNIagiosoVeXmnTw9RUeJfaRN3nHw1C0TPYESOYX75KjS_S_9EPeVV4TFFbnNMsYWtYRUSklC9sphEoruqsrv6hUh7bpOSdA4v9kIopm1lzXQKYpvXOrghlh_2TL88eiMtYZuF5IvdNoZZqitO_MVzXLby-Y4Z_1lYo_ECB9-qcoZy0NkCUP7F2zbOhwifzdNcPx60ibXeOm-SAiMNkIsP7ayQhGlimbLWD1X3Z-8hUc5u0BJrsPTJe6etqxFKacJvWc"/>
+<div>
+<div class="font-headline-sm text-headline-sm text-on-surface">Project Name</div>
+<div class="font-eyebrow-mono text-eyebrow-mono text-on-surface-variant">Active Workspace</div>
+</div>
+</div>
+</div>
+<!-- Nav Items -->
+<a class="flex items-center gap-3 px-6 py-3 text-secondary font-medium bg-secondary-container/10 border-r-2 border-secondary translate-x-1 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined text-secondary">dashboard</span>
+<span class="font-body-sm text-body-sm">Overview</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-3 text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined">target</span>
+<span class="font-body-sm text-body-sm">Objectives</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-3 text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined">description</span>
+<span class="font-body-sm text-body-sm">Documents</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-3 text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined">topic</span>
+<span class="font-body-sm text-body-sm">Templates</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-3 text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined">account_tree</span>
+<span class="font-body-sm text-body-sm">Use Cases</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-3 text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined">rule</span>
+<span class="font-body-sm text-body-sm">Requirements</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-3 text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined">architecture</span>
+<span class="font-body-sm text-body-sm">Design Elements</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-3 text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined">fact_check</span>
+<span class="font-body-sm text-body-sm">Test Cases</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-3 text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined">hub</span>
+<span class="font-body-sm text-body-sm">Traceability</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-3 text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined">verified</span>
+<span class="font-body-sm text-body-sm">Validation</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-3 text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined">account_tree</span>
+<span class="font-body-sm text-body-sm">Diagrams</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-3 text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-body-sm text-body-sm">Analytics</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-3 text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined">history</span>
+<span class="font-body-sm text-body-sm">Versions</span>
+</a>
+<a class="flex items-center gap-3 px-6 py-3 text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-body-sm text-body-sm">Settings</span>
+</a>
+</nav>
+<!-- Main Content Canvas -->
+<main class="flex-1 md:ml-64 p-margin-mobile md:p-margin-desktop max-w-[1440px] mx-auto w-full flex flex-col gap-8">
+<!-- Page Header -->
+<div class="flex flex-col gap-2">
+<span class="font-eyebrow-mono text-eyebrow-mono text-secondary uppercase tracking-widest">HOSPITAL SCHEDULER</span>
+<h1 class="font-headline-xl text-headline-xl text-on-surface">Overview</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant">Project health and readiness at a glance</p>
+<div class="font-eyebrow-mono text-eyebrow-mono text-tertiary mt-2">rev 3.0</div>
+</div>
+<!-- Bento Grid Layout -->
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+<!-- Readiness Hero Row (Spans 2 cols on LG) -->
+<div class="tech-card rounded-xl p-6 lg:col-span-2 relative">
+<div class="absolute top-4 right-4 font-eyebrow-mono text-eyebrow-mono text-outline">last validated 2m ago</div>
+<div class="flex flex-col md:flex-row items-center gap-8 h-full">
+<!-- Circular Gauge -->
+<div class="relative w-48 h-48 flex-shrink-0 flex items-center justify-center">
+<svg class="w-full h-full transform -rotate-90" viewbox="0 0 36 36">
+<!-- Background Circle -->
+<path class="text-surface-variant stroke-current" d="M18 2.0845
+                                        a 15.9155 15.9155 0 0 1 0 31.831
+                                        a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke-width="3"></path>
+<!-- Progress Circle -->
+<path class="text-secondary stroke-current gauge-circle" d="M18 2.0845
+                                        a 15.9155 15.9155 0 0 1 0 31.831
+                                        a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke-width="3"></path>
+</svg>
+<div class="absolute inset-0 flex flex-col items-center justify-center">
+<span class="font-headline-xl text-headline-xl text-on-surface">74%</span>
+<span class="font-eyebrow-mono text-eyebrow-mono text-secondary">OVERALL</span>
+</div>
+</div>
+<!-- Coverage Breakdown -->
+<div class="flex-1 w-full grid grid-cols-1 sm:grid-cols-2 gap-4">
+<!-- Metric 1 -->
+<div class="bg-surface/50 p-4 rounded-lg border border-outline-variant/30 flex flex-col gap-1">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase">Sections Filled</span>
+<span class="font-code-md text-code-md text-primary-container">82%</span>
+</div>
+<!-- Metric 2 -->
+<div class="bg-surface/50 p-4 rounded-lg border border-outline-variant/30 flex flex-col gap-1">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase">Requirements Traced</span>
+<span class="font-code-md text-code-md text-secondary">94%</span>
+</div>
+<!-- Metric 3 -->
+<div class="bg-surface/50 p-4 rounded-lg border border-outline-variant/30 flex flex-col gap-1">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase">UC Coverage</span>
+<span class="font-code-md text-code-md text-tertiary">66%</span>
+</div>
+<!-- Metric 4 -->
+<div class="bg-surface/50 p-4 rounded-lg border border-outline-variant/30 flex flex-col gap-1">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase">Implementation</span>
+<span class="font-code-md text-code-md text-error-container">45%</span>
+</div>
+<!-- Metric 5 -->
+<div class="bg-surface/50 p-4 rounded-lg border border-outline-variant/30 flex flex-col gap-1 sm:col-span-2">
+<span class="font-label-sm text-label-sm text-on-surface-variant uppercase">Verification</span>
+<span class="font-code-md text-code-md text-error">30%</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Readiness Checklist -->
+<div class="tech-card rounded-xl p-6 flex flex-col gap-4">
+<h2 class="font-headline-md text-headline-md text-on-surface border-b border-[#33517E] pb-2">Readiness Checklist</h2>
+<div class="font-eyebrow-mono text-eyebrow-mono text-secondary">3 / 5 steps complete</div>
+<div class="flex flex-col gap-3 mt-2">
+<!-- Step 1 -->
+<div class="flex items-center gap-3">
+<div class="w-6 h-6 rounded-full bg-secondary/20 border border-secondary flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary" style="font-size: 14px;">check</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant line-through opacity-70">Create a document</span>
+</div>
+<!-- Step 2 -->
+<div class="flex items-center gap-3">
+<div class="w-6 h-6 rounded-full bg-secondary/20 border border-secondary flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary" style="font-size: 14px;">check</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant line-through opacity-70">Add a use case</span>
+</div>
+<!-- Step 3 -->
+<div class="flex items-center gap-3">
+<div class="w-6 h-6 rounded-full bg-secondary/20 border border-secondary flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary" style="font-size: 14px;">check</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface-variant line-through opacity-70">Register a requirement</span>
+</div>
+<!-- Step 4 -->
+<div class="flex items-center gap-3">
+<div class="w-6 h-6 rounded-full bg-surface-container-highest border border-outline-variant flex items-center justify-center">
+<span class="font-eyebrow-mono text-eyebrow-mono text-on-surface">4</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface">Link use cases to requirements</span>
+</div>
+<!-- Step 5 -->
+<div class="flex items-center gap-3">
+<div class="w-6 h-6 rounded-full bg-surface-container-highest border border-outline-variant flex items-center justify-center">
+<span class="font-eyebrow-mono text-eyebrow-mono text-on-surface">5</span>
+</div>
+<span class="font-body-sm text-body-sm text-on-surface">Run validation</span>
+</div>
+</div>
+</div>
+<!-- Quick Tools Grid (Spans 2 cols on LG) -->
+<div class="lg:col-span-2 grid grid-cols-2 md:grid-cols-5 gap-4">
+<!-- Tool 1 -->
+<div class="tech-card rounded-lg p-4 flex flex-col items-center justify-center gap-2 hover:bg-surface-container-high cursor-pointer">
+<span class="material-symbols-outlined text-tertiary">description</span>
+<span class="font-label-sm text-label-sm text-on-surface text-center">Documents</span>
+<span class="font-code-md text-code-md text-secondary">12</span>
+</div>
+<!-- Tool 2 -->
+<div class="tech-card rounded-lg p-4 flex flex-col items-center justify-center gap-2 hover:bg-surface-container-high cursor-pointer">
+<span class="material-symbols-outlined text-tertiary">rule</span>
+<span class="font-label-sm text-label-sm text-on-surface text-center">Requirements</span>
+<span class="font-code-md text-code-md text-secondary">48</span>
+</div>
+<!-- Tool 3 -->
+<div class="tech-card rounded-lg p-4 flex flex-col items-center justify-center gap-2 hover:bg-surface-container-high cursor-pointer">
+<span class="material-symbols-outlined text-tertiary">hub</span>
+<span class="font-label-sm text-label-sm text-on-surface text-center">Traceability</span>
+<span class="font-code-md text-code-md text-primary-container">66%</span>
+</div>
+<!-- Tool 4 -->
+<div class="tech-card rounded-lg p-4 flex flex-col items-center justify-center gap-2 hover:bg-surface-container-high cursor-pointer">
+<span class="material-symbols-outlined text-tertiary">verified</span>
+<span class="font-label-sm text-label-sm text-on-surface text-center">Validation</span>
+<span class="font-code-md text-code-md text-secondary">Pass</span>
+</div>
+<!-- Tool 5 -->
+<div class="tech-card rounded-lg p-4 flex flex-col items-center justify-center gap-2 hover:bg-surface-container-high cursor-pointer">
+<span class="material-symbols-outlined text-tertiary">account_tree</span>
+<span class="font-label-sm text-label-sm text-on-surface text-center">Diagrams</span>
+<span class="font-code-md text-code-md text-secondary">5</span>
+</div>
+</div>
+<!-- Activity Feed -->
+<div class="tech-card rounded-xl p-6 flex flex-col gap-4">
+<h2 class="font-headline-md text-headline-md text-on-surface border-b border-[#33517E] pb-2">Activity Feed</h2>
+<div class="flex flex-col gap-4 mt-2">
+<!-- Entry 1 -->
+<div class="flex gap-3">
+<div class="mt-1 w-2 h-2 rounded-full bg-secondary flex-shrink-0"></div>
+<div class="flex flex-col">
+<span class="font-body-sm text-body-sm text-on-surface">FR-012 created - User Auth</span>
+<span class="font-eyebrow-mono text-eyebrow-mono text-outline">10:42 AM</span>
+</div>
+</div>
+<!-- Entry 2 -->
+<div class="flex gap-3">
+<div class="mt-1 w-2 h-2 rounded-full bg-primary-container flex-shrink-0"></div>
+<div class="flex flex-col">
+<span class="font-body-sm text-body-sm text-on-surface">REQ-003 updated</span>
+<span class="font-eyebrow-mono text-eyebrow-mono text-outline">09:15 AM</span>
+</div>
+</div>
+<!-- Entry 3 -->
+<div class="flex gap-3">
+<div class="mt-1 w-2 h-2 rounded-full bg-tertiary flex-shrink-0"></div>
+<div class="flex flex-col">
+<span class="font-body-sm text-body-sm text-on-surface">System Diagram v2 uploaded</span>
+<span class="font-eyebrow-mono text-eyebrow-mono text-outline">YESTERDAY</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="font-eyebrow-mono text-eyebrow-mono text-outline text-center mt-8 p-4 bg-surface-container-low rounded-lg border border-outline-variant/30">
+                Every requirement must be traceable: Scope → REQ → Design → Test
+            </div>
+</main>
+</div>
+</body></html>

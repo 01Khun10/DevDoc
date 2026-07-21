@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>DevDoc - Documentation that proves itself.</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&amp;family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "on-primary-fixed-variant": "#004395",
+                        "on-surface-variant": "#c2c6d6",
+                        "error-container": "#93000a",
+                        "primary-fixed": "#d8e2ff",
+                        "inverse-surface": "#e0e3e7",
+                        "on-primary-fixed": "#001a42",
+                        "background": "#0B1526", /* Blueprint Canvas base */
+                        "surface": "#0B1526",
+                        "on-error-container": "#ffdad6",
+                        "primary-fixed-dim": "#adc6ff",
+                        "on-secondary-fixed": "#001f25",
+                        "primary": "#adc6ff",
+                        "tertiary-container": "#8191ae",
+                        "surface-tint": "#adc6ff",
+                        "tertiary-fixed": "#d5e3ff",
+                        "on-background": "#e0e3e7",
+                        "surface-container-highest": "#313538",
+                        "tertiary": "#b6c7e6",
+                        "error": "#ffb4ab",
+                        "surface-bright": "#16273F", /* Lifted Surface */
+                        "on-tertiary-fixed-variant": "#374761",
+                        "tertiary-fixed-dim": "#b6c7e6",
+                        "surface-container-lowest": "#0b0f12",
+                        "surface-container-high": "#262a2e",
+                        "on-primary-container": "#00285d",
+                        "on-tertiary": "#203149",
+                        "surface-variant": "#16273F", /* Lifted Surface variant */
+                        "on-error": "#690005",
+                        "surface-container-low": "#181c1f",
+                        "primary-container": "#3B82F6", /* Primary Blue */
+                        "inverse-on-surface": "#2d3134",
+                        "secondary-container": "#22D3EE", /* Secondary Cyan */
+                        "on-tertiary-fixed": "#0a1c33",
+                        "on-tertiary-container": "#192a42",
+                        "on-secondary-fixed-variant": "#004e5a",
+                        "outline": "#33517E", /* Hairline border */
+                        "secondary": "#5de6ff",
+                        "inverse-primary": "#005ac2",
+                        "secondary-fixed": "#a2eeff",
+                        "on-surface": "#e0e3e7",
+                        "on-primary": "#002e6a",
+                        "surface-container": "#1c2023",
+                        "secondary-fixed-dim": "#2fd9f4",
+                        "on-secondary-container": "#00515d",
+                        "outline-variant": "#4A6E9B", /* Hover border */
+                        "surface-dim": "#101417",
+                        "on-secondary": "#00363e",
+                        /* Custom token colors based on prompt requirements */
+                        "blueprint-canvas": "#0B1526",
+                        "blueprint-lifted": "#16273F",
+                        "blueprint-border": "#33517E",
+                        "blueprint-border-hover": "#4A6E9B",
+                        "blueprint-cyan": "#22D3EE",
+                        "blueprint-blue": "#3B82F6",
+                        "token-bo": "#0D9488",
+                        "token-uc": "#7F77DD",
+                        "token-fr": "#3B82F6",
+                        "token-de": "#10B981",
+                        "token-tc": "#EC4899",
+                        "token-amber": "#F59E0B"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    spacing: {
+                        "margin-mobile": "16px",
+                        "gutter": "24px",
+                        "margin-desktop": "32px",
+                        "container-max": "1440px",
+                        "unit": "4px"
+                    },
+                    fontFamily: {
+                        "headline-xl": ["Space Grotesk"],
+                        "body-lg": ["Inter"],
+                        "headline-md": ["Space Grotesk"],
+                        "eyebrow-mono": ["JetBrains Mono"],
+                        "body-sm": ["Inter"],
+                        "body-md": ["Inter"],
+                        "headline-lg": ["Space Grotesk"],
+                        "code-md": ["JetBrains Mono"],
+                        "label-sm": ["Inter"]
+                    },
+                    fontSize: {
+                        "headline-xl": ["40px", { lineHeight: "48px", letterSpacing: "-0.02em", fontWeight: "600" }],
+                        "body-lg": ["18px", { lineHeight: "28px", fontWeight: "400" }],
+                        "headline-md": ["24px", { lineHeight: "32px", fontWeight: "500" }],
+                        "eyebrow-mono": ["11px", { lineHeight: "16px", letterSpacing: "0.1em", fontWeight: "600" }],
+                        "body-sm": ["14px", { lineHeight: "20px", fontWeight: "400" }],
+                        "body-md": ["16px", { lineHeight: "24px", fontWeight: "400" }],
+                        "headline-lg": ["32px", { lineHeight: "40px", letterSpacing: "-0.01em", fontWeight: "600" }],
+                        "code-md": ["14px", { lineHeight: "20px", fontWeight: "400" }],
+                        "label-sm": ["12px", { lineHeight: "16px", fontWeight: "500" }]
+                    },
+                    backgroundImage: {
+                        'blueprint-grid': 'linear-gradient(rgba(51, 81, 126, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(51, 81, 126, 0.1) 1px, transparent 1px)'
+                    },
+                    backgroundSize: {
+                        'blueprint': '20px 20px'
+                    },
+                    boxShadow: {
+                        'blueprint-lifted': '0px 8px 24px rgba(0, 0, 0, 0.4)'
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: theme('colors.blueprint-canvas');
+            color: theme('colors.on-background');
+        }
+        .blueprint-bg {
+            background-image: theme('backgroundImage.blueprint-grid');
+            background-size: theme('backgroundSize.blueprint');
+            background-position: center;
+        }
+        .dimension-line {
+            position: relative;
+        }
+        .dimension-line::before, .dimension-line::after {
+            content: '';
+            position: absolute;
+            background-color: theme('colors.outline');
+        }
+        .dimension-line.horizontal::before {
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            z-index: -1;
+        }
+        .dimension-line.horizontal::after {
+            /* Tick marks handled via separate elements for clarity in responsive design */
+            display: none; 
+        }
+        .tick {
+            position: absolute;
+            width: 1px;
+            height: 8px;
+            background-color: theme('colors.outline');
+            top: 50%;
+            transform: translateY(-50%);
+        }
+    </style>
+</head>
+<body class="blueprint-bg min-h-screen selection:bg-blueprint-blue/30 font-body-md antialiased text-body-md overflow-x-hidden">
+<!-- Top Navigation -->
+<nav class="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-md border-b border-outline/30">
+<div class="flex justify-between items-center h-16 px-margin-desktop max-w-container-max mx-auto">
+<div class="flex items-center gap-8">
+<a class="font-headline-md text-headline-md font-bold text-on-surface tracking-tighter" href="#">devdoc</a>
+<div class="hidden md:flex items-center gap-6">
+<a class="font-body-sm text-body-sm text-on-surface-variant font-medium hover:text-secondary transition-colors duration-200" href="#">Features</a>
+<a class="font-body-sm text-body-sm text-on-surface-variant font-medium hover:text-secondary transition-colors duration-200" href="#">How it works</a>
+<a class="font-body-sm text-body-sm text-on-surface-variant font-medium hover:text-secondary transition-colors duration-200" href="#">Diagrams</a>
+<a class="font-body-sm text-body-sm text-on-surface-variant font-medium hover:text-secondary transition-colors duration-200" href="#">Docs</a>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<span class="material-symbols-outlined text-on-surface-variant cursor-pointer hover:text-secondary transition-colors">settings_input_component</span>
+<a class="font-body-sm text-body-sm text-on-surface-variant font-medium hover:text-secondary transition-colors duration-200 hidden md:block" href="#">Log in</a>
+<a class="px-4 py-2 bg-secondary-container text-on-primary-fixed rounded font-body-sm text-body-sm font-medium hover:opacity-90 transition-opacity" href="#">Get started</a>
+</div>
+</div>
+</nav>
+<main class="pt-24 pb-32">
+<!-- Hero Section -->
+<section class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-16 md:py-24 grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
+<div class="flex flex-col items-start max-w-2xl relative z-10">
+<div class="font-eyebrow-mono text-eyebrow-mono text-secondary-container uppercase tracking-widest mb-6 px-3 py-1 bg-secondary-container/10 border border-secondary-container/30 rounded-full inline-block">
+                    DOCUMENTATION LIFECYCLE WORKSPACE
+                </div>
+<h1 class="font-headline-xl text-headline-xl lg:text-[64px] lg:leading-[72px] text-on-surface mb-6 font-bold tracking-tight">
+                    Documentation that proves itself.
+                </h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant mb-10 max-w-xl">
+                    From business objective to verified test — every artifact linked, every gap surfaced, every document validated. A systematic approach to engineering truth.
+                </p>
+<div class="flex flex-wrap items-center gap-4">
+<a class="px-6 py-3 bg-secondary-container text-on-primary-fixed rounded font-body-md font-medium hover:opacity-90 transition-opacity flex items-center gap-2" href="#">
+                        Start building
+                        <span class="material-symbols-outlined text-[18px]">arrow_forward</span>
+</a>
+<a class="px-6 py-3 border border-outline text-primary-container rounded font-body-md font-medium hover:border-primary-container transition-colors bg-surface-bright/50" href="#">
+                        View architecture
+                    </a>
+</div>
+</div>
+<div class="relative w-full h-[500px] border border-outline rounded bg-surface-variant shadow-blueprint-lifted overflow-hidden group">
+<div class="absolute inset-0 blueprint-bg opacity-30"></div>
+<div class="absolute inset-0 bg-gradient-to-tr from-background/80 via-transparent to-transparent"></div>
+<div class="absolute inset-0 flex items-center justify-center">
+<div class="text-center">
+<span class="material-symbols-outlined text-4xl text-outline mb-2">view_in_ar</span>
+<p class="font-eyebrow-mono text-eyebrow-mono text-outline-variant uppercase">3D blueprint canvas mounts here</p>
+</div>
+</div>
+<!-- Title Block Stamp -->
+<div class="absolute bottom-4 right-4 border border-outline bg-surface-variant/90 p-4 font-eyebrow-mono text-eyebrow-mono text-on-surface-variant flex flex-col gap-2 backdrop-blur-sm rounded-sm">
+<div class="flex justify-between border-b border-outline pb-1 gap-8">
+<span>PROJECT: DEVDOC</span>
+<span>REV: 3.0.4</span>
+</div>
+<div class="flex justify-between border-b border-outline pb-1">
+<span>SYS_STATUS:</span>
+<span class="text-secondary-container">OPERATIONAL</span>
+</div>
+<div class="flex justify-between pb-1">
+<span>SCALE:</span>
+<span>1:1 TRUTH</span>
+</div>
+</div>
+</div>
+</section>
+<!-- Traceability Chain -->
+<section class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-16 border-y border-outline/30 relative overflow-hidden bg-surface-variant/20">
+<div class="flex flex-col gap-12">
+<div class="flex items-center gap-4">
+<h2 class="font-eyebrow-mono text-eyebrow-mono text-on-surface-variant uppercase tracking-widest">THE CHAIN</h2>
+<div class="h-px bg-outline/50 flex-grow"></div>
+</div>
+<div class="relative w-full overflow-x-auto pb-8 hide-scrollbar">
+<div class="min-w-[800px] flex justify-between items-center relative py-8 px-4">
+<!-- Connecting Line -->
+<div class="absolute top-1/2 left-10 right-10 h-px bg-outline -z-10 -translate-y-1/2"></div>
+<!-- Node: BO -->
+<div class="flex flex-col items-center gap-4 relative bg-background px-2 group">
+<div class="w-12 h-12 rounded bg-token-bo/15 border border-token-bo text-token-bo flex items-center justify-center font-code-md text-code-md shadow-[0_0_15px_rgba(13,148,136,0.1)] group-hover:shadow-[0_0_20px_rgba(13,148,136,0.3)] transition-shadow">
+                                BO
+                            </div>
+<span class="font-eyebrow-mono text-eyebrow-mono text-on-surface-variant absolute -bottom-6 whitespace-nowrap">Business Obj</span>
+</div>
+<!-- Label: initiates -->
+<div class="font-eyebrow-mono text-[10px] text-secondary-container bg-background px-2 absolute left-[15%] top-1/2 -translate-y-1/2 border border-outline/30 rounded-sm">
+                            initiates
+                        </div>
+<div class="tick left-[15%]"></div>
+<!-- Node: UC -->
+<div class="flex flex-col items-center gap-4 relative bg-background px-2 group">
+<div class="w-12 h-12 rounded bg-token-uc/15 border border-token-uc text-token-uc flex items-center justify-center font-code-md text-code-md shadow-[0_0_15px_rgba(127,119,221,0.1)] group-hover:shadow-[0_0_20px_rgba(127,119,221,0.3)] transition-shadow">
+                                UC
+                            </div>
+<span class="font-eyebrow-mono text-eyebrow-mono text-on-surface-variant absolute -bottom-6 whitespace-nowrap">Use Case</span>
+</div>
+<!-- Label: covers -->
+<div class="font-eyebrow-mono text-[10px] text-secondary-container bg-background px-2 absolute left-[38%] top-1/2 -translate-y-1/2 border border-outline/30 rounded-sm">
+                            covers
+                        </div>
+<div class="tick left-[38%]"></div>
+<!-- Node: FR -->
+<div class="flex flex-col items-center gap-4 relative bg-background px-2 group">
+<div class="w-12 h-12 rounded bg-token-fr/15 border border-token-fr text-token-fr flex items-center justify-center font-code-md text-code-md shadow-[0_0_15px_rgba(59,130,246,0.1)] group-hover:shadow-[0_0_20px_rgba(59,130,246,0.3)] transition-shadow">
+                                FR
+                            </div>
+<span class="font-eyebrow-mono text-eyebrow-mono text-on-surface-variant absolute -bottom-6 whitespace-nowrap">Requirement</span>
+</div>
+<!-- Label: implemented_by -->
+<div class="font-eyebrow-mono text-[10px] text-secondary-container bg-background px-2 absolute left-[62%] top-1/2 -translate-y-1/2 border border-outline/30 rounded-sm">
+                            implemented_by
+                        </div>
+<div class="tick left-[62%]"></div>
+<!-- Node: DE -->
+<div class="flex flex-col items-center gap-4 relative bg-background px-2 group">
+<div class="w-12 h-12 rounded bg-token-de/15 border border-token-de text-token-de flex items-center justify-center font-code-md text-code-md shadow-[0_0_15px_rgba(16,185,129,0.1)] group-hover:shadow-[0_0_20px_rgba(16,185,129,0.3)] transition-shadow">
+                                DE
+                            </div>
+<span class="font-eyebrow-mono text-eyebrow-mono text-on-surface-variant absolute -bottom-6 whitespace-nowrap">Design Element</span>
+</div>
+<!-- Label: verified_by -->
+<div class="font-eyebrow-mono text-[10px] text-secondary-container bg-background px-2 absolute left-[85%] top-1/2 -translate-y-1/2 border border-outline/30 rounded-sm">
+                            verified_by
+                        </div>
+<div class="tick left-[85%]"></div>
+<!-- Node: TC -->
+<div class="flex flex-col items-center gap-4 relative bg-background px-2 group">
+<div class="w-12 h-12 rounded bg-token-tc/15 border border-token-tc text-token-tc flex items-center justify-center font-code-md text-code-md shadow-[0_0_15px_rgba(236,72,153,0.1)] group-hover:shadow-[0_0_20px_rgba(236,72,153,0.3)] transition-shadow">
+                                TC
+                            </div>
+<span class="font-eyebrow-mono text-eyebrow-mono text-on-surface-variant absolute -bottom-6 whitespace-nowrap">Test Case</span>
+</div>
+</div>
+</div>
+</div>
+</section>
+<!-- Final CTA -->
+<section class="max-w-container-max mx-auto px-margin-mobile md:px-margin-desktop py-24 md:py-32 flex flex-col items-center justify-center text-center">
+<h2 class="font-headline-lg text-headline-lg lg:text-[48px] lg:leading-[56px] text-on-surface mb-8 font-bold tracking-tight">Start your first blueprint.</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant mb-10 max-w-2xl">Deploy the DevDoc environment and begin linking your business logic directly to your engineering reality.</p>
+<div class="flex gap-4">
+<a class="px-8 py-4 bg-secondary-container text-on-primary-fixed rounded font-body-md font-medium hover:opacity-90 transition-opacity" href="#">Initialize Workspace</a>
+</div>
+</section>
+</main>
+<!-- Footer -->
+<footer class="w-full py-12 px-margin-desktop bg-surface-container-lowest border-t border-outline-variant/20">
+<div class="grid grid-cols-1 md:grid-cols-4 gap-gutter max-w-container-max mx-auto">
+<div class="col-span-1 md:col-span-1 flex flex-col gap-4">
+<span class="font-headline-md text-headline-md font-bold text-on-surface">devdoc</span>
+<p class="font-eyebrow-mono text-eyebrow-mono text-on-surface-variant uppercase">© 2024 DEVDOC. REV 3.0 // ALL SYSTEMS OPERATIONAL</p>
+</div>
+<div class="col-span-1 flex flex-col gap-2">
+<span class="font-eyebrow-mono text-eyebrow-mono text-on-surface-variant mb-2">PRODUCT</span>
+<a class="font-body-sm text-body-sm text-on-surface-variant hover:text-secondary transition-colors" href="#">Features</a>
+<a class="font-body-sm text-body-sm text-on-surface-variant hover:text-secondary transition-colors" href="#">Security</a>
+<a class="font-body-sm text-body-sm text-on-surface-variant hover:text-secondary transition-colors" href="#">API</a>
+</div>
+<div class="col-span-1 flex flex-col gap-2">
+<span class="font-eyebrow-mono text-eyebrow-mono text-on-surface-variant mb-2">RESOURCES</span>
+<a class="font-body-sm text-body-sm text-on-surface-variant hover:text-secondary transition-colors" href="#">Changelog</a>
+<a class="font-body-sm text-body-sm text-on-surface-variant hover:text-secondary transition-colors" href="#">Documentation</a>
+</div>
+<div class="col-span-1 flex flex-col gap-2">
+<span class="font-eyebrow-mono text-eyebrow-mono text-on-surface-variant mb-2">LEGAL</span>
+<a class="font-body-sm text-body-sm text-on-surface-variant hover:text-secondary transition-colors" href="#">Privacy</a>
+<a class="font-body-sm text-body-sm text-on-surface-variant hover:text-secondary transition-colors" href="#">Terms</a>
+</div>
+</div>
+</footer>
+</body></html>

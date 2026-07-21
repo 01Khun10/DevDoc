@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>DevDoc - Project Settings</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&amp;family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "surface-container-highest": "#32353c",
+                        "secondary-fixed": "#a2eeff",
+                        "on-error": "#690005",
+                        "surface": "#10131a",
+                        "primary-fixed": "#d8e2ff",
+                        "outline-variant": "#424754",
+                        "tertiary-fixed-dim": "#ffb786",
+                        "secondary": "#5de6ff",
+                        "primary-fixed-dim": "#adc6ff",
+                        "primary": "#adc6ff",
+                        "on-background": "#e1e2ec",
+                        "on-primary-fixed": "#001a42",
+                        "tertiary-container": "#df7412",
+                        "on-primary": "#002e6a",
+                        "inverse-primary": "#005ac2",
+                        "background": "#10131a",
+                        "on-secondary-container": "#00515d",
+                        "inverse-surface": "#e1e2ec",
+                        "tertiary": "#ffb786",
+                        "error": "#ffb4ab",
+                        "surface-container-lowest": "#0b0e15",
+                        "on-surface-variant": "#c2c6d6",
+                        "error-container": "#93000a",
+                        "surface-variant": "#32353c",
+                        "on-secondary-fixed-variant": "#004e5a",
+                        "on-tertiary-fixed": "#311400",
+                        "surface-tint": "#adc6ff",
+                        "surface-dim": "#10131a",
+                        "surface-container-low": "#191b23",
+                        "surface-container": "#1d2027",
+                        "secondary-container": "#00cbe6",
+                        "on-tertiary-fixed-variant": "#723600",
+                        "on-tertiary-container": "#461f00",
+                        "primary-container": "#4d8eff",
+                        "inverse-on-surface": "#2e3038",
+                        "secondary-fixed-dim": "#2fd9f4",
+                        "on-surface": "#e1e2ec",
+                        "outline": "#8c909f",
+                        "on-tertiary": "#502400",
+                        "on-secondary": "#00363e",
+                        "tertiary-fixed": "#ffdcc6",
+                        "surface-bright": "#363941",
+                        "on-secondary-fixed": "#001f25",
+                        "on-primary-fixed-variant": "#004395",
+                        "on-error-container": "#ffdad6",
+                        "surface-container-high": "#272a31",
+                        "on-primary-container": "#00285d",
+                        "danger-border": "#EF4444"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    spacing: {
+                        "margin-mobile": "16px",
+                        "base": "4px",
+                        "margin-desktop": "32px",
+                        "grid-pattern": "24px",
+                        "gutter": "16px"
+                    },
+                    fontFamily: {
+                        "eyebrow-mono": ["JetBrains Mono"],
+                        "headline-md": ["Space Grotesk"],
+                        "headline-sm": ["Space Grotesk"],
+                        "body-md": ["Inter"],
+                        "headline-lg": ["Space Grotesk"],
+                        "body-lg": ["Inter"],
+                        "code": ["JetBrains Mono"],
+                        "body-sm": ["Inter"]
+                    },
+                    fontSize: {
+                        "eyebrow-mono": ["11px", { lineHeight: "16px", letterSpacing: "0.15em", fontWeight: "500" }],
+                        "headline-md": ["24px", { lineHeight: "1.3", fontWeight: "600" }],
+                        "headline-sm": ["18px", { lineHeight: "1.4", fontWeight: "500" }],
+                        "body-md": ["14px", { lineHeight: "1.5", fontWeight: "400" }],
+                        "headline-lg": ["32px", { lineHeight: "1.2", letterSpacing: "-0.02em", fontWeight: "700" }],
+                        "body-lg": ["16px", { lineHeight: "1.6", fontWeight: "400" }],
+                        "code": ["13px", { lineHeight: "20px", fontWeight: "400" }],
+                        "body-sm": ["13px", { lineHeight: "1.5", fontWeight: "400" }]
+                    }
+                }
+            }
+        };
+    </script>
+<style>
+        body {
+            background-color: #0b0e15; /* surface-container-lowest */
+            background-image: linear-gradient(to right, rgba(66, 71, 84, 0.1) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(66, 71, 84, 0.1) 1px, transparent 1px);
+            background-size: 24px 24px;
+            color: #e1e2ec;
+        }
+        
+        .card-container {
+            background-color: #1d2027; /* surface-container */
+            border: 1px solid #424754; /* outline-variant */
+            box-shadow: 2px 2px 0px 0px rgba(173, 198, 255, 0.1); /* primary-fixed */
+        }
+        
+        .input-field {
+            background-color: #10131a; /* background */
+            border: 1px solid #424754;
+            color: #e1e2ec;
+        }
+        
+        .input-field:focus {
+            outline: none;
+            border-color: #5de6ff; /* secondary */
+            box-shadow: 0 0 0 1px #5de6ff;
+        }
+        
+        .danger-card {
+            border: 1px solid #EF4444;
+            background-color: rgba(239, 68, 68, 0.05);
+        }
+    </style>
+</head>
+<body class="font-body-md text-body-md min-h-screen flex flex-col md:flex-row overflow-hidden">
+<!-- Mobile Top Bar (Hidden on Desktop) -->
+<header class="md:hidden flex justify-between items-center w-full px-margin-mobile h-16 z-50 bg-surface-container border-b border-outline-variant sticky top-0">
+<div class="font-headline-sm text-headline-sm font-bold text-on-surface">DevDoc</div>
+<div class="flex gap-4">
+<span class="material-symbols-outlined text-primary cursor-pointer hover:bg-surface-variant transition-colors p-1 rounded">dark_mode</span>
+<span class="material-symbols-outlined text-primary cursor-pointer hover:bg-surface-variant transition-colors p-1 rounded">help</span>
+</div>
+</header>
+<!-- SideNavBar (Hidden on Mobile) -->
+<nav class="hidden md:flex flex-col h-screen w-64 bg-surface-container-low border-r border-outline-variant py-6 gap-2 shrink-0 overflow-y-auto">
+<div class="px-6 mb-8 flex items-center gap-4">
+<div class="w-10 h-10 rounded bg-primary-container flex items-center justify-center text-on-primary-container font-headline-sm font-bold">
+                P
+            </div>
+<div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Project Name</h2>
+<p class="font-eyebrow-mono text-eyebrow-mono text-secondary">Active Workspace</p>
+</div>
+</div>
+<div class="flex flex-col px-4 gap-1">
+<!-- Inactive Tabs -->
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-body-sm text-body-sm" href="#">
+<span class="material-symbols-outlined text-[20px]">dashboard</span> Overview
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-body-sm text-body-sm" href="#">
+<span class="material-symbols-outlined text-[20px]">target</span> Objectives
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-body-sm text-body-sm" href="#">
+<span class="material-symbols-outlined text-[20px]">description</span> Documents
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-body-sm text-body-sm" href="#">
+<span class="material-symbols-outlined text-[20px]">topic</span> Templates
+            </a>
+<div class="h-px bg-outline-variant my-2 mx-3"></div>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-body-sm text-body-sm" href="#">
+<span class="material-symbols-outlined text-[20px]">account_tree</span> Use Cases
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-body-sm text-body-sm" href="#">
+<span class="material-symbols-outlined text-[20px]">rule</span> Requirements
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-body-sm text-body-sm" href="#">
+<span class="material-symbols-outlined text-[20px]">architecture</span> Design Elements
+            </a>
+<div class="h-px bg-outline-variant my-2 mx-3"></div>
+<!-- Active Tab -->
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-secondary font-medium bg-secondary-container/10 border-r-2 border-secondary translate-x-1 transition-transform duration-200 font-body-sm text-body-sm" href="#">
+<span class="material-symbols-outlined text-[20px]">settings</span> Settings
+            </a>
+</div>
+<div class="mt-auto px-6 pt-4 border-t border-outline-variant">
+<div class="font-eyebrow-mono text-eyebrow-mono text-outline flex justify-between">
+<span>REV: 4.2.1</span>
+<span>STATUS: CONFIG</span>
+</div>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="flex-1 overflow-y-auto relative h-screen">
+<!-- Desktop Top App Bar (Inside Main Content for Layout) -->
+<header class="hidden md:flex justify-between items-center w-full px-margin-desktop h-16 z-40 bg-surface-container/90 backdrop-blur-sm border-b border-outline-variant sticky top-0">
+<div class="flex items-center gap-4">
+<span class="font-headline-sm text-headline-sm font-bold text-on-surface">DevDoc</span>
+</div>
+<div class="flex items-center gap-6">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[18px]">search</span>
+<input class="input-field rounded-full pl-9 pr-4 py-1.5 text-body-sm font-body-sm w-64" placeholder="Search resources..." type="text"/>
+</div>
+<div class="flex gap-4">
+<span class="material-symbols-outlined text-primary cursor-pointer hover:text-primary-fixed transition-colors">dark_mode</span>
+<span class="material-symbols-outlined text-primary cursor-pointer hover:text-primary-fixed transition-colors">help</span>
+</div>
+<div class="w-8 h-8 rounded-full bg-surface-bright overflow-hidden border border-outline-variant">
+<img alt="User Profile Avatar" class="w-full h-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuBN0lDVMoaNwypszTseAscxDJEbMdOG1lf8S6CgtC8kP0BD0pgrcxPx_h3H8QAwS-H8HZ9Hzrs7zc4zQIqUVlbdAqLTRe55WapmuHhELhbr03zH_YsyJJb7uHXsq5NHYWoOKLO-x_7PDibj0jbibZLhzH5117oKYn7iHZ7w0fAv9AFzMrjwnxe01ZbCN0ugAnAn900RLanyIPQEeF2C2WnrUGqYD8fnAI4iJUvV_ScXNTwT3Re3olW48S8UZMms_81oTLfIHh7f__4"/>
+</div>
+</div>
+</header>
+<div class="max-w-[1000px] mx-auto px-margin-mobile md:px-margin-desktop py-8 md:py-12 pb-24">
+<!-- Page Header -->
+<div class="mb-8">
+<p class="font-eyebrow-mono text-eyebrow-mono text-secondary mb-2">CONFIGURATION</p>
+<h1 class="font-headline-lg text-headline-lg text-on-surface">Project settings</h1>
+</div>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-8">
+<!-- Main Form Column -->
+<div class="md:col-span-2 space-y-6">
+<!-- Project Info Card -->
+<div class="card-container rounded-xl p-6 relative">
+<div class="absolute top-0 right-0 px-3 py-1 bg-surface-container-highest border-b border-l border-outline-variant rounded-bl-lg rounded-tr-xl">
+<span class="font-eyebrow-mono text-eyebrow-mono text-outline">META_DATA</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-6">General Information</h3>
+<div class="space-y-5">
+<div>
+<label class="block font-body-sm text-body-sm text-on-surface-variant mb-1.5 flex justify-between items-center">
+                                    Project Name
+                                    <span class="font-eyebrow-mono text-[10px] text-outline flex items-center gap-1"><span class="material-symbols-outlined text-[14px]">check_circle</span> Saved</span>
+</label>
+<input class="input-field w-full rounded-lg px-3 py-2 text-body-md font-body-md focus:ring-0" type="text" value="Project Name"/>
+</div>
+<div>
+<label class="block font-body-sm text-body-sm text-on-surface-variant mb-1.5">Description</label>
+<textarea class="input-field w-full rounded-lg px-3 py-2 text-body-md font-body-md focus:ring-0 resize-none" rows="3">Initial conceptual framework for the orbital deployment system.</textarea>
+</div>
+<div class="grid grid-cols-2 gap-4">
+<div>
+<label class="block font-body-sm text-body-sm text-on-surface-variant mb-1.5 flex items-center gap-1">
+                                        Project Profile
+                                        <span class="material-symbols-outlined text-[14px] text-outline cursor-help" title="Profile can't change after creation">info</span>
+</label>
+<input class="input-field w-full rounded-lg px-3 py-2 text-body-md font-body-md bg-surface-container-highest text-outline cursor-not-allowed" readonly="" type="text" value="Industry: Aerospace"/>
+</div>
+<div>
+<label class="block font-body-sm text-body-sm text-on-surface-variant mb-1.5">Status</label>
+<select 0="" 2000="" 24="" 24\"="" class="input-field w-full rounded-lg px-3 py-2 text-body-md font-body-md focus:ring-0 appearance-none bg-no-repeat bg-right" fill='\"none\"' height='\"24\"' http:="" stroke='\"%238c909f\"' stroke-linecap='\"round\"' stroke-linejoin='\"round\"' stroke-width='\"2\"' style="background-image: url('data:image/svg+xml;utf8,&lt;svg xmlns=\" svg\"="" viewbox='\"0' width='\"24\"' www.w3.org="">'); background-position: right 0.5rem center; background-size: 1.2em;"&gt;
+                                        <option value="active">Active Workspace</option>
+<option value="archived">Archived</option>
+</select>
+</div>
+</div>
+</div>
+</div>
+<!-- Share Link Card -->
+<div class="card-container rounded-xl p-6 relative">
+<div class="absolute top-0 right-0 px-3 py-1 bg-surface-container-highest border-b border-l border-outline-variant rounded-bl-lg rounded-tr-xl">
+<span class="font-eyebrow-mono text-eyebrow-mono text-outline">ACCESS_CONTROL</span>
+</div>
+<div class="flex justify-between items-start mb-4">
+<div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-2">Share Project</h3>
+<p class="text-body-sm font-body-sm text-on-surface-variant max-w-md">Supervisors get read-only access to your validation report and traceability map.</p>
+</div>
+</div>
+<!-- Generated Link State -->
+<div class="mt-4 p-4 bg-surface-container-highest border border-outline-variant rounded-lg flex items-center justify-between gap-4">
+<div class="font-code text-code text-secondary truncate flex-1 font-mono">
+                                https://devdoc.io/p/aero-09x2/validate
+                            </div>
+<button class="shrink-0 flex items-center gap-2 px-3 py-1.5 bg-surface-bright hover:bg-outline-variant border border-outline-variant rounded-lg text-on-surface transition-colors font-body-sm text-body-sm">
+<span class="material-symbols-outlined text-[18px]">content_copy</span> Copy
+                            </button>
+</div>
+</div>
+</div>
+<!-- Right Column (Danger Zone & Metadta) -->
+<div class="space-y-6">
+<!-- Danger Zone -->
+<div class="card-container danger-card rounded-xl p-6">
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-danger-border">warning</span>
+<h3 class="font-headline-sm text-headline-sm text-danger-border font-bold">Delete project</h3>
+</div>
+<p class="text-body-sm font-body-sm text-on-surface-variant mb-6">Once you delete a project, there is no going back. Please be certain.</p>
+<button class="w-full py-2.5 bg-[#93000a] hover:bg-[#690005] text-[#ffdad6] font-body-md text-body-md rounded-lg transition-colors border border-[#ffb4ab]/30 font-medium">
+                            Delete permanently
+                        </button>
+</div>
+<!-- Small Info Box -->
+<div class="border border-outline-variant border-dashed rounded-xl p-4 bg-surface/50">
+<p class="font-eyebrow-mono text-eyebrow-mono text-outline mb-3">SYSTEM INFO</p>
+<div class="space-y-2 font-body-sm text-body-sm text-on-surface-variant">
+<div class="flex justify-between">
+<span>Created</span>
+<span class="text-on-surface">Oct 24, 2023</span>
+</div>
+<div class="flex justify-between">
+<span>Size</span>
+<span class="text-on-surface">14.2 MB</span>
+</div>
+<div class="flex justify-between">
+<span>Region</span>
+<span class="text-on-surface font-code text-[12px]">us-east-1</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+<!-- Bottom Navigation Bar (Mobile Only) -->
+<nav class="md:hidden fixed bottom-0 left-0 w-full bg-surface-container border-t border-outline-variant flex justify-around items-center h-16 z-50">
+<a class="flex flex-col items-center gap-1 text-on-surface-variant" href="#">
+<span class="material-symbols-outlined text-[24px]">dashboard</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-on-surface-variant" href="#">
+<span class="material-symbols-outlined text-[24px]">description</span>
+</a>
+<a class="flex flex-col items-center gap-1 text-primary" href="#">
+<span class="material-symbols-outlined text-[24px]" style="font-variation-settings: 'FILL' 1;">settings</span>
+</a>
+</nav>
+</body></html>

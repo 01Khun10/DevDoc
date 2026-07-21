@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>DevDoc - Analytics</title>
+<!-- Fonts & Icons -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&amp;family=JetBrains+Mono:wght@400;500&amp;family=Space+Grotesk:wght@500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Theme Config -->
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-container": "#1d2027",
+                    "secondary": "#5de6ff",
+                    "surface": "#10131a",
+                    "secondary-fixed": "#a2eeff",
+                    "secondary-fixed-dim": "#2fd9f4",
+                    "on-surface-variant": "#c2c6d6",
+                    "tertiary-fixed-dim": "#ffb786",
+                    "tertiary-fixed": "#ffdcc6",
+                    "on-tertiary": "#502400",
+                    "outline-variant": "#424754",
+                    "surface-variant": "#32353c",
+                    "on-secondary-fixed-variant": "#004e5a",
+                    "on-secondary": "#00363e",
+                    "on-surface": "#e1e2ec",
+                    "on-primary-fixed": "#001a42",
+                    "on-secondary-fixed": "#001f25",
+                    "error": "#ffb4ab",
+                    "primary-container": "#4d8eff",
+                    "on-primary-container": "#00285d",
+                    "error-container": "#93000a",
+                    "tertiary": "#ffb786",
+                    "inverse-primary": "#005ac2",
+                    "surface-container-low": "#191b23",
+                    "on-tertiary-fixed": "#311400",
+                    "on-primary": "#002e6a",
+                    "background": "#10131a",
+                    "surface-tint": "#adc6ff",
+                    "secondary-container": "#00cbe6",
+                    "primary-fixed": "#d8e2ff",
+                    "surface-container-lowest": "#0b0e15",
+                    "primary-fixed-dim": "#adc6ff",
+                    "surface-bright": "#363941",
+                    "on-error": "#690005",
+                    "on-tertiary-fixed-variant": "#723600",
+                    "on-tertiary-container": "#461f00",
+                    "on-background": "#e1e2ec",
+                    "inverse-surface": "#e1e2ec",
+                    "on-secondary-container": "#00515d",
+                    "surface-container-highest": "#32353c",
+                    "on-primary-fixed-variant": "#004395",
+                    "surface-container-high": "#272a31",
+                    "tertiary-container": "#df7412",
+                    "primary": "#adc6ff",
+                    "inverse-on-surface": "#2e3038",
+                    "on-error-container": "#ffdad6",
+                    "outline": "#8c909f",
+                    "surface-dim": "#10131a",
+                    
+                    // Specific mapping for requested artifact colors to theme nearest match
+                    "artifact-uc": "#c084fc", // Custom map for Violet intent (Use Cases)
+                    "artifact-fr": "#60a5fa", // Custom map for Blue intent (Requirements)
+                    "artifact-de": "#34d399", // Custom map for Emerald intent (Design Elements)
+                    "artifact-tc": "#f472b6", // Custom map for Pink intent (Test Cases)
+                    "artifact-bo": "#2dd4bf"  // Custom map for Teal intent (Traceability)
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "base": "4px",
+                    "gutter": "16px",
+                    "grid-pattern": "24px",
+                    "margin-mobile": "16px",
+                    "margin-desktop": "32px"
+            },
+            "fontFamily": {
+                    "headline-lg": ["Space Grotesk"],
+                    "body-md": ["Inter"],
+                    "headline-md": ["Space Grotesk"],
+                    "code": ["JetBrains Mono"],
+                    "body-sm": ["Inter"],
+                    "body-lg": ["Inter"],
+                    "headline-sm": ["Space Grotesk"],
+                    "eyebrow-mono": ["JetBrains Mono"]
+            },
+            "fontSize": {
+                    "headline-lg": ["32px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                    "body-md": ["14px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                    "headline-md": ["24px", { "lineHeight": "1.3", "fontWeight": "600" }],
+                    "code": ["13px", { "lineHeight": "20px", "fontWeight": "400" }],
+                    "body-sm": ["13px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                    "body-lg": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                    "headline-sm": ["18px", { "lineHeight": "1.4", "fontWeight": "500" }],
+                    "eyebrow-mono": ["11px", { "lineHeight": "16px", "letterSpacing": "0.15em", "fontWeight": "500" }]
+            }
+          }
+        }
+      }
+    </script>
+<style>
+        /* Base Styles & Utilities */
+        body {
+            background-color: theme('colors.background');
+            color: theme('colors.on-background');
+        }
+
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        /* Blueprint Canvas Texture */
+        .bg-blueprint {
+            background-image: 
+                linear-gradient(to right, theme('colors.outline-variant') 1px, transparent 1px),
+                linear-gradient(to bottom, theme('colors.outline-variant') 1px, transparent 1px);
+            background-size: theme('spacing.grid-pattern') theme('spacing.grid-pattern');
+            background-position: 0 0;
+            opacity: 0.15;
+            pointer-events: none;
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+        }
+
+        /* Faux-3D Elevation for prominent cards */
+        .elevation-blueprint {
+            box-shadow: 2px 2px 0px 0px theme('colors.secondary');
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+        .elevation-blueprint:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 4px 4px 0px 0px theme('colors.secondary');
+        }
+
+        /* Hairline borders */
+        .hairline {
+            border: 1px solid theme('colors.outline-variant');
+        }
+        
+        .hairline-b { border-bottom: 1px solid theme('colors.outline-variant'); }
+        .hairline-r { border-right: 1px solid theme('colors.outline-variant'); }
+
+        /* Custom Scrollbar for technical feel */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: theme('colors.surface'); 
+            border-left: 1px solid theme('colors.outline-variant');
+        }
+        ::-webkit-scrollbar-thumb {
+            background: theme('colors.outline-variant'); 
+            border-radius: 0px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: theme('colors.outline'); 
+        }
+        
+        /* Grid Line animations for chart */
+        @keyframes sweep {
+            0% { transform: scaleX(0); transform-origin: left; opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: scaleX(1); transform-origin: left; opacity: 1; }
+        }
+        .chart-grid-line {
+            animation: sweep 1.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+    </style>
+</head>
+<body class="antialiased flex h-screen overflow-hidden">
+<!-- Shared Component: SideNavBar -->
+<nav class="hidden md:flex flex-col h-screen w-64 border-r border-outline-variant bg-surface-container-low py-6 gap-2 z-40 relative flex-shrink-0">
+<!-- Header -->
+<div class="px-6 mb-6 flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-primary/20 border border-primary flex items-center justify-center text-primary font-headline-sm text-headline-sm">P</div>
+<div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface">Project Name</h2>
+<p class="font-eyebrow-mono text-eyebrow-mono text-on-surface-variant uppercase">Active Workspace</p>
+</div>
+</div>
+<!-- Nav Items -->
+<div class="flex-1 overflow-y-auto px-4 flex flex-col gap-1">
+<!-- Inactive -->
+<a class="flex items-center gap-3 px-3 py-2 rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-body-sm text-body-sm group" href="#">
+<span class="material-symbols-outlined text-[18px]">dashboard</span>
+                Overview
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-body-sm text-body-sm group" href="#">
+<span class="material-symbols-outlined text-[18px]">target</span>
+                Objectives
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-body-sm text-body-sm group" href="#">
+<span class="material-symbols-outlined text-[18px]">description</span>
+                Documents
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-body-sm text-body-sm group" href="#">
+<span class="material-symbols-outlined text-[18px]">topic</span>
+                Templates
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-body-sm text-body-sm group" href="#">
+<span class="material-symbols-outlined text-[18px]">account_tree</span>
+                Use Cases
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-body-sm text-body-sm group" href="#">
+<span class="material-symbols-outlined text-[18px]">rule</span>
+                Requirements
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-body-sm text-body-sm group" href="#">
+<span class="material-symbols-outlined text-[18px]">architecture</span>
+                Design Elements
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-body-sm text-body-sm group" href="#">
+<span class="material-symbols-outlined text-[18px]">fact_check</span>
+                Test Cases
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-body-sm text-body-sm group" href="#">
+<span class="material-symbols-outlined text-[18px]">hub</span>
+                Traceability
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-body-sm text-body-sm group" href="#">
+<span class="material-symbols-outlined text-[18px]">verified</span>
+                Validation
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-body-sm text-body-sm group" href="#">
+<span class="material-symbols-outlined text-[18px]">account_tree</span>
+                Diagrams
+            </a>
+<!-- Active -->
+<a class="flex items-center gap-3 px-3 py-2 rounded-DEFAULT font-body-sm text-body-sm text-secondary font-medium bg-secondary-container/10 border-r-2 border-secondary translate-x-1 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined text-[18px]">analytics</span>
+                Analytics
+            </a>
+<!-- Inactive -->
+<a class="flex items-center gap-3 px-3 py-2 rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-body-sm text-body-sm group mt-4" href="#">
+<span class="material-symbols-outlined text-[18px]">history</span>
+                Versions
+            </a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-DEFAULT text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-body-sm text-body-sm group" href="#">
+<span class="material-symbols-outlined text-[18px]">settings</span>
+                Settings
+            </a>
+</div>
+</nav>
+<!-- Main Content Area -->
+<div class="flex-1 flex flex-col min-w-0 relative bg-background">
+<!-- Shared Component: TopAppBar -->
+<header class="flex justify-between items-center w-full px-margin-desktop h-16 z-50 bg-surface-container border-b border-outline-variant flex-shrink-0">
+<!-- Search -->
+<div class="flex items-center w-64 bg-background border border-outline-variant rounded-DEFAULT h-9 px-3 focus-within:border-secondary focus-within:shadow-[0_0_0_1px_theme('colors.secondary')] transition-all">
+<span class="material-symbols-outlined text-on-surface-variant text-[18px] mr-2">search</span>
+<input class="bg-transparent border-none outline-none w-full font-body-sm text-body-sm text-on-surface placeholder:text-on-surface-variant/50 p-0 focus:ring-0" placeholder="Search doc, ID, or tag..." type="text"/>
+<div class="ml-2 px-1.5 py-0.5 rounded text-on-surface-variant bg-surface-variant font-eyebrow-mono text-[10px]">⌘K</div>
+</div>
+<!-- Logo/Brand (Center - Implicit from layout logic) -->
+<div class="absolute left-1/2 -translate-x-1/2 hidden md:flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">schema</span>
+<span class="font-headline-sm text-headline-sm font-bold text-on-surface">DevDoc</span>
+</div>
+<!-- Trailing Actions -->
+<div class="flex items-center gap-4">
+<button class="text-on-surface-variant hover:bg-surface-variant p-2 rounded-full transition-colors">
+<span class="material-symbols-outlined text-[20px]">dark_mode</span>
+</button>
+<button class="text-on-surface-variant hover:bg-surface-variant p-2 rounded-full transition-colors">
+<span class="material-symbols-outlined text-[20px]">help</span>
+</button>
+<div class="w-8 h-8 rounded-full bg-surface-variant border border-outline-variant overflow-hidden ml-2 cursor-pointer">
+<img alt="User Profile Avatar" class="w-full h-full object-cover" data-alt="A clean, minimalist abstract avatar featuring a subtle geometric pattern in dark blues and cyans. Technical aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA3BQjHWOVzzg6sMdZwn9LUPMf7bTR1NDf9KH0-N9cP24VMfbqZ_aZLoAv2wSX9qE4YUqrQ2xV0jjtMlyOko6M64CPJQJEiiJtS1S1kIKjSwYjkMTNF_UKK34gUdHGrAbh5DxNznWK5lwdxMt1JOQNokMDb6CCCTfUsNATJaErHSRg3_AJOfUI7p2gjmOcv-d1sz26JTU1hdQCN5Ca7vJY0EnTRbN5NWXNpy9RPB4fyOohxsKTrBNfFwY_VVCC238tr-a5BZQA3PYg"/>
+</div>
+</div>
+</header>
+<!-- Scrollable Canvas -->
+<main class="flex-1 overflow-y-auto relative p-margin-mobile md:p-margin-desktop">
+<!-- Blueprint Pattern Layer -->
+<div class="bg-blueprint"></div>
+<div class="max-w-[1440px] mx-auto relative z-10 flex flex-col gap-6">
+<!-- Page Header -->
+<div class="flex flex-col gap-1 mb-2">
+<div class="flex items-center gap-2 mb-2">
+<span class="px-2 py-0.5 bg-secondary/10 border border-secondary/30 text-secondary font-eyebrow-mono text-eyebrow-mono rounded uppercase tracking-wider">SYS_REPORT_01</span>
+<div class="h-px flex-1 bg-gradient-to-r from-outline-variant to-transparent"></div>
+</div>
+<h1 class="font-headline-lg text-headline-lg text-on-surface m-0">Analytics</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant">Project health over time</p>
+</div>
+<!-- Section 1: Top Stat Cards (Bento Grid) -->
+<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-base">
+<!-- Stat Card: Total Docs -->
+<div class="bg-surface-container hairline rounded-DEFAULT p-4 flex flex-col justify-between hover:bg-surface-container-high transition-colors relative overflow-hidden group">
+<div class="absolute top-0 right-0 p-2 opacity-10">
+<span class="material-symbols-outlined text-4xl">description</span>
+</div>
+<span class="font-eyebrow-mono text-eyebrow-mono text-on-surface-variant uppercase mb-2">Total Docs</span>
+<div class="font-headline-lg text-headline-lg text-on-surface mb-1">142</div>
+<div class="flex items-center gap-1 font-body-sm text-body-sm text-emerald-400">
+<span class="material-symbols-outlined text-[14px]">arrow_upward</span>
+<span>12%</span>
+</div>
+</div>
+<!-- Stat Card: Use Cases -->
+<div class="bg-surface-container hairline rounded-DEFAULT p-4 flex flex-col justify-between hover:bg-surface-container-high transition-colors relative overflow-hidden">
+<div class="w-1 h-full bg-[#c084fc] absolute left-0 top-0"></div> <!-- Violet identifier -->
+<span class="font-eyebrow-mono text-eyebrow-mono text-on-surface-variant uppercase mb-2 pl-2">Use Cases</span>
+<div class="font-headline-lg text-headline-lg text-on-surface mb-1 pl-2">84</div>
+<div class="flex items-center gap-1 font-body-sm text-body-sm text-emerald-400 pl-2">
+<span class="material-symbols-outlined text-[14px]">arrow_upward</span>
+<span>4 new</span>
+</div>
+</div>
+<!-- Stat Card: Requirements -->
+<div class="bg-surface-container hairline rounded-DEFAULT p-4 flex flex-col justify-between hover:bg-surface-container-high transition-colors relative overflow-hidden">
+<div class="w-1 h-full bg-[#60a5fa] absolute left-0 top-0"></div> <!-- Blue identifier -->
+<span class="font-eyebrow-mono text-eyebrow-mono text-on-surface-variant uppercase mb-2 pl-2">Requirements</span>
+<div class="font-headline-lg text-headline-lg text-on-surface mb-1 pl-2">320</div>
+<div class="flex items-center gap-1 font-body-sm text-body-sm text-on-surface-variant pl-2">
+<span class="material-symbols-outlined text-[14px]">horizontal_rule</span>
+<span>Stable</span>
+</div>
+</div>
+<!-- Stat Card: Design Elements -->
+<div class="bg-surface-container hairline rounded-DEFAULT p-4 flex flex-col justify-between hover:bg-surface-container-high transition-colors relative overflow-hidden">
+<div class="w-1 h-full bg-[#34d399] absolute left-0 top-0"></div> <!-- Emerald identifier -->
+<span class="font-eyebrow-mono text-eyebrow-mono text-on-surface-variant uppercase mb-2 pl-2">Design Elements</span>
+<div class="font-headline-lg text-headline-lg text-on-surface mb-1 pl-2">215</div>
+<div class="flex items-center gap-1 font-body-sm text-body-sm text-emerald-400 pl-2">
+<span class="material-symbols-outlined text-[14px]">arrow_upward</span>
+<span>8%</span>
+</div>
+</div>
+<!-- Stat Card: Test Cases -->
+<div class="bg-surface-container hairline rounded-DEFAULT p-4 flex flex-col justify-between hover:bg-surface-container-high transition-colors relative overflow-hidden">
+<div class="w-1 h-full bg-[#f472b6] absolute left-0 top-0"></div> <!-- Pink identifier -->
+<span class="font-eyebrow-mono text-eyebrow-mono text-on-surface-variant uppercase mb-2 pl-2">Test Cases</span>
+<div class="font-headline-lg text-headline-lg text-on-surface mb-1 pl-2">412</div>
+<div class="flex items-center gap-1 font-body-sm text-body-sm text-rose-400 pl-2">
+<span class="material-symbols-outlined text-[14px]">arrow_downward</span>
+<span>2 failing</span>
+</div>
+</div>
+<!-- Stat Card: Trace Links -->
+<div class="bg-surface-container hairline rounded-DEFAULT p-4 flex flex-col justify-between hover:bg-surface-container-high transition-colors relative overflow-hidden">
+<div class="w-1 h-full bg-[#2dd4bf] absolute left-0 top-0"></div> <!-- Teal identifier -->
+<span class="font-eyebrow-mono text-eyebrow-mono text-on-surface-variant uppercase mb-2 pl-2">Trace Links</span>
+<div class="font-headline-lg text-headline-lg text-on-surface mb-1 pl-2">1.2k</div>
+<div class="flex items-center gap-1 font-body-sm text-body-sm text-emerald-400 pl-2">
+<span class="material-symbols-outlined text-[14px]">arrow_upward</span>
+<span>Dense</span>
+</div>
+</div>
+</div>
+<!-- Section 2: Main Charts Row -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-base">
+<!-- Readiness Trend (Large Chart) -->
+<div class="lg:col-span-8 bg-surface-container hairline rounded-DEFAULT p-6 relative flex flex-col elevation-blueprint">
+<!-- Corner Title Block Stamp -->
+<div class="absolute top-0 right-0 border-l border-b border-outline-variant px-3 py-1 bg-background/50 rounded-bl-DEFAULT backdrop-blur flex gap-3 font-eyebrow-mono text-[10px] text-on-surface-variant">
+<span>REV: 4.2.1</span>
+<span class="text-secondary">STATUS: LIVE</span>
+</div>
+<div class="flex justify-between items-end mb-6">
+<div>
+<h3 class="font-headline-md text-headline-md text-on-surface m-0">Project Readiness Trend</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">Overall completion vs. validation targets over 30 days.</p>
+</div>
+<div class="flex gap-2">
+<span class="px-2 py-1 bg-surface-variant hairline rounded text-on-surface font-code text-code cursor-pointer hover:bg-outline-variant transition-colors">30D</span>
+<span class="px-2 py-1 bg-transparent hairline rounded text-on-surface-variant font-code text-code cursor-pointer hover:bg-surface-variant transition-colors">90D</span>
+</div>
+</div>
+<!-- Chart Canvas Area (Simulated with SVG for technical precision) -->
+<div class="flex-1 min-h-[280px] w-full relative border border-outline-variant bg-background/30 rounded overflow-hidden">
+<!-- Background Blueprint Grid specific to chart -->
+<div class="absolute inset-0" style="background-image: linear-gradient(theme('colors.outline-variant') 1px, transparent 1px), linear-gradient(90deg, theme('colors.outline-variant') 1px, transparent 1px); background-size: 20px 20px; opacity: 0.2;"></div>
+<!-- SVG Line Chart -->
+<svg class="absolute inset-0 w-full h-full" preserveaspectratio="none" viewbox="0 0 1000 300">
+<!-- Data Line -->
+<path class="drop-shadow-[0_0_8px_rgba(93,230,255,0.4)]" d="M0,280 C100,250 200,260 300,200 C400,140 500,180 600,100 C700,20 800,80 900,40 L1000,20" fill="none" stroke="theme('colors.secondary')" stroke-width="2"></path>
+<!-- Area fill under line -->
+<path d="M0,280 C100,250 200,260 300,200 C400,140 500,180 600,100 C700,20 800,80 900,40 L1000,20 L1000,300 L0,300 Z" fill="url(#trend-gradient)" opacity="0.2"></path>
+<defs>
+<lineargradient id="trend-gradient" x1="0" x2="0" y1="0" y2="1">
+<stop offset="0%" stop-color="theme('colors.secondary')"></stop>
+<stop offset="100%" stop-color="theme('colors.background')"></stop>
+</lineargradient>
+</defs>
+<!-- Data Points (Mocked) -->
+<circle cx="300" cy="200" fill="theme('colors.surface-container')" r="4" stroke="theme('colors.secondary')" stroke-width="2"></circle>
+<circle cx="600" cy="100" fill="theme('colors.surface-container')" r="4" stroke="theme('colors.secondary')" stroke-width="2"></circle>
+<circle cx="900" cy="40" fill="theme('colors.surface-container')" r="4" stroke="theme('colors.secondary')" stroke-width="2"></circle>
+</svg>
+<!-- Axis Labels (Overlay) -->
+<div class="absolute bottom-2 left-4 font-eyebrow-mono text-[10px] text-on-surface-variant">T-30</div>
+<div class="absolute bottom-2 right-4 font-eyebrow-mono text-[10px] text-on-surface-variant">TODAY</div>
+<div class="absolute top-2 left-4 font-eyebrow-mono text-[10px] text-on-surface-variant">100%</div>
+</div>
+</div>
+<!-- Artifact Distribution (Donut) -->
+<div class="lg:col-span-4 bg-surface-container hairline rounded-DEFAULT p-6 relative flex flex-col">
+<div class="flex justify-between items-end mb-6">
+<h3 class="font-headline-md text-headline-md text-on-surface m-0">Artifact Dist.</h3>
+<span class="material-symbols-outlined text-on-surface-variant text-[20px]">pie_chart</span>
+</div>
+<div class="flex-1 flex flex-col items-center justify-center relative min-h-[200px]">
+<!-- CSS Donut Chart (Technical Style) -->
+<div class="w-48 h-48 rounded-full relative flex items-center justify-center" style="background: conic-gradient(
+                                    #c084fc 0% 15%,   /* UC */
+                                    #60a5fa 15% 45%,  /* FR */
+                                    #34d399 45% 70%,  /* DE */
+                                    #f472b6 70% 90%,  /* TC */
+                                    #2dd4bf 90% 100%  /* BO */
+                                 ); box-shadow: inset 0 0 0 1px theme('colors.outline-variant');">
+<!-- Inner cutout to make it a donut -->
+<div class="w-36 h-36 bg-surface-container rounded-full flex flex-col items-center justify-center relative z-10 border border-outline-variant">
+<span class="font-headline-lg text-headline-lg text-on-surface m-0">1.1k</span>
+<span class="font-eyebrow-mono text-[10px] text-on-surface-variant uppercase">Total Items</span>
+</div>
+</div>
+</div>
+<!-- Legend -->
+<div class="grid grid-cols-2 gap-x-4 gap-y-2 mt-6 font-code text-[11px]">
+<div class="flex items-center gap-2"><div class="w-2 h-2 rounded-sm bg-[#c084fc]"></div><span class="text-on-surface">Use Cases (15%)</span></div>
+<div class="flex items-center gap-2"><div class="w-2 h-2 rounded-sm bg-[#60a5fa]"></div><span class="text-on-surface">Reqs (30%)</span></div>
+<div class="flex items-center gap-2"><div class="w-2 h-2 rounded-sm bg-[#34d399]"></div><span class="text-on-surface">Design (25%)</span></div>
+<div class="flex items-center gap-2"><div class="w-2 h-2 rounded-sm bg-[#f472b6]"></div><span class="text-on-surface">Tests (20%)</span></div>
+<div class="flex items-center gap-2"><div class="w-2 h-2 rounded-sm bg-[#2dd4bf]"></div><span class="text-on-surface">Trace (10%)</span></div>
+</div>
+</div>
+</div>
+<!-- Section 3: Document Status & Coverage -->
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-base">
+<!-- Per-Document Completion -->
+<div class="lg:col-span-6 bg-surface-container hairline rounded-DEFAULT p-6 relative">
+<div class="flex justify-between items-end mb-6">
+<h3 class="font-headline-sm text-headline-sm text-on-surface m-0">Document Completion</h3>
+<button class="font-eyebrow-mono text-[10px] text-secondary hover:underline">VIEW ALL</button>
+</div>
+<div class="flex flex-col gap-4">
+<!-- Doc Row 1 -->
+<div>
+<div class="flex justify-between text-body-sm mb-1">
+<div class="flex items-center gap-2">
+<span class="font-code text-[11px] px-1.5 py-0.5 bg-surface-variant hairline rounded text-on-surface-variant">DOC-01</span>
+<span class="text-on-surface">System Architecture</span>
+</div>
+<span class="font-code text-emerald-400">100%</span>
+</div>
+<div class="h-1.5 w-full bg-background rounded-full overflow-hidden hairline">
+<div class="h-full bg-emerald-400 w-full"></div>
+</div>
+</div>
+<!-- Doc Row 2 -->
+<div>
+<div class="flex justify-between text-body-sm mb-1">
+<div class="flex items-center gap-2">
+<span class="font-code text-[11px] px-1.5 py-0.5 bg-surface-variant hairline rounded text-on-surface-variant">DOC-04</span>
+<span class="text-on-surface">API Gateway Spec</span>
+</div>
+<span class="font-code text-secondary">85%</span>
+</div>
+<div class="h-1.5 w-full bg-background rounded-full overflow-hidden hairline">
+<div class="h-full bg-secondary w-[85%]"></div>
+</div>
+</div>
+<!-- Doc Row 3 -->
+<div>
+<div class="flex justify-between text-body-sm mb-1">
+<div class="flex items-center gap-2">
+<span class="font-code text-[11px] px-1.5 py-0.5 bg-surface-variant hairline rounded text-on-surface-variant">DOC-12</span>
+<span class="text-on-surface">Security Threat Model</span>
+</div>
+<span class="font-code text-amber-400">42%</span>
+</div>
+<div class="h-1.5 w-full bg-background rounded-full overflow-hidden hairline">
+<div class="h-full bg-amber-400 w-[42%]"></div>
+</div>
+</div>
+<!-- Doc Row 4 -->
+<div>
+<div class="flex justify-between text-body-sm mb-1">
+<div class="flex items-center gap-2">
+<span class="font-code text-[11px] px-1.5 py-0.5 bg-surface-variant hairline rounded text-on-surface-variant">DOC-15</span>
+<span class="text-on-surface">Database Migration Plan</span>
+</div>
+<span class="font-code text-rose-400">12%</span>
+</div>
+<div class="h-1.5 w-full bg-background rounded-full overflow-hidden hairline">
+<div class="h-full bg-rose-400 w-[12%]"></div>
+</div>
+</div>
+</div>
+</div>
+<!-- Coverage Breakdown (Small Multiples) -->
+<div class="lg:col-span-6 bg-surface-container hairline rounded-DEFAULT p-6 relative">
+<div class="flex justify-between items-end mb-6">
+<h3 class="font-headline-sm text-headline-sm text-on-surface m-0">Coverage Ratios</h3>
+<span class="material-symbols-outlined text-on-surface-variant text-[18px]">rule_settings</span>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+<!-- Ratio 1 -->
+<div>
+<div class="font-eyebrow-mono text-[10px] text-on-surface-variant uppercase mb-2">Sections Documented</div>
+<div class="flex items-end gap-2 mb-1">
+<span class="font-headline-md text-headline-md text-on-surface">92%</span>
+<span class="font-body-sm text-on-surface-variant mb-1">400/435</span>
+</div>
+<div class="flex h-2 w-full bg-background rounded-full overflow-hidden hairline">
+<div class="bg-primary w-[92%]"></div>
+</div>
+</div>
+<!-- Ratio 2 -->
+<div>
+<div class="font-eyebrow-mono text-[10px] text-on-surface-variant uppercase mb-2">Reqs Traced to Design</div>
+<div class="flex items-end gap-2 mb-1">
+<span class="font-headline-md text-headline-md text-on-surface">78%</span>
+<span class="font-body-sm text-on-surface-variant mb-1">250/320</span>
+</div>
+<div class="flex h-2 w-full bg-background rounded-full overflow-hidden hairline">
+<div class="bg-[#34d399] w-[78%]"></div> <!-- Design Elements Color -->
+</div>
+</div>
+<!-- Ratio 3 -->
+<div>
+<div class="font-eyebrow-mono text-[10px] text-on-surface-variant uppercase mb-2">Design Covered by Tests</div>
+<div class="flex items-end gap-2 mb-1">
+<span class="font-headline-md text-headline-md text-on-surface">65%</span>
+<span class="font-body-sm text-on-surface-variant mb-1">140/215</span>
+</div>
+<div class="flex h-2 w-full bg-background rounded-full overflow-hidden hairline">
+<div class="bg-[#f472b6] w-[65%]"></div> <!-- Test Cases Color -->
+</div>
+</div>
+<!-- Ratio 4 -->
+<div>
+<div class="font-eyebrow-mono text-[10px] text-on-surface-variant uppercase mb-2">Tests Executed (Pass)</div>
+<div class="flex items-end gap-2 mb-1">
+<span class="font-headline-md text-headline-md text-on-surface">88%</span>
+<span class="font-body-sm text-on-surface-variant mb-1">362/412</span>
+</div>
+<div class="flex h-2 w-full bg-background rounded-full overflow-hidden hairline">
+<div class="bg-secondary w-[88%]"></div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Section 4: Activity Heatmap -->
+<div class="bg-surface-container hairline rounded-DEFAULT p-6 relative w-full overflow-x-auto">
+<div class="flex justify-between items-end mb-4 min-w-[600px]">
+<h3 class="font-headline-sm text-headline-sm text-on-surface m-0">System Activity</h3>
+<div class="flex items-center gap-2 font-eyebrow-mono text-[10px] text-on-surface-variant">
+<span>LESS</span>
+<div class="flex gap-1">
+<div class="w-3 h-3 rounded-sm bg-surface-variant"></div>
+<div class="w-3 h-3 rounded-sm bg-secondary/20"></div>
+<div class="w-3 h-3 rounded-sm bg-secondary/50"></div>
+<div class="w-3 h-3 rounded-sm bg-secondary/80"></div>
+<div class="w-3 h-3 rounded-sm bg-secondary"></div>
+</div>
+<span>MORE</span>
+</div>
+</div>
+<!-- Heatmap Grid (Simulated last ~3 months) -->
+<div class="flex gap-1 min-w-[600px]">
+<!-- JS will populate this to avoid massive HTML bloat, but we provide a skeleton/initial state -->
+<div class="flex gap-1" id="heatmap-container"></div>
+</div>
+</div>
+</div>
+<!-- Bottom spacing -->
+<div class="h-12 w-full"></div>
+</main>
+</div>
+<!-- Inline Script for micro-interactions & rendering the heatmap -->
+<script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Render Heatmap
+            const container = document.getElementById('heatmap-container');
+            const weeks = 24; // ~6 months
+            const daysPerWeek = 7;
+            
+            // Intensities mapping to classes for Tailwind
+            const intensities = [
+                'bg-surface-variant', // 0
+                'bg-secondary/20',    // 1
+                'bg-secondary/50',    // 2
+                'bg-secondary/80',    // 3
+                'bg-secondary'        // 4
+            ];
+
+            for (let w = 0; w < weeks; w++) {
+                const col = document.createElement('div');
+                col.className = 'flex flex-col gap-1';
+                
+                for (let d = 0; d < daysPerWeek; d++) {
+                    const cell = document.createElement('div');
+                    
+                    // Generate random activity, weighting towards lower numbers
+                    let val = Math.random();
+                    let intensityIndex = 0;
+                    if (val > 0.6) intensityIndex = 1;
+                    if (val > 0.8) intensityIndex = 2;
+                    if (val > 0.9) intensityIndex = 3;
+                    if (val > 0.95) intensityIndex = 4;
+
+                    cell.className = `w-3 h-3 rounded-sm ${intensities[intensityIndex]} border border-outline-variant/30 hover:border-secondary transition-colors cursor-crosshair`;
+                    
+                    // Mock tooltip data
+                    cell.title = `Activity level: ${intensityIndex}`;
+                    
+                    col.appendChild(cell);
+                }
+                container.appendChild(col);
+            }
+        });
+    </script>
+</body></html>

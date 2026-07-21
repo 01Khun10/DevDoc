@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>About DevDoc - Documentation, engineered.</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500&amp;family=Space+Grotesk:wght@500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "on-surface-variant": "#c2c6d6",
+                        "inverse-on-surface": "#2e3038",
+                        "surface-container-highest": "#32353c",
+                        "on-tertiary": "#502400",
+                        "on-tertiary-container": "#461f00",
+                        "tertiary-fixed-dim": "#ffb786",
+                        "surface-container-low": "#191b23",
+                        "primary": "#adc6ff",
+                        "secondary-container": "#00cbe6",
+                        "outline-variant": "#424754",
+                        "surface-tint": "#adc6ff",
+                        "surface-container-lowest": "#0b0e15",
+                        "on-secondary-fixed": "#001f25",
+                        "on-tertiary-fixed-variant": "#723600",
+                        "surface": "#10131a",
+                        "on-primary-fixed": "#001a42",
+                        "on-primary-container": "#00285d",
+                        "inverse-surface": "#e1e2ec",
+                        "secondary": "#5de6ff",
+                        "on-tertiary-fixed": "#311400",
+                        "secondary-fixed-dim": "#2fd9f4",
+                        "inverse-primary": "#005ac2",
+                        "tertiary": "#ffb786",
+                        "surface-dim": "#10131a",
+                        "on-secondary-container": "#00515d",
+                        "primary-fixed": "#d8e2ff",
+                        "tertiary-fixed": "#ffdcc6",
+                        "tertiary-container": "#df7412",
+                        "error": "#ffb4ab",
+                        "surface-bright": "#363941",
+                        "primary-fixed-dim": "#adc6ff",
+                        "on-background": "#e1e2ec",
+                        "primary-container": "#4d8eff",
+                        "on-secondary": "#00363e",
+                        "surface-container-high": "#272a31",
+                        "surface-container": "#1d2027",
+                        "error-container": "#93000a",
+                        "outline": "#8c909f",
+                        "on-secondary-fixed-variant": "#004e5a",
+                        "surface-variant": "#32353c",
+                        "on-error-container": "#ffdad6",
+                        "secondary-fixed": "#a2eeff",
+                        "on-primary-fixed-variant": "#004395",
+                        "on-primary": "#002e6a",
+                        "on-error": "#690005",
+                        "background": "#0B1526",
+                        "on-surface": "#e1e2ec",
+                        "blueprint-grid": "rgba(51, 81, 126, 0.1)",
+                        "blueprint-line": "#33517E",
+                        "card-bg": "#16273F",
+                        "bo-chip": "#0D9488",
+                        "uc-chip": "#7F77DD",
+                        "fr-chip": "#3B82F6",
+                        "de-chip": "#10B981",
+                        "tc-chip": "#EC4899"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem",
+                        "btn": "8px"
+                    },
+                    spacing: {
+                        "gutter": "16px",
+                        "margin-mobile": "16px",
+                        "margin-desktop": "32px",
+                        "grid-pattern": "24px",
+                        "base": "4px"
+                    },
+                    fontFamily: {
+                        "headline-md": ["Space Grotesk"],
+                        "eyebrow-mono": ["JetBrains Mono"],
+                        "body-sm": ["Inter"],
+                        "body-md": ["Inter"],
+                        "headline-sm": ["Space Grotesk"],
+                        "headline-lg": ["Space Grotesk"],
+                        "code": ["JetBrains Mono"],
+                        "body-lg": ["Inter"]
+                    },
+                    fontSize: {
+                        "headline-md": ["24px", { "lineHeight": "1.3", "fontWeight": "600" }],
+                        "eyebrow-mono": ["11px", { "lineHeight": "16px", "letterSpacing": "0.15em", "fontWeight": "500" }],
+                        "body-sm": ["13px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "body-md": ["14px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "headline-sm": ["18px", { "lineHeight": "1.4", "fontWeight": "500" }],
+                        "headline-lg": ["32px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "code": ["13px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "body-lg": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }]
+                    },
+                    backgroundImage: {
+                        'blueprint': 'linear-gradient(rgba(51, 81, 126, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(51, 81, 126, 0.1) 1px, transparent 1px)'
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: theme('colors.background');
+            background-image: theme('backgroundImage.blueprint');
+            background-size: theme('spacing.grid-pattern') theme('spacing.grid-pattern');
+            background-attachment: fixed;
+            color: theme('colors.on-surface');
+        }
+        
+        .title-block-corner {
+            position: relative;
+        }
+        .title-block-corner::before,
+        .title-block-corner::after {
+            content: '';
+            position: absolute;
+            background-color: theme('colors.blueprint-line');
+        }
+        
+        .corner-tl::before { top: 0; left: 0; width: 12px; height: 1px; }
+        .corner-tl::after { top: 0; left: 0; width: 1px; height: 12px; }
+        
+        .corner-tr::before { top: 0; right: 0; width: 12px; height: 1px; }
+        .corner-tr::after { top: 0; right: 0; width: 1px; height: 12px; }
+        
+        .corner-bl::before { bottom: 0; left: 0; width: 12px; height: 1px; }
+        .corner-bl::after { bottom: 0; left: 0; width: 1px; height: 12px; }
+        
+        .corner-br::before { bottom: 0; right: 0; width: 12px; height: 1px; }
+        .corner-br::after { bottom: 0; right: 0; width: 1px; height: 12px; }
+    </style>
+</head>
+<body class="font-body-md text-body-md antialiased min-h-screen flex flex-col">
+<!-- TopAppBar -->
+<header class="bg-surface-container dark:bg-surface-container border-b border-outline-variant dark:border-outline-variant flex justify-between items-center w-full px-margin-desktop h-16 z-50 sticky top-0">
+<div class="flex items-center gap-4">
+<span class="font-headline-sm text-headline-sm font-bold text-on-surface dark:text-on-surface tracking-tight">DevDoc</span>
+</div>
+<nav class="hidden md:flex items-center gap-6">
+<!-- Active state suppressed for generic TopBar on specific About page, maintaining baseline styling -->
+<a class="text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-variant dark:hover:bg-surface-variant transition-colors px-3 py-2 rounded-lg font-body-sm text-body-sm" href="#">Overview</a>
+<a class="text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-variant dark:hover:bg-surface-variant transition-colors px-3 py-2 rounded-lg font-body-sm text-body-sm" href="#">Objectives</a>
+<a class="text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-variant dark:hover:bg-surface-variant transition-colors px-3 py-2 rounded-lg font-body-sm text-body-sm" href="#">Documents</a>
+<!-- About is active -->
+<a class="text-primary font-bold border-b-2 border-primary opacity-80 scale-[0.98] transition-transform px-3 py-2 font-body-sm text-body-sm" href="#">About</a>
+</nav>
+<div class="flex items-center gap-4">
+<button class="text-on-surface-variant hover:text-on-surface transition-colors p-2 rounded-full hover:bg-surface-variant">
+<span class="material-symbols-outlined" data-icon="dark_mode">dark_mode</span>
+</button>
+<button class="text-on-surface-variant hover:text-on-surface transition-colors p-2 rounded-full hover:bg-surface-variant">
+<span class="material-symbols-outlined" data-icon="help">help</span>
+</button>
+<div class="w-8 h-8 rounded-full bg-surface-variant border border-outline-variant overflow-hidden flex-shrink-0">
+<img alt="User Profile Avatar" class="w-full h-full object-cover" data-alt="A small, professional user avatar portrait of an engineer looking thoughtfully at the camera. The background is a subtle, high-tech dark mode studio setting. The lighting is cool and sophisticated, emphasizing technical expertise and precision. The overall mood is focused and authoritative." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCf71DXGXACp9IDI_ZCh27W5orL0_5y_VnI0DRCCDSDnSUIrUCYnv1t0_kR835wTr8WwVlvtHEs0smoAakDymyxwTbASVDhL-hXjabg0ddzfOKm6hTw2btxQgmbbc12Geou_1E3H_4bjGH_kbkc1y7qfD5PB8O_rhUHwAFoHU-CrtkT-0Nr2HR0wFbSg8NEvUint5gAZev_095-TdJ5nU6q0oOhv0vzchaNBUu-6dyfwvyjI6iNJhQ24lzd1xKoGDdsOpXPET6-4as"/>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="flex-1 w-full max-w-[1440px] mx-auto px-margin-mobile md:px-margin-desktop py-12 flex flex-col gap-16 relative">
+<!-- Hero Section -->
+<section class="flex flex-col items-center text-center max-w-3xl mx-auto py-12">
+<div class="mb-6 font-eyebrow-mono text-eyebrow-mono text-primary uppercase tracking-[0.2em]">ABOUT DEVDOC</div>
+<h1 class="font-headline-lg text-headline-lg text-on-surface mb-6">Documentation, engineered.</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl leading-relaxed">
+                DevDoc treats documentation as structured, linked, and validatable data. We bridge the gap between abstract requirements and concrete test cases, ensuring that every piece of knowledge is actively maintained, traceable, and integrated into the engineering lifecycle.
+            </p>
+</section>
+<!-- Problem/Solution Band -->
+<section class="grid grid-cols-1 md:grid-cols-2 gap-8 relative">
+<!-- Problem Card -->
+<div class="bg-card-bg border border-blueprint-line p-8 relative title-block-corner corner-tl corner-br">
+<div class="font-eyebrow-mono text-eyebrow-mono text-error mb-4 border-b border-blueprint-line pb-2 inline-block">THE_PROBLEM</div>
+<h2 class="font-headline-md text-headline-md mb-4 text-on-surface">Documentation Drift</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mb-4">
+                     Traditional technical documentation quickly becomes obsolete. Requirements are orphaned, design decisions lose context, and test cases fail to map back to business objectives. The result is a chaotic knowledge base with zero traceability.
+                 </p>
+<ul class="space-y-2 mt-6">
+<li class="flex items-center gap-3 font-code text-code text-error-container">
+<span class="material-symbols-outlined text-[16px]">close</span>
+                         Orphaned Requirements
+                     </li>
+<li class="flex items-center gap-3 font-code text-code text-error-container">
+<span class="material-symbols-outlined text-[16px]">close</span>
+                         Broken Traceability Links
+                     </li>
+<li class="flex items-center gap-3 font-code text-code text-error-container">
+<span class="material-symbols-outlined text-[16px]">close</span>
+                         Unverifiable Design Docs
+                     </li>
+</ul>
+</div>
+<!-- Solution Card -->
+<div class="bg-card-bg border border-blueprint-line p-8 relative title-block-corner corner-tr corner-bl shadow-[4px_4px_0px_rgba(59,130,246,0.2)]">
+<div class="font-eyebrow-mono text-eyebrow-mono text-secondary mb-4 border-b border-blueprint-line pb-2 inline-block">THE_DEVDOC_APPROACH</div>
+<h2 class="font-headline-md text-headline-md mb-4 text-on-surface">The Linked Chain</h2>
+<p class="font-body-md text-body-md text-on-surface-variant mb-4">
+                    DevDoc enforces a rigid, blueprint-like structure. Every artifact is typed, validated by our Doc-Linter, and connected via a bidirectional traceability map. If a requirement changes, the impact is immediately visible across the entire chain.
+                </p>
+<ul class="space-y-2 mt-6">
+<li class="flex items-center gap-3 font-code text-code text-secondary">
+<span class="material-symbols-outlined text-[16px]">check</span>
+                         Semantic Artifact Types
+                     </li>
+<li class="flex items-center gap-3 font-code text-code text-secondary">
+<span class="material-symbols-outlined text-[16px]">check</span>
+                         Continuous Doc-Linting
+                     </li>
+<li class="flex items-center gap-3 font-code text-code text-secondary">
+<span class="material-symbols-outlined text-[16px]">check</span>
+                         Interactive Blueprint Maps
+                     </li>
+</ul>
+</div>
+</section>
+<!-- The Chain Explainer -->
+<section class="flex flex-col gap-8 py-12 border-y border-blueprint-line relative">
+<div class="absolute inset-y-0 left-[50%] w-px bg-blueprint-line opacity-50 hidden md:block"></div>
+<div class="text-center mb-8">
+<h2 class="font-headline-sm text-headline-sm text-on-surface uppercase tracking-wide">The Traceability Chain</h2>
+</div>
+<!-- Chain Visual -->
+<div class="flex flex-col md:flex-row justify-between items-center gap-4 relative z-10 w-full px-4 overflow-x-auto pb-4">
+<!-- BO -->
+<div class="flex flex-col items-center gap-3 group">
+<div class="w-16 h-16 rounded border border-bo-chip flex items-center justify-center bg-[#0D9488]/10 text-bo-chip shadow-[0_0_10px_rgba(13,148,136,0.2)] group-hover:shadow-[0_0_15px_rgba(13,148,136,0.5)] transition-all">
+<span class="font-eyebrow-mono text-eyebrow-mono">BO</span>
+</div>
+<span class="font-code text-code text-on-surface-variant text-center text-[11px]">Business<br/>Objective</span>
+</div>
+<!-- Connector -->
+<div class="hidden md:flex h-px flex-1 bg-blueprint-line relative">
+<span class="material-symbols-outlined absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-blueprint-line text-[16px]">arrow_forward</span>
+</div>
+<div class="md:hidden w-px h-8 bg-blueprint-line"></div>
+<!-- UC -->
+<div class="flex flex-col items-center gap-3 group">
+<div class="w-16 h-16 rounded border border-uc-chip flex items-center justify-center bg-[#7F77DD]/10 text-uc-chip shadow-[0_0_10px_rgba(127,119,221,0.2)] group-hover:shadow-[0_0_15px_rgba(127,119,221,0.5)] transition-all">
+<span class="font-eyebrow-mono text-eyebrow-mono">UC</span>
+</div>
+<span class="font-code text-code text-on-surface-variant text-center text-[11px]">Use<br/>Case</span>
+</div>
+<!-- Connector -->
+<div class="hidden md:flex h-px flex-1 bg-blueprint-line relative">
+<span class="material-symbols-outlined absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-blueprint-line text-[16px]">arrow_forward</span>
+</div>
+<div class="md:hidden w-px h-8 bg-blueprint-line"></div>
+<!-- FR -->
+<div class="flex flex-col items-center gap-3 group">
+<div class="w-16 h-16 rounded border border-fr-chip flex items-center justify-center bg-[#3B82F6]/10 text-fr-chip shadow-[0_0_10px_rgba(59,130,246,0.2)] group-hover:shadow-[0_0_15px_rgba(59,130,246,0.5)] transition-all">
+<span class="font-eyebrow-mono text-eyebrow-mono">FR</span>
+</div>
+<span class="font-code text-code text-on-surface-variant text-center text-[11px]">Functional<br/>Requirement</span>
+</div>
+<!-- Connector -->
+<div class="hidden md:flex h-px flex-1 bg-blueprint-line relative">
+<span class="material-symbols-outlined absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-blueprint-line text-[16px]">arrow_forward</span>
+</div>
+<div class="md:hidden w-px h-8 bg-blueprint-line"></div>
+<!-- DE -->
+<div class="flex flex-col items-center gap-3 group">
+<div class="w-16 h-16 rounded border border-de-chip flex items-center justify-center bg-[#10B981]/10 text-de-chip shadow-[0_0_10px_rgba(16,185,129,0.2)] group-hover:shadow-[0_0_15px_rgba(16,185,129,0.5)] transition-all">
+<span class="font-eyebrow-mono text-eyebrow-mono">DE</span>
+</div>
+<span class="font-code text-code text-on-surface-variant text-center text-[11px]">Design<br/>Element</span>
+</div>
+<!-- Connector -->
+<div class="hidden md:flex h-px flex-1 bg-blueprint-line relative">
+<span class="material-symbols-outlined absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-blueprint-line text-[16px]">arrow_forward</span>
+</div>
+<div class="md:hidden w-px h-8 bg-blueprint-line"></div>
+<!-- TC -->
+<div class="flex flex-col items-center gap-3 group">
+<div class="w-16 h-16 rounded border border-tc-chip flex items-center justify-center bg-[#EC4899]/10 text-tc-chip shadow-[0_0_10px_rgba(236,72,153,0.2)] group-hover:shadow-[0_0_15px_rgba(236,72,153,0.5)] transition-all">
+<span class="font-eyebrow-mono text-eyebrow-mono">TC</span>
+</div>
+<span class="font-code text-code text-on-surface-variant text-center text-[11px]">Test<br/>Case</span>
+</div>
+</div>
+</section>
+<!-- Feature Highlights -->
+<section class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<div class="bg-surface/50 border border-blueprint-line p-6 hover:bg-card-bg transition-colors">
+<div class="w-10 h-10 mb-4 rounded border border-primary text-primary flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px]">fact_check</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-2">IDE-Like Validation</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Real-time linting of documentation schemas. Catch orphaned requirements before they merge.</p>
+</div>
+<div class="bg-surface/50 border border-blueprint-line p-6 hover:bg-card-bg transition-colors">
+<div class="w-10 h-10 mb-4 rounded border border-secondary text-secondary flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px]">account_tree</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-2">Automated Traceability</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Bidirectional mapping ensures every design element is justified by a functional requirement.</p>
+</div>
+<div class="bg-surface/50 border border-blueprint-line p-6 hover:bg-card-bg transition-colors">
+<div class="w-10 h-10 mb-4 rounded border border-tertiary text-tertiary flex items-center justify-center">
+<span class="material-symbols-outlined text-[20px]">picture_as_pdf</span>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-2">Pristine Exports</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Compile structured data into beautifully formatted PDF and HTML technical manuals instantly.</p>
+</div>
+</section>
+<!-- Tech & Credits Area -->
+<section class="flex flex-col md:flex-row gap-8 justify-between items-end border-t border-blueprint-line pt-8">
+<!-- Tech Stack -->
+<div class="flex-1 w-full">
+<div class="font-eyebrow-mono text-eyebrow-mono text-on-surface-variant mb-4">SYSTEM_ARCHITECTURE_STACK</div>
+<div class="flex flex-wrap gap-2">
+<span class="px-2 py-1 border border-blueprint-line bg-surface font-code text-code text-on-surface text-[11px] rounded">React</span>
+<span class="px-2 py-1 border border-blueprint-line bg-surface font-code text-code text-on-surface text-[11px] rounded">Node.js</span>
+<span class="px-2 py-1 border border-blueprint-line bg-surface font-code text-code text-on-surface text-[11px] rounded">PostgreSQL</span>
+<span class="px-2 py-1 border border-blueprint-line bg-surface font-code text-code text-on-surface text-[11px] rounded">Prisma</span>
+<span class="px-2 py-1 border border-blueprint-line bg-surface font-code text-code text-on-surface text-[11px] rounded">PlantUML</span>
+</div>
+</div>
+<!-- Title Block -->
+<div class="border border-blueprint-line bg-card-bg p-4 w-full md:w-[400px] flex-shrink-0 text-right">
+<div class="font-eyebrow-mono text-eyebrow-mono text-outline mb-1">PROJECT TITLE</div>
+<div class="font-headline-sm text-headline-sm text-on-surface mb-4">Final Year Project • COMSATS University Islamabad</div>
+<div class="font-eyebrow-mono text-eyebrow-mono text-outline mb-1">ENGINEERING TEAM</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant">
+                    Jane Doe, Lead Architect<br/>
+                    John Smith, Full Stack Engineer<br/>
+                    Alex Chen, Documentation Specialist
+                </div>
+<div class="mt-4 pt-4 border-t border-blueprint-line flex justify-between items-center">
+<span class="font-code text-code text-[10px] text-outline">REV: 1.0.4</span>
+<span class="font-code text-code text-[10px] text-outline">STATUS: APPROVED</span>
+</div>
+</div>
+</section>
+<!-- CTA -->
+<section class="flex justify-center py-12">
+<button class="bg-[#3B82F6] hover:bg-[#2563EB] text-white font-headline-sm text-headline-sm py-3 px-8 rounded-btn shadow-[0_0_15px_rgba(59,130,246,0.3)] hover:shadow-[0_0_25px_rgba(59,130,246,0.5)] transition-all flex items-center gap-2">
+                Initialize DevDoc Environment
+                <span class="material-symbols-outlined text-[20px]">terminal</span>
+</button>
+</section>
+</main>
+</body></html>

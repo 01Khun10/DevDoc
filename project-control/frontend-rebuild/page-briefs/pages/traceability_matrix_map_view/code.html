@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>DevDoc IDE - Traceability</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500&amp;family=Space+Grotesk:wght@500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "surface-tint": "#adc6ff",
+                        "on-secondary-fixed-variant": "#004e5a",
+                        "surface-container": "#1d2027",
+                        "secondary-fixed-dim": "#2fd9f4",
+                        "tertiary-container": "#df7412",
+                        "on-tertiary-fixed": "#311400",
+                        "on-surface-variant": "#c2c6d6",
+                        "error": "#ffb4ab",
+                        "on-secondary": "#00363e",
+                        "surface-container-lowest": "#0b0e15",
+                        "on-surface": "#e1e2ec",
+                        "on-primary-container": "#00285d",
+                        "primary-fixed": "#d8e2ff",
+                        "inverse-on-surface": "#2e3038",
+                        "error-container": "#93000a",
+                        "background": "#10131a",
+                        "tertiary-fixed": "#ffdcc6",
+                        "surface-container-high": "#272a31",
+                        "surface-bright": "#363941",
+                        "on-primary-fixed-variant": "#004395",
+                        "on-secondary-container": "#00515d",
+                        "surface-variant": "#32353c",
+                        "surface-dim": "#10131a",
+                        "on-background": "#e1e2ec",
+                        "on-error": "#690005",
+                        "on-primary": "#002e6a",
+                        "inverse-primary": "#005ac2",
+                        "secondary-fixed": "#a2eeff",
+                        "on-primary-fixed": "#001a42",
+                        "on-tertiary-container": "#461f00",
+                        "secondary-container": "#00cbe6",
+                        "on-secondary-fixed": "#001f25",
+                        "inverse-surface": "#e1e2ec",
+                        "outline": "#8c909f",
+                        "on-tertiary": "#502400",
+                        "surface-container-highest": "#32353c",
+                        "outline-variant": "#424754",
+                        "surface-container-low": "#191b23",
+                        "primary": "#adc6ff",
+                        "tertiary-fixed-dim": "#ffb786",
+                        "primary-fixed-dim": "#adc6ff",
+                        "surface": "#10131a",
+                        "tertiary": "#ffb786",
+                        "secondary": "#5de6ff",
+                        "primary-container": "#4d8eff",
+                        "on-tertiary-fixed-variant": "#723600",
+                        "on-error-container": "#ffdad6"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "gutter": "16px",
+                        "base": "4px",
+                        "margin-mobile": "16px",
+                        "grid-pattern": "24px",
+                        "margin-desktop": "32px"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Space Grotesk"],
+                        "body-sm": ["Inter"],
+                        "headline-md": ["Space Grotesk"],
+                        "code": ["JetBrains Mono"],
+                        "body-md": ["Inter"],
+                        "eyebrow-mono": ["JetBrains Mono"],
+                        "body-lg": ["Inter"],
+                        "headline-sm": ["Space Grotesk"]
+                    },
+                    "fontSize": {
+                        "headline-lg": ["32px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "body-sm": ["13px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "headline-md": ["24px", { "lineHeight": "1.3", "fontWeight": "600" }],
+                        "code": ["13px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "body-md": ["14px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "eyebrow-mono": ["11px", { "lineHeight": "16px", "letterSpacing": "0.15em", "fontWeight": "500" }],
+                        "body-lg": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "headline-sm": ["18px", { "lineHeight": "1.4", "fontWeight": "500" }]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .blueprint-grid {
+            background-size: 24px 24px;
+            background-image: 
+                linear-gradient(to right, rgba(140, 144, 159, 0.05) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(140, 144, 159, 0.05) 1px, transparent 1px);
+        }
+        .isometric-view {
+            transform: rotateX(60deg) rotateZ(-45deg);
+            transform-style: preserve-3d;
+        }
+        .isometric-card {
+            transform: translateZ(20px);
+            box-shadow: 
+                -1px 1px 0 #191b23,
+                -2px 2px 0 #191b23,
+                -3px 3px 0 #191b23,
+                -4px 4px 0 #191b23,
+                -5px 5px 10px rgba(0,0,0,0.5);
+            transition: transform 0.3s ease;
+        }
+        .isometric-card:hover {
+            transform: translateZ(30px) scale(1.02);
+            box-shadow: 
+                -1px 1px 0 #005ac2,
+                -2px 2px 0 #005ac2,
+                -3px 3px 0 #005ac2,
+                -4px 4px 0 #005ac2,
+                -8px 8px 15px rgba(0,90,194,0.3);
+            border-color: #005ac2;
+        }
+        .vignette {
+            box-shadow: inset 0 0 150px rgba(11, 14, 21, 0.9);
+        }
+        .trace-line {
+            transform: translateZ(1px);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md antialiased overflow-hidden flex h-screen">
+<!-- SideNavBar -->
+<nav class="hidden md:flex flex-col h-full py-gutter px-4 bg-surface-container-lowest border-r border-outline-variant docked left-0 h-full w-64 z-20 shrink-0">
+<div class="flex items-center gap-3 mb-8 px-2">
+<img alt="DevDoc Logo" class="w-8 h-8 rounded" data-alt="A highly stylized, minimalist logo for a technical documentation platform named DevDoc. It features a geometric, blueprint-inspired monogram in deep shades of blue and white, set against a dark canvas background. The design is clinical, precise, and implies structural integrity and advanced engineering." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAp2xhgEDtRnuQd1NCGh0Squ1XZfrBNLIprccPNIqjARLYVgnSRDD9xL8AVqTz_bZlqmygXYW7ISiVSqNnLwNVtRdk4qtjiRrlAO3HJRBCC0od1OnHoEFpF4Bf1l638yLvgHKwZE9e-0JVrPNbiLQVQ8v2KMkYVIcqyem6bYdrmTvXNnzJKg8RI8OlFwzVm8GopLXhwS1fB8INvUlSCOdl1flLnxJbeEu8854wluN29-ZL-HF5SDNze9LMJmsjLLfzaQCIWSv3IOaI"/>
+<div>
+<h1 class="font-headline-sm text-headline-sm text-on-surface font-bold tracking-tight">DevDoc IDE</h1>
+<p class="font-eyebrow-mono text-eyebrow-mono text-on-surface-variant">Documentation Workspace</p>
+</div>
+</div>
+<button class="bg-primary text-on-primary font-body-sm font-medium py-2 px-4 rounded mb-6 hover:bg-primary-fixed transition-colors flex justify-center items-center gap-2">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">add</span>
+            New Artifact
+        </button>
+<div class="flex-1 overflow-y-auto space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 rounded text-on-surface-variant hover:bg-surface-variant transition-all duration-200" href="#">
+<span class="material-symbols-outlined text-[18px]">dashboard</span>
+<span class="font-body-sm">Overview</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded text-on-surface-variant hover:bg-surface-variant transition-all duration-200" href="#">
+<span class="material-symbols-outlined text-[18px]">target</span>
+<span class="font-body-sm">Objectives</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded text-on-surface-variant hover:bg-surface-variant transition-all duration-200" href="#">
+<span class="material-symbols-outlined text-[18px]">description</span>
+<span class="font-body-sm">Documents</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded text-on-surface-variant hover:bg-surface-variant transition-all duration-200" href="#">
+<span class="material-symbols-outlined text-[18px]">topic</span>
+<span class="font-body-sm">Templates</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded text-on-surface-variant hover:bg-surface-variant transition-all duration-200" href="#">
+<span class="material-symbols-outlined text-[18px]">account_tree</span>
+<span class="font-body-sm">Use Cases</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded text-on-surface-variant hover:bg-surface-variant transition-all duration-200" href="#">
+<span class="material-symbols-outlined text-[18px]">rule</span>
+<span class="font-body-sm">Requirements</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded text-on-surface-variant hover:bg-surface-variant transition-all duration-200" href="#">
+<span class="material-symbols-outlined text-[18px]">architecture</span>
+<span class="font-body-sm">Design Elements</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded text-on-surface-variant hover:bg-surface-variant transition-all duration-200" href="#">
+<span class="material-symbols-outlined text-[18px]">fact_check</span>
+<span class="font-body-sm">Test Cases</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded bg-secondary-container text-on-secondary-container border-l-2 border-secondary font-bold scale-[0.98] transition-transform" href="#">
+<span class="material-symbols-outlined text-[18px]" style="font-variation-settings: 'FILL' 1;">account_tree</span>
+<span class="font-body-sm">Traceability</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded text-on-surface-variant hover:bg-surface-variant transition-all duration-200" href="#">
+<span class="material-symbols-outlined text-[18px]">verified</span>
+<span class="font-body-sm">Validation</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded text-on-surface-variant hover:bg-surface-variant transition-all duration-200" href="#">
+<span class="material-symbols-outlined text-[18px]">draw</span>
+<span class="font-body-sm">Diagrams</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded text-on-surface-variant hover:bg-surface-variant transition-all duration-200" href="#">
+<span class="material-symbols-outlined text-[18px]">insights</span>
+<span class="font-body-sm">Analytics</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded text-on-surface-variant hover:bg-surface-variant transition-all duration-200" href="#">
+<span class="material-symbols-outlined text-[18px]">history</span>
+<span class="font-body-sm">Versions</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded text-on-surface-variant hover:bg-surface-variant transition-all duration-200" href="#">
+<span class="material-symbols-outlined text-[18px]">settings</span>
+<span class="font-body-sm">Settings</span>
+</a>
+</div>
+<div class="mt-8 space-y-1 border-t border-outline-variant pt-4">
+<a class="flex items-center gap-3 px-3 py-2 rounded text-on-surface-variant hover:bg-surface-variant transition-all duration-200" href="#">
+<span class="material-symbols-outlined text-[18px]">help</span>
+<span class="font-body-sm">Support</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded text-on-surface-variant hover:bg-surface-variant transition-all duration-200" href="#">
+<span class="material-symbols-outlined text-[18px]">menu_book</span>
+<span class="font-body-sm">Documentation</span>
+</a>
+</div>
+</nav>
+<div class="flex-1 flex flex-col min-w-0 h-full relative">
+<!-- TopNavBar (Mobile only for active states context, hidden on desktop due to split layout design mandate usually putting nav at top, but JSON dictates top and side. Using side for primary, top for global/context) -->
+<header class="flex justify-between items-center w-full px-margin-desktop h-16 bg-background border-b border-outline-variant z-10 shrink-0 hidden md:flex">
+<div class="flex items-center gap-6">
+<!-- Mobile menu toggle placeholder -->
+<button class="md:hidden text-on-surface-variant">
+<span class="material-symbols-outlined">menu</span>
+</button>
+</div>
+<div class="flex-1 flex justify-center">
+<div class="flex gap-4">
+<a class="px-3 py-4 text-on-surface-variant font-body-md hover:text-primary transition-colors" href="#">Overview</a>
+<a class="px-3 py-4 text-on-surface-variant font-body-md hover:text-primary transition-colors" href="#">Validation</a>
+<a class="px-3 py-4 text-on-surface-variant font-body-md hover:text-primary transition-colors" href="#">Analytics</a>
+</div>
+</div>
+<div class="flex items-center gap-4 text-on-surface-variant">
+<button class="hover:text-primary transition-colors">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<button class="hover:text-primary transition-colors">
+<span class="material-symbols-outlined">help_outline</span>
+</button>
+<div class="w-8 h-8 rounded-full bg-surface-variant overflow-hidden border border-outline">
+<img alt="User profile" class="w-full h-full object-cover" data-alt="A sharp, minimalist user avatar illustration of a tech professional in a dark mode setting. The avatar uses deep blues and stark whites, fitting a highly technical, precise UI environment." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAouqq9S5GGLIoWcRjjbF_Bnqf-UmbGgDVycuxhxYINWe_2Hg5WfcyBuXD22HFQotKvYiINB7ZGGhqEur_dv3LH86jJ8GPX9BYPgg4cI0OrgPOCwY0vYuGg7Quy-lzaoEZOAmw5s3_whVmFx3I_DdyidLvfG9MFCPO4BxCiYo7x7JuP04oSv0x7EFmK1JYxN4vWlPTf4RdB9K_z1fTxLqK6ZqjGMlnS9mHiWfI6wOJHWICEHgUF_NfgyLwBiaU8tVBEvqQRAMcJTp8"/>
+</div>
+</div>
+</header>
+<!-- Main Content Area -->
+<main class="flex-1 flex flex-col h-full relative">
+<!-- Page Header -->
+<div class="px-margin-desktop py-6 bg-surface-dim border-b border-outline-variant shrink-0 relative z-10">
+<div class="max-w-[1440px] mx-auto flex justify-between items-start">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-on-surface">Traceability</h2>
+<p class="font-body-md text-on-surface-variant mt-1 flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]">polyline</span>
+                            Link artifacts across the chain
+                        </p>
+</div>
+<div class="flex items-center gap-4">
+<div class="flex bg-surface-container rounded border border-outline-variant p-1">
+<button class="px-3 py-1 text-on-surface-variant text-body-sm hover:text-primary transition-colors">Mode: View</button>
+<div class="w-px bg-outline-variant mx-1"></div>
+<button class="px-3 py-1 text-on-surface-variant text-body-sm hover:text-primary transition-colors">Edit</button>
+</div>
+<button class="px-4 py-2 bg-surface-variant text-on-surface border border-outline-variant rounded font-body-sm hover:bg-surface-container-high transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">auto_awesome</span>
+                            Suggested links
+                        </button>
+</div>
+</div>
+<!-- Tabs -->
+<div class="max-w-[1440px] mx-auto mt-6 flex gap-6 border-b border-outline-variant">
+<button class="pb-3 text-on-surface-variant font-body-sm hover:text-primary transition-colors">Grid</button>
+<button class="pb-3 text-on-surface-variant font-body-sm hover:text-primary transition-colors">Graph</button>
+<button class="pb-3 text-primary font-body-sm font-medium border-b-2 border-primary">Map</button>
+<button class="pb-3 text-on-surface-variant font-body-sm hover:text-primary transition-colors">Builder</button>
+<button class="pb-3 text-on-surface-variant font-body-sm hover:text-primary transition-colors flex items-center gap-1">
+                        Suggestions <span class="bg-primary-container text-on-primary-container px-1.5 rounded-full text-[10px] font-bold">3</span>
+</button>
+</div>
+</div>
+<!-- Map View Showpiece Canvas -->
+<div class="flex-1 bg-surface-container-lowest relative overflow-hidden vignette blueprint-grid cursor-move">
+<!-- Microcopy -->
+<div class="absolute top-4 left-4 z-10 font-eyebrow-mono text-eyebrow-mono text-outline-variant flex items-center gap-2 pointer-events-none">
+<span class="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
+                    Project topology: ensuring structural integrity.
+                </div>
+<!-- Corner Stamp / Controls -->
+<div class="absolute bottom-6 right-6 z-20 flex gap-4 pointer-events-none">
+<!-- Title Block -->
+<div class="bg-surface-container-high border border-outline-variant rounded p-3 shadow-lg pointer-events-auto backdrop-blur-sm bg-opacity-90">
+<div class="font-eyebrow-mono text-eyebrow-mono text-on-surface-variant mb-1">WORKSPACE STATS</div>
+<div class="font-code text-code text-on-surface flex items-center gap-3">
+<span>6 artifacts</span>
+<span class="text-outline-variant">·</span>
+<span class="text-error flex items-center gap-1"><span class="w-1.5 h-1.5 bg-error rounded-full block"></span> 1 orphan</span>
+</div>
+</div>
+<!-- Controls -->
+<div class="flex flex-col gap-2 pointer-events-auto">
+<button class="w-10 h-10 bg-surface-container-high border border-outline-variant rounded flex items-center justify-center text-on-surface hover:text-primary hover:border-primary transition-colors shadow-lg">
+<span class="material-symbols-outlined">zoom_in</span>
+</button>
+<button class="w-10 h-10 bg-surface-container-high border border-outline-variant rounded flex items-center justify-center text-on-surface hover:text-primary hover:border-primary transition-colors shadow-lg">
+<span class="material-symbols-outlined">zoom_out</span>
+</button>
+<button class="w-10 h-10 bg-surface-container-high border border-outline-variant rounded flex items-center justify-center text-on-surface hover:text-primary hover:border-primary transition-colors shadow-lg mt-2">
+<span class="material-symbols-outlined">fit_screen</span>
+</button>
+</div>
+<!-- Minimap Placeholder -->
+<div class="w-32 h-32 bg-surface-container border border-outline-variant rounded shadow-lg pointer-events-auto overflow-hidden relative">
+<div class="absolute inset-0 blueprint-grid opacity-50 scale-50 origin-top-left"></div>
+<!-- Minimap dots -->
+<div class="absolute top-4 left-4 w-2 h-2 bg-primary rounded-sm"></div>
+<div class="absolute top-12 left-10 w-2 h-2 bg-secondary rounded-sm"></div>
+<div class="absolute top-20 left-6 w-2 h-2 bg-tertiary rounded-sm"></div>
+<div class="absolute top-8 left-20 w-2 h-2 bg-on-surface rounded-sm"></div>
+<!-- Viewport rect -->
+<div class="absolute top-2 left-2 w-24 h-24 border border-primary bg-primary bg-opacity-10 pointer-events-none"></div>
+</div>
+</div>
+<!-- 3D Isometric Canvas -->
+<div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+<div class="w-[800px] h-[800px] isometric-view relative pointer-events-auto">
+<!-- Dimension Lines / Corridors (Base Layer) -->
+<svg class="absolute inset-0 w-full h-full trace-line pointer-events-none" style="z-index: 1;">
+<defs>
+<marker id="arrow" markerheight="6" markerwidth="6" orient="auto-start-reverse" refx="5" refy="5" viewbox="0 0 10 10">
+<path d="M 0 0 L 10 5 L 0 10 z" fill="#424754"></path>
+</marker>
+</defs>
+<!-- REQ-01 to DS-04 -->
+<line marker-end="url(#arrow)" stroke="#424754" stroke-dasharray="4 4" stroke-width="2" x1="250" x2="500" y1="200" y2="350"></line>
+<path d="M 250 200 L 500 200 L 500 350" fill="none" opacity="0.5" stroke="#005ac2" stroke-width="1"></path>
+<!-- UC-12 to REQ-01 -->
+<line marker-end="url(#arrow)" stroke="#424754" stroke-width="2" x1="150" x2="200" y1="400" y2="250"></line>
+<!-- DS-04 to TC-99 -->
+<line marker-end="url(#arrow)" stroke="#424754" stroke-width="2" x1="550" x2="450" y1="400" y2="550"></line>
+<!-- UC-12 to DS-04 -->
+<line stroke="#424754" stroke-dasharray="2 6" stroke-width="2" x1="200" x2="450" y1="450" y2="400"></line>
+</svg>
+<!-- Artifact Nodes (Lifted Layer) -->
+<!-- REQ-01 (Requirement) -->
+<div class="absolute top-[150px] left-[150px] w-48 bg-surface border border-outline-variant rounded p-3 isometric-card cursor-pointer" style="z-index: 10;">
+<div class="flex items-center gap-2 mb-2">
+<span class="px-1.5 py-0.5 bg-primary-container text-on-primary-container rounded font-eyebrow-mono text-[10px]">REQ</span>
+<span class="font-code text-code text-on-surface-variant">REQ-001</span>
+</div>
+<h3 class="font-body-sm font-medium text-on-surface leading-tight">User Authentication Service</h3>
+</div>
+<!-- UC-12 (Use Case) -->
+<div class="absolute top-[380px] left-[50px] w-48 bg-surface border border-outline-variant rounded p-3 isometric-card cursor-pointer" style="z-index: 10;">
+<div class="flex items-center gap-2 mb-2">
+<span class="px-1.5 py-0.5 bg-secondary-container text-on-secondary-container rounded font-eyebrow-mono text-[10px]">UC</span>
+<span class="font-code text-code text-on-surface-variant">UC-012</span>
+</div>
+<h3 class="font-body-sm font-medium text-on-surface leading-tight">Login via SSO Provider</h3>
+</div>
+<!-- DS-04 (Design Element) -->
+<div class="absolute top-[320px] left-[450px] w-48 bg-surface border border-outline-variant rounded p-3 isometric-card cursor-pointer" style="z-index: 10;">
+<div class="flex items-center gap-2 mb-2">
+<span class="px-1.5 py-0.5 bg-tertiary-container text-on-tertiary-container rounded font-eyebrow-mono text-[10px]">DES</span>
+<span class="font-code text-code text-on-surface-variant">DS-004</span>
+</div>
+<h3 class="font-body-sm font-medium text-on-surface leading-tight">OAuth2 Flow Diagram</h3>
+</div>
+<!-- TC-99 (Test Case) -->
+<div class="absolute top-[520px] left-[350px] w-48 bg-surface border border-outline-variant rounded p-3 isometric-card cursor-pointer" style="z-index: 10;">
+<div class="flex items-center gap-2 mb-2">
+<span class="px-1.5 py-0.5 bg-surface-variant text-on-surface-variant rounded font-eyebrow-mono text-[10px] border border-outline">TST</span>
+<span class="font-code text-code text-on-surface-variant">TC-099</span>
+</div>
+<h3 class="font-body-sm font-medium text-on-surface leading-tight">Invalid Token Rejection</h3>
+</div>
+<!-- Orphan Node (Red Corner Tick) -->
+<div class="absolute top-[100px] left-[600px] w-48 bg-surface border border-error rounded p-3 isometric-card cursor-pointer relative overflow-hidden" style="z-index: 10;">
+<!-- Red Corner Tick -->
+<div class="absolute top-0 right-0 w-4 h-4 bg-error" style="clip-path: polygon(100% 0, 0 0, 100% 100%);"></div>
+<div class="flex items-center gap-2 mb-2">
+<span class="px-1.5 py-0.5 bg-surface-variant text-error rounded font-eyebrow-mono text-[10px] border border-error">DOC</span>
+<span class="font-code text-code text-error">DOC-X9</span>
+</div>
+<h3 class="font-body-sm font-medium text-on-surface leading-tight">Legacy API Specs (Draft)</h3>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

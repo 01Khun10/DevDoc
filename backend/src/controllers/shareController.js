@@ -4,11 +4,14 @@ const { sendError, sendUnexpectedError } = require("../utils/httpErrors");
 
 async function create(req, res) {
   try {
-    const { token } = await createShareToken(req.user.id, req.params.id);
-    return res.status(201).json({ token, url: `/shared/${token}` });
+    const { token, expiresAt } = await createShareToken(req.user.id, req.params.id, req.body?.expiresAt);
+    return res.status(201).json({ token, expiresAt, url: `/shared/${token}` });
   } catch (error) {
     if (error.code === PROJECT_NOT_FOUND) {
       return sendError(res, 404, "Project not found");
+    }
+    if (error.code === "INVALID_EXPIRY") {
+      return sendError(res, 400, error.message);
     }
     return sendUnexpectedError(res, error, "shareController.create");
   }

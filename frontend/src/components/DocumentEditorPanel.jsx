@@ -281,7 +281,6 @@ function DocumentEditorPanel({
             <RibbonButton wide onClick={onSave} disabled={isSaving}>Save Section</RibbonButton>
             <RibbonButton wide onClick={onSaveAndNext} disabled={isSaving}>Save & Next</RibbonButton>
             <RibbonButton wide onClick={() => navigate(`/projects/${projectId}`)}>Back to Project</RibbonButton>
-            <RibbonButton wide disabled>Export PDF (Coming Soon)</RibbonButton>
           </div>
         );
       case "Home":

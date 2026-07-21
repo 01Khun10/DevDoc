@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>DevDoc - System Error</title>
+<!-- Material Symbols -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Theme Config -->
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "outline-variant": "#424754",
+                      "surface-container-lowest": "#0b0e15",
+                      "on-primary-fixed-variant": "#004395",
+                      "error": "#ffb4ab",
+                      "tertiary-fixed-dim": "#ffb786",
+                      "primary": "#adc6ff",
+                      "on-surface": "#e1e2ec",
+                      "on-secondary": "#00363e",
+                      "surface-container": "#1d2027",
+                      "on-secondary-container": "#00515d",
+                      "on-background": "#e1e2ec",
+                      "on-primary": "#002e6a",
+                      "on-tertiary-container": "#461f00",
+                      "on-tertiary": "#502400",
+                      "on-surface-variant": "#c2c6d6",
+                      "primary-fixed": "#d8e2ff",
+                      "surface-container-highest": "#32353c",
+                      "on-error": "#690005",
+                      "outline": "#8c909f",
+                      "on-primary-container": "#00285d",
+                      "background": "#10131a",
+                      "primary-container": "#4d8eff",
+                      "inverse-on-surface": "#2e3038",
+                      "tertiary-container": "#df7412",
+                      "primary-fixed-dim": "#adc6ff",
+                      "on-secondary-fixed": "#001f25",
+                      "tertiary-fixed": "#ffdcc6",
+                      "surface": "#10131a",
+                      "on-primary-fixed": "#001a42",
+                      "tertiary": "#ffb786",
+                      "error-container": "#93000a",
+                      "secondary-container": "#00cbe6",
+                      "surface-container-low": "#191b23",
+                      "on-secondary-fixed-variant": "#004e5a",
+                      "secondary-fixed": "#a2eeff",
+                      "on-error-container": "#ffdad6",
+                      "secondary-fixed-dim": "#2fd9f4",
+                      "on-tertiary-fixed-variant": "#723600",
+                      "inverse-surface": "#e1e2ec",
+                      "surface-tint": "#adc6ff",
+                      "on-tertiary-fixed": "#311400",
+                      "surface-container-high": "#272a31",
+                      "surface-variant": "#32353c",
+                      "inverse-primary": "#005ac2",
+                      "surface-bright": "#363941",
+                      "surface-dim": "#10131a",
+                      "secondary": "#5de6ff"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "base": "4px",
+                      "margin-desktop": "32px",
+                      "margin-mobile": "16px",
+                      "gutter": "16px",
+                      "grid-pattern": "24px"
+              },
+              "fontFamily": {
+                      "body-sm": [
+                              "Inter"
+                      ],
+                      "eyebrow-mono": [
+                              "JetBrains Mono"
+                      ],
+                      "body-lg": [
+                              "Inter"
+                      ],
+                      "headline-lg": [
+                              "Space Grotesk"
+                      ],
+                      "body-md": [
+                              "Inter"
+                      ],
+                      "headline-sm": [
+                              "Space Grotesk"
+                      ],
+                      "headline-md": [
+                              "Space Grotesk"
+                      ],
+                      "code": [
+                              "JetBrains Mono"
+                      ]
+              },
+              "fontSize": {
+                      "body-sm": [
+                              "13px",
+                              {
+                                      "lineHeight": "1.5",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "eyebrow-mono": [
+                              "11px",
+                              {
+                                      "lineHeight": "16px",
+                                      "letterSpacing": "0.15em",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "body-lg": [
+                              "16px",
+                              {
+                                      "lineHeight": "1.6",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-lg": [
+                              "32px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "body-md": [
+                              "14px",
+                              {
+                                      "lineHeight": "1.5",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-sm": [
+                              "18px",
+                              {
+                                      "lineHeight": "1.4",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "headline-md": [
+                              "24px",
+                              {
+                                      "lineHeight": "1.3",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "code": [
+                              "13px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "400"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+    </script>
+<!-- Google Fonts -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500&amp;family=Space+Grotesk:wght@500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<style>
+        /* Blueprint Grid Background */
+        .bg-blueprint {
+            background-color: #0B1526; /* Specific request overrides theme */
+            background-image: 
+                linear-gradient(to right, rgba(51, 81, 126, 0.1) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(51, 81, 126, 0.1) 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+
+        /* Perspective Grid */
+        .perspective-grid {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 40vh;
+            background-image: 
+                linear-gradient(to right, rgba(51, 81, 126, 0.2) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(51, 81, 126, 0.2) 1px, transparent 1px);
+            background-size: 48px 48px;
+            transform: perspective(500px) rotateX(60deg);
+            transform-origin: bottom;
+            pointer-events: none;
+            mask-image: linear-gradient(to top, rgba(0,0,0,1), transparent);
+            -webkit-mask-image: linear-gradient(to top, rgba(0,0,0,1), transparent);
+        }
+
+        /* Glitch Animation for Eyebrow */
+        @keyframes glitch {
+            0% { transform: translate(0) }
+            20% { transform: translate(-2px, 1px) }
+            40% { transform: translate(-1px, -1px) }
+            60% { transform: translate(2px, 1px) }
+            80% { transform: translate(1px, -1px) }
+            100% { transform: translate(0) }
+        }
+        .glitch-hover:hover {
+            animation: glitch 0.2s linear infinite;
+            color: #ffb4ab; /* error color */
+        }
+    </style>
+</head>
+<body class="bg-blueprint text-on-background min-h-screen flex items-center justify-center relative overflow-hidden font-body-md text-body-md">
+<!-- Perspective Grid at Bottom -->
+<div class="perspective-grid"></div>
+<!-- Main Content Canvas -->
+<main class="relative z-10 w-full max-w-[1440px] px-margin-mobile md:px-margin-desktop flex flex-col items-center justify-center">
+<!-- Error Container -->
+<div class="max-w-2xl w-full flex flex-col items-center text-center space-y-8 p-12 bg-surface/80 backdrop-blur-md border border-outline-variant shadow-[0_0_40px_rgba(11,21,38,0.5)]">
+<!-- Isometric Illustration (Faint Blueprint Style) -->
+<div class="w-48 h-48 mb-4 relative flex justify-center items-center opacity-70">
+<img class="object-contain w-full h-full opacity-60 mix-blend-screen" data-alt="A minimalist, blueprint-style isometric technical illustration of a disconnected wire or broken circuit connection. Drawn with thin, precise cyan and white lines against a dark navy background. The style is clinical, engineered, and resembles a digital schematic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAE5G5TDtZn8Y-PACwXgFGigLP3REQNiFR2cNxmVoHivaVa4MMyCYI-V_buybSUZeG5XNlSSslkR_3SHU44Qi8HUtX1WEuQWIydIzgzphQgp12rFUr4pyJFjKqfuMMHRrjKJ0YtvoIUoWXntNAdTs88L0Qd0l3R4ngMcB6glwdf6qq0S203GtIQDyVnKDgIM48zv69uyilVLCg9-RASCK2rBntK4wyRqU6kGZHjiH31NjYfrOqRvhWSs-3kwmhroDpdcjkIJn_A3sI"/>
+<!-- Overlay faint grid lines to blend it in -->
+<div class="absolute inset-0 border border-outline-variant/30 pointer-events-none" style="background-image: linear-gradient(45deg, transparent 48%, rgba(51, 81, 126, 0.2) 49%, rgba(51, 81, 126, 0.2) 51%, transparent 52%); background-size: 8px 8px;"></div>
+</div>
+<!-- Typography -->
+<div class="space-y-4">
+<p class="font-eyebrow-mono text-eyebrow-mono text-error glitch-hover cursor-default">
+                    ERROR
+                </p>
+<h1 class="font-headline-lg text-headline-lg text-on-surface">
+                    Something came loose.
+                </h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-md mx-auto">
+                    An unexpected error occurred. Your work is safe.
+                </p>
+</div>
+<!-- Actions -->
+<div class="flex flex-col sm:flex-row gap-4 w-full sm:w-auto mt-6">
+<button class="px-6 py-3 bg-primary text-on-primary font-body-sm text-body-sm font-medium rounded hover:bg-primary-container transition-colors shadow-[2px_2px_0px_#004395] active:translate-y-[2px] active:translate-x-[2px] active:shadow-none" onclick="window.location.reload()">
+                    Reload
+                </button>
+<button class="px-6 py-3 bg-transparent border border-outline-variant text-on-surface font-body-sm text-body-sm font-medium rounded hover:bg-surface-variant transition-colors flex items-center justify-center gap-2">
+<span class="material-symbols-outlined text-[18px]">dashboard</span>
+                    Back to dashboard
+                </button>
+</div>
+<!-- Expandable Technical Details -->
+<div class="w-full mt-8 border-t border-outline-variant pt-6 text-left">
+<button class="w-full flex items-center justify-between font-eyebrow-mono text-eyebrow-mono text-outline hover:text-on-surface-variant transition-colors group focus:outline-none" id="tech-details-btn">
+<span class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]">terminal</span>
+                        TECHNICAL DETAILS
+                    </span>
+<span class="material-symbols-outlined text-[16px] transition-transform duration-200" id="tech-details-icon">expand_more</span>
+</button>
+<div class="hidden mt-4 bg-surface-container-lowest border border-outline-variant p-4 font-code text-code text-on-surface-variant overflow-x-auto relative" id="tech-details-content">
+<!-- Faint trace lines -->
+<div class="absolute left-0 top-0 h-full w-[2px] bg-error/30"></div>
+<pre><code>Error: Uncaught (in promise) Error: Network request failed
+    at fetchDocumentMetadata (api/docs.js:42:15)
+    at async DocumentCanvas.loadData (components/Canvas.js:108:22)
+    at async Workspace.initialize (app/Workspace.js:15:9)
+    
+[Trace ID: a1b2-c3d4-e5f6]
+[Timestamp: 2023-10-27T14:32:01.000Z]</code></pre>
+</div>
+</div>
+</div>
+</main>
+<!-- Title Block Stamp (Bottom Right) -->
+<div class="fixed bottom-0 right-0 p-4 font-eyebrow-mono text-eyebrow-mono text-outline text-right z-20 pointer-events-none flex flex-col gap-1 border-t border-l border-outline-variant bg-surface-container/50 backdrop-blur-sm">
+<div class="flex items-center justify-end gap-2 text-error">
+<span class="w-2 h-2 rounded-full bg-error animate-pulse"></span>
+            STATUS: CRITICAL
+        </div>
+<div>ERR_SYS_FAILURE</div>
+<div>REV: 1.0.4</div>
+</div>
+<script>
+        // Toggle Technical Details
+        const btn = document.getElementById('tech-details-btn');
+        const content = document.getElementById('tech-details-content');
+        const icon = document.getElementById('tech-details-icon');
+
+        btn.addEventListener('click', () => {
+            content.classList.toggle('hidden');
+            if(content.classList.contains('hidden')) {
+                icon.style.transform = 'rotate(0deg)';
+            } else {
+                icon.style.transform = 'rotate(180deg)';
+            }
+        });
+    </script>
+</body></html>

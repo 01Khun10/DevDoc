@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>DevDoc - Requirement Registry</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&amp;family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "outline": "#8c909f",
+                        "on-tertiary-fixed": "#0a1c33",
+                        "on-background": "#e0e3e7",
+                        "surface": "#101417",
+                        "secondary-fixed-dim": "#2fd9f4",
+                        "outline-variant": "#424754",
+                        "surface-container-low": "#181c1f",
+                        "on-surface": "#e0e3e7",
+                        "on-secondary-fixed-variant": "#004e5a",
+                        "tertiary-container": "#8191ae",
+                        "surface-container-high": "#262a2e",
+                        "primary-fixed-dim": "#adc6ff",
+                        "on-tertiary": "#203149",
+                        "on-primary-fixed-variant": "#004395",
+                        "on-secondary-fixed": "#001f25",
+                        "inverse-on-surface": "#2d3134",
+                        "primary": "#adc6ff",
+                        "on-tertiary-container": "#192a42",
+                        "tertiary-fixed": "#d5e3ff",
+                        "on-surface-variant": "#c2c6d6",
+                        "on-tertiary-fixed-variant": "#374761",
+                        "surface-dim": "#101417",
+                        "surface-bright": "#363a3d",
+                        "on-secondary": "#00363e",
+                        "on-error": "#690005",
+                        "on-primary-fixed": "#001a42",
+                        "tertiary": "#b6c7e6",
+                        "on-primary": "#002e6a",
+                        "primary-fixed": "#d8e2ff",
+                        "surface-container": "#1c2023",
+                        "error": "#ffb4ab",
+                        "secondary-fixed": "#a2eeff",
+                        "surface-tint": "#adc6ff",
+                        "on-error-container": "#ffdad6",
+                        "surface-container-highest": "#313538",
+                        "inverse-surface": "#e0e3e7",
+                        "inverse-primary": "#005ac2",
+                        "error-container": "#93000a",
+                        "on-secondary-container": "#00515d",
+                        "secondary": "#5de6ff",
+                        "on-primary-container": "#00285d",
+                        "surface-variant": "#313538",
+                        "surface-container-lowest": "#0b0f12",
+                        "secondary-container": "#00cbe6",
+                        "primary-container": "#4d8eff",
+                        "tertiary-fixed-dim": "#b6c7e6",
+                        "background": "#101417",
+                        
+                        // Overrides for "Dark Airy Blueprint" theme
+                        "blueprint-canvas": "#0B1526",
+                        "blueprint-card": "#16273F",
+                        "blueprint-border": "#33517E",
+                        "blueprint-border-hover": "#4A6E9B",
+                        "blueprint-text": "#F5F8FC",
+                        "blueprint-cyan": "#22D3EE",
+                        "blueprint-blue": "#3B82F6",
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    spacing: {
+                        "container-max": "1440px",
+                        "margin-mobile": "16px",
+                        "unit": "4px",
+                        "gutter": "24px",
+                        "margin-desktop": "32px"
+                    },
+                    fontFamily: {
+                        "body-md": ["Inter"],
+                        "headline-xl": ["Space Grotesk"],
+                        "label-sm": ["Inter"],
+                        "code-md": ["JetBrains Mono"],
+                        "body-lg": ["Inter"],
+                        "headline-md": ["Space Grotesk"],
+                        "body-sm": ["Inter"],
+                        "headline-lg": ["Space Grotesk"],
+                        "eyebrow-mono": ["JetBrains Mono"]
+                    },
+                    fontSize: {
+                        "body-md": ["16px", { "lineHeight": "24px", "fontWeight": "400" }],
+                        "headline-xl": ["40px", { "lineHeight": "48px", "letterSpacing": "-0.02em", "fontWeight": "600" }],
+                        "label-sm": ["12px", { "lineHeight": "16px", "fontWeight": "500" }],
+                        "code-md": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "body-lg": ["18px", { "lineHeight": "28px", "fontWeight": "400" }],
+                        "headline-md": ["24px", { "lineHeight": "32px", "fontWeight": "500" }],
+                        "body-sm": ["14px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "headline-lg": ["32px", { "lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600" }],
+                        "eyebrow-mono": ["11px", { "lineHeight": "16px", "letterSpacing": "0.1em", "fontWeight": "600" }]
+                    },
+                    backgroundImage: {
+                        'blueprint-grid': "linear-gradient(rgba(51, 81, 126, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(51, 81, 126, 0.1) 1px, transparent 1px)"
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: #0B1526;
+            color: #F5F8FC;
+            background-image: linear-gradient(rgba(51, 81, 126, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(51, 81, 126, 0.1) 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+        
+        .blueprint-card-shadow {
+            box-shadow: 0px 8px 24px rgba(0, 0, 0, 0.4);
+        }
+        
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        
+        .material-symbols-outlined[data-weight="fill"] {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+
+        /* Scrollbar styles for technical feel */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0B1526; 
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #33517E; 
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #4A6E9B; 
+        }
+    </style>
+</head>
+<body class="flex flex-col h-screen overflow-hidden font-body-md text-body-md antialiased selection:bg-blueprint-blue/30">
+<!-- Top App Bar -->
+<header class="bg-surface-container dark:bg-surface-container border-b border-outline-variant dark:border-outline-variant flex justify-between items-center w-full px-margin-desktop h-16 z-50 shrink-0">
+<div class="flex items-center gap-6">
+<div class="font-headline-sm text-headline-sm font-bold text-on-surface dark:text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-primary">data_object</span>
+                DevDoc
+            </div>
+</div>
+<div class="flex-1 max-w-xl mx-8 relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant">search</span>
+<input class="w-full bg-[#0B1526] border border-[#33517E] rounded pl-10 pr-4 py-1.5 text-blueprint-text placeholder:text-on-surface-variant focus:outline-none focus:border-blueprint-blue focus:ring-1 focus:ring-blueprint-blue/50 transition-all font-body-sm h-9" placeholder="Search documentation, components, or requirements..." type="text"/>
+</div>
+<div class="flex items-center gap-4">
+<button class="w-9 h-9 flex items-center justify-center rounded hover:bg-surface-variant dark:hover:bg-surface-variant transition-colors text-on-surface-variant">
+<span class="material-symbols-outlined">dark_mode</span>
+</button>
+<button class="w-9 h-9 flex items-center justify-center rounded hover:bg-surface-variant dark:hover:bg-surface-variant transition-colors text-on-surface-variant">
+<span class="material-symbols-outlined">help</span>
+</button>
+<div class="w-8 h-8 rounded-full overflow-hidden border border-[#33517E]">
+<img alt="User Profile Avatar" class="w-full h-full object-cover" data-alt="A macro photography shot of a perfectly smooth, polished cobalt blue sphere reflecting a stark, minimalist white light studio setup. The lighting creates a single sharp, curved highlight on the surface. The background is a deep, endless indigo. The mood is precise, pristine, and highly technical." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDRn9XpQKU5MeB8ats4urqKbn6Z6-fzoM_w2StoLBjeggSaKWcT4ZS7rtHG2EFrG450WuynLD5V7i9lZJWAnm6tVkF1hkqMHRzJFOCg1UsafliIvjgXljtmMGr-xHBvtvYKsrh6iANEE0X4uUeRRsmJvfEmZwYYXjW8cyYQkApOpBoFrIPBL5EgyTLf4PnDoTQtqOsV5Tmuxp9yknJGkp-3Nb9uyLteX4FVbXtR6UuzP62NxDIfZHN8Gw-jSANs8lnaoecLfvwC4gE"/>
+</div>
+</div>
+</header>
+<div class="flex flex-1 overflow-hidden">
+<!-- Side Nav Bar -->
+<nav class="bg-surface-container-low dark:bg-surface-container-low border-r border-outline-variant dark:border-outline-variant flex flex-col h-full py-6 gap-2 w-64 shrink-0 z-40">
+<div class="px-6 mb-4">
+<div class="flex items-center gap-3 mb-1">
+<div class="w-8 h-8 rounded bg-blueprint-card border border-blueprint-border flex items-center justify-center">
+<span class="material-symbols-outlined text-secondary text-[18px]">local_hospital</span>
+</div>
+<div>
+<div class="font-eyebrow-mono text-eyebrow-mono text-on-surface-variant uppercase">HOSPITAL SCHEDULER</div>
+<div class="font-headline-sm text-headline-sm text-on-surface font-semibold leading-tight">Project Name</div>
+</div>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto px-3 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">dashboard</span>
+<span class="font-body-sm text-body-sm">Overview</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">target</span>
+<span class="font-body-sm text-body-sm">Objectives</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-secondary font-medium bg-secondary-container/10 border-r-2 border-secondary translate-x-1 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined text-[20px]">rule</span>
+<span class="font-body-sm text-body-sm">Requirements</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">description</span>
+<span class="font-body-sm text-body-sm">Documents</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">account_tree</span>
+<span class="font-body-sm text-body-sm">Use Cases</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">architecture</span>
+<span class="font-body-sm text-body-sm">Design Elements</span>
+</a>
+</div>
+<div class="px-6 mt-auto">
+<a class="flex items-center gap-3 py-2 text-on-surface-variant hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">settings</span>
+<span class="font-body-sm text-body-sm">Settings</span>
+</a>
+</div>
+</nav>
+<!-- Main Content Canvas -->
+<main class="flex-1 flex flex-col relative overflow-hidden">
+<!-- Page Header -->
+<div class="px-margin-desktop pt-8 pb-6 shrink-0">
+<div class="max-w-container-max mx-auto w-full flex justify-between items-end">
+<div>
+<div class="font-eyebrow-mono text-eyebrow-mono text-blueprint-cyan mb-2">HOSPITAL SCHEDULER</div>
+<h1 class="font-headline-xl text-headline-xl text-blueprint-text mb-2">Requirements</h1>
+<p class="font-body-md text-body-md text-on-surface-variant">18 requirements · 12 traced · 6 orphaned</p>
+</div>
+<div class="flex gap-3">
+<button class="px-4 py-2 border border-blueprint-border rounded text-blueprint-blue font-label-sm text-label-sm hover:border-blueprint-border-hover hover:bg-blueprint-blue/5 transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">filter_list</span>
+                            Filter / Sort
+                        </button>
+<button class="px-4 py-2 bg-blueprint-cyan text-[#001f25] rounded font-label-sm text-label-sm font-semibold hover:bg-[#5de6ff] transition-colors flex items-center gap-2 shadow-[0_0_12px_rgba(34,211,238,0.3)]" onclick="document.getElementById('edit-drawer').classList.toggle('translate-x-full')">
+<span class="material-symbols-outlined text-[18px]">add</span>
+                            Add requirement
+                        </button>
+</div>
+</div>
+</div>
+<!-- Registry Content -->
+<div class="flex-1 overflow-y-auto px-margin-desktop pb-12">
+<div class="max-w-container-max mx-auto w-full space-y-4">
+<!-- Filter Bar -->
+<div class="flex items-center justify-between bg-blueprint-card border border-blueprint-border rounded-lg p-2 blueprint-card-shadow">
+<div class="flex items-center gap-1 bg-[#0B1526] rounded border border-blueprint-border p-1">
+<button class="px-4 py-1.5 rounded bg-blueprint-border/30 text-blueprint-text font-label-sm text-label-sm transition-colors">All</button>
+<button class="px-4 py-1.5 rounded hover:bg-blueprint-border/20 text-on-surface-variant font-label-sm text-label-sm transition-colors">FR</button>
+<button class="px-4 py-1.5 rounded hover:bg-blueprint-border/20 text-on-surface-variant font-label-sm text-label-sm transition-colors">NFR</button>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative w-64">
+<span class="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-on-surface-variant text-[18px]">search</span>
+<input class="w-full bg-[#0B1526] border border-blueprint-border rounded pl-9 pr-3 py-1.5 text-blueprint-text placeholder:text-on-surface-variant focus:outline-none focus:border-blueprint-blue transition-all font-body-sm h-8 text-sm" placeholder="Search requirements..." type="text"/>
+</div>
+<button class="flex items-center gap-2 px-3 py-1.5 rounded border border-blueprint-border text-on-surface-variant hover:text-blueprint-text hover:border-blueprint-border-hover transition-colors">
+<span class="font-label-sm text-label-sm">Code A-Z</span>
+<span class="material-symbols-outlined text-[18px]">sort_by_alpha</span>
+</button>
+</div>
+</div>
+<!-- Registry Table Card -->
+<div class="bg-blueprint-card border border-blueprint-border rounded-lg blueprint-card-shadow overflow-hidden">
+<!-- Table Header -->
+<div class="grid grid-cols-[40px_100px_1fr_120px_100px_100px] gap-4 px-4 py-3 border-b border-blueprint-border bg-[#101E32] text-on-surface-variant font-eyebrow-mono text-eyebrow-mono uppercase">
+<div class="flex items-center justify-center">
+<input class="rounded border-blueprint-border bg-[#0B1526] text-blueprint-cyan focus:ring-blueprint-cyan focus:ring-offset-0 w-4 h-4" type="checkbox"/>
+</div>
+<div>Code</div>
+<div>Title &amp; Description</div>
+<div>Status</div>
+<div>Priority</div>
+<div class="text-right">Traceability</div>
+</div>
+<!-- Rows -->
+<div class="divide-y divide-blueprint-border">
+<!-- Row 1 -->
+<div class="grid grid-cols-[40px_100px_1fr_120px_100px_100px] gap-4 px-4 py-3 hover:bg-[#101E32] transition-colors group">
+<div class="flex items-start justify-center pt-1 opacity-0 group-hover:opacity-100 transition-opacity">
+<input class="rounded border-blueprint-border bg-[#0B1526] text-blueprint-cyan focus:ring-blueprint-cyan focus:ring-offset-0 w-4 h-4" type="checkbox"/>
+</div>
+<div class="pt-1">
+<span class="inline-flex items-center px-2 py-0.5 rounded bg-blueprint-blue/15 border border-blueprint-blue/30 text-blueprint-blue font-code-md text-xs">FR-012</span>
+</div>
+<div>
+<div class="font-body-md text-body-md text-blueprint-text font-medium mb-1">Physician Roster Synchronization</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant truncate">The system must sync the active physician roster from the HR master database every 15 minutes.</div>
+</div>
+<div class="pt-1">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#004e5a]/30 border border-[#00cbe6]/30 text-[#a2eeff] font-label-sm text-xs">
+<div class="w-1.5 h-1.5 rounded-full bg-[#5de6ff]"></div>
+                                        Approved
+                                    </span>
+</div>
+<div class="pt-1">
+<span class="inline-flex items-center px-2 py-0.5 rounded bg-red-900/20 border border-red-500/30 text-red-300 font-label-sm text-xs">High</span>
+</div>
+<div class="pt-1 text-right">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-blueprint-border/20 border border-blueprint-border text-on-surface-variant font-label-sm text-xs">
+<span class="material-symbols-outlined text-[14px]">link</span>
+                                        3 links
+                                    </span>
+</div>
+</div>
+<!-- Row 2 -->
+<div class="grid grid-cols-[40px_100px_1fr_120px_100px_100px] gap-4 px-4 py-3 hover:bg-[#101E32] transition-colors group">
+<div class="flex items-start justify-center pt-1 opacity-0 group-hover:opacity-100 transition-opacity">
+<input class="rounded border-blueprint-border bg-[#0B1526] text-blueprint-cyan focus:ring-blueprint-cyan focus:ring-offset-0 w-4 h-4" type="checkbox"/>
+</div>
+<div class="pt-1">
+<span class="inline-flex items-center px-2 py-0.5 rounded bg-blueprint-cyan/15 border border-blueprint-cyan/30 text-blueprint-cyan font-code-md text-xs">NFR-004</span>
+</div>
+<div>
+<div class="font-body-md text-body-md text-blueprint-text font-medium mb-1">Query Response Time</div>
+<div class="font-body-sm text-body-sm text-on-surface-variant truncate">Schedule availability queries must return results in under 200ms under 95th percentile load.</div>
+</div>
+<div class="pt-1">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-green-900/20 border border-green-500/30 text-green-300 font-label-sm text-xs">
+<div class="w-1.5 h-1.5 rounded-full bg-green-400"></div>
+                                        Verified
+                                    </span>
+</div>
+<div class="pt-1">
+<span class="inline-flex items-center px-2 py-0.5 rounded bg-red-900/20 border border-red-500/30 text-red-300 font-label-sm text-xs">High</span>
+</div>
+<div class="pt-1 text-right">
+<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded bg-red-900/20 border border-red-500/30 text-red-300 font-label-sm text-xs">
+<span class="material-symbols-outlined text-[14px]">warning</span>
+                                        Orphan
+                                    </span>
+</div>
+</div>
+</div>
+</div>
+<div class="text-center pt-8 pb-4">
+<p class="font-eyebrow-mono text-eyebrow-mono text-blueprint-border-hover">Every requirement must be traceable: Scope → REQ → Design → Test</p>
+</div>
+</div>
+</div>
+</main>
+</div>
+<!-- Slide-over Drawer for Add/Edit Requirement -->
+<div class="fixed inset-y-0 right-0 w-[480px] bg-blueprint-card border-l border-blueprint-border blueprint-card-shadow transform translate-x-full transition-transform duration-300 ease-in-out z-[60] flex flex-col" id="edit-drawer">
+<div class="flex items-center justify-between p-6 border-b border-blueprint-border bg-[#101E32]">
+<h2 class="font-headline-md text-headline-md text-blueprint-text">New Requirement</h2>
+<button class="w-8 h-8 flex items-center justify-center rounded hover:bg-surface-variant text-on-surface-variant transition-colors" onclick="document.getElementById('edit-drawer').classList.add('translate-x-full')">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<div class="flex-1 overflow-y-auto p-6 space-y-6">
+<div class="grid grid-cols-2 gap-4">
+<div>
+<label class="block font-eyebrow-mono text-eyebrow-mono text-on-surface-variant mb-2 uppercase">Type</label>
+<select class="w-full bg-[#0B1526] border border-blueprint-border rounded px-3 py-2 text-blueprint-text focus:outline-none focus:border-blueprint-blue transition-colors font-body-sm">
+<option>Functional (FR)</option>
+<option>Non-Functional (NFR)</option>
+</select>
+</div>
+<div>
+<label class="block font-eyebrow-mono text-eyebrow-mono text-on-surface-variant mb-2 uppercase">Priority</label>
+<select class="w-full bg-[#0B1526] border border-blueprint-border rounded px-3 py-2 text-blueprint-text focus:outline-none focus:border-blueprint-blue transition-colors font-body-sm">
+<option>High</option>
+<option>Medium</option>
+<option>Low</option>
+</select>
+</div>
+</div>
+<div>
+<label class="block font-eyebrow-mono text-eyebrow-mono text-on-surface-variant mb-2 uppercase">Title</label>
+<input class="w-full bg-[#0B1526] border border-blueprint-border rounded px-3 py-2 text-blueprint-text focus:outline-none focus:border-blueprint-blue transition-colors font-body-sm" placeholder="e.g., Secure Authentication..." type="text"/>
+</div>
+<div>
+<label class="block font-eyebrow-mono text-eyebrow-mono text-on-surface-variant mb-2 uppercase">Description</label>
+<textarea class="w-full bg-[#0B1526] border border-blueprint-border rounded px-3 py-2 text-blueprint-text focus:outline-none focus:border-blueprint-blue transition-colors font-body-sm resize-none" placeholder="Detailed requirement description..." rows="4"></textarea>
+</div>
+<div>
+<label class="block font-eyebrow-mono text-eyebrow-mono text-on-surface-variant mb-2 uppercase">Acceptance Criteria</label>
+<div class="border border-blueprint-border rounded bg-[#0B1526] p-1">
+<textarea class="w-full bg-transparent border-none focus:ring-0 text-blueprint-text font-code-md text-sm resize-none p-2" placeholder="Given... When... Then..." rows="3"></textarea>
+</div>
+</div>
+</div>
+<div class="p-6 border-t border-blueprint-border bg-[#101E32] flex justify-end gap-3">
+<button class="px-4 py-2 border border-blueprint-border rounded text-blueprint-text font-label-sm text-label-sm hover:bg-blueprint-border/20 transition-colors" onclick="document.getElementById('edit-drawer').classList.add('translate-x-full')">Cancel</button>
+<button class="px-4 py-2 bg-blueprint-cyan text-[#001f25] rounded font-label-sm text-label-sm font-semibold hover:bg-[#5de6ff] transition-colors">Save Requirement</button>
+</div>
+</div>
+</body></html>

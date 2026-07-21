@@ -4,17 +4,13 @@ import { useParams } from "react-router-dom";
 import { useProject, useUpdateProject } from "../api/projects";
 
 
-function Card({ title, children, danger }) {
+function Card({ title, children }) {
   return (
-    <section className="rounded-lg border p-6" style={{ borderColor: danger ? "var(--devdoc-error)" : "var(--devdoc-border)", backgroundColor: "var(--devdoc-surface)" }}>
-      <h2 className="mb-4 font-headline text-lg font-semibold" style={danger ? { color: "var(--devdoc-error)" } : undefined}>{title}</h2>
+    <section className="rounded-lg border p-6" style={{ borderColor: "var(--devdoc-border)", backgroundColor: "var(--devdoc-surface)" }}>
+      <h2 className="mb-4 font-headline text-lg font-semibold">{title}</h2>
       {children}
     </section>
   );
-}
-
-function Planned() {
-  return <span className="rounded px-1.5 py-0.5 text-[10px] font-medium" style={{ color: "var(--devdoc-warning)", backgroundColor: "var(--devdoc-warning-soft)" }}>planned</span>;
 }
 
 export default function ProjectSettings() {
@@ -79,29 +75,6 @@ export default function ProjectSettings() {
           </div>
         </Card>
 
-        <Card title="Share link">
-          <div className="flex items-start gap-2">
-            <p className="flex-1 text-sm text-[var(--devdoc-muted)]">
-              Give supervisors read-only access to your validation report and traceability map.
-            </p>
-            <Planned />
-          </div>
-          <button disabled className="mt-3 cursor-not-allowed rounded-md border px-4 py-2 text-sm opacity-60" style={{ borderColor: "var(--devdoc-border)", color: "var(--devdoc-muted)" }}>
-            Create share link
-          </button>
-          <p className="mt-2 font-mono text-[11px] text-[var(--devdoc-subtle)]">Needs a share-token endpoint — see the shared report page, which already reads /api/shared/:token.</p>
-        </Card>
-
-        <Card title="Danger zone" danger>
-          <div className="flex items-start gap-2">
-            <p className="flex-1 text-sm text-[var(--devdoc-muted)]">Permanently delete this project and all its artifacts. This cannot be undone.</p>
-            <Planned />
-          </div>
-          <button disabled className="mt-3 cursor-not-allowed rounded-md border px-4 py-2 text-sm opacity-60" style={{ borderColor: "var(--devdoc-error)", color: "var(--devdoc-error)" }}>
-            Delete project
-          </button>
-          <p className="mt-2 font-mono text-[11px] text-[var(--devdoc-subtle)]">Needs a delete-project endpoint + hook before wiring the typed-name confirmation.</p>
-        </Card>
       </div>
     </main>
   );

@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>UML Diagram Designer — Blueprint Edition</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500;700&amp;family=Space+Grotesk:wght@500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-tertiary-container": "#461f00",
+                        "surface-container-highest": "#32353c",
+                        "on-tertiary": "#502400",
+                        "inverse-on-surface": "#2e3038",
+                        "on-surface-variant": "#c2c6d6",
+                        "outline-variant": "#424754",
+                        "secondary-container": "#00cbe6",
+                        "primary": "#adc6ff",
+                        "tertiary-fixed-dim": "#ffb786",
+                        "surface-container-low": "#191b23",
+                        "surface": "#10131a",
+                        "on-primary-fixed": "#001a42",
+                        "on-tertiary-fixed-variant": "#723600",
+                        "on-secondary-fixed": "#001f25",
+                        "surface-container-lowest": "#0b0e15",
+                        "surface-tint": "#adc6ff",
+                        "tertiary": "#ffb786",
+                        "surface-dim": "#10131a",
+                        "on-secondary-container": "#00515d",
+                        "inverse-primary": "#005ac2",
+                        "secondary-fixed-dim": "#2fd9f4",
+                        "secondary": "#5de6ff",
+                        "on-tertiary-fixed": "#311400",
+                        "on-primary-container": "#00285d",
+                        "inverse-surface": "#e1e2ec",
+                        "surface-bright": "#363941",
+                        "error": "#ffb4ab",
+                        "tertiary-fixed": "#ffdcc6",
+                        "tertiary-container": "#df7412",
+                        "primary-fixed": "#d8e2ff",
+                        "primary-container": "#4d8eff",
+                        "on-secondary": "#00363e",
+                        "primary-fixed-dim": "#adc6ff",
+                        "on-background": "#e1e2ec",
+                        "surface-variant": "#32353c",
+                        "on-secondary-fixed-variant": "#004e5a",
+                        "outline": "#8c909f",
+                        "surface-container": "#1d2027",
+                        "error-container": "#93000a",
+                        "surface-container-high": "#272a31",
+                        "on-surface": "#e1e2ec",
+                        "on-primary-fixed-variant": "#004395",
+                        "on-primary": "#002e6a",
+                        "on-error": "#690005",
+                        "background": "#10131a",
+                        "secondary-fixed": "#a2eeff",
+                        "on-error-container": "#ffdad6"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "margin-mobile": "16px",
+                        "margin-desktop": "32px",
+                        "grid-pattern": "24px",
+                        "base": "4px",
+                        "gutter": "16px"
+                    },
+                    "fontFamily": {
+                        "headline-sm": ["Space Grotesk"],
+                        "headline-lg": ["Space Grotesk"],
+                        "code": ["JetBrains Mono"],
+                        "body-lg": ["Inter"],
+                        "body-md": ["Inter"],
+                        "headline-md": ["Space Grotesk"],
+                        "eyebrow-mono": ["JetBrains Mono"],
+                        "body-sm": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-sm": ["18px", { "lineHeight": "1.4", "fontWeight": "500" }],
+                        "headline-lg": ["32px", { "lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700" }],
+                        "code": ["13px", { "lineHeight": "20px", "fontWeight": "400" }],
+                        "body-lg": ["16px", { "lineHeight": "1.6", "fontWeight": "400" }],
+                        "body-md": ["14px", { "lineHeight": "1.5", "fontWeight": "400" }],
+                        "headline-md": ["24px", { "lineHeight": "1.3", "fontWeight": "600" }],
+                        "eyebrow-mono": ["11px", { "lineHeight": "16px", "letterSpacing": "0.15em", "fontWeight": "500" }],
+                        "body-sm": ["13px", { "lineHeight": "1.5", "fontWeight": "400" }]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .blueprint-bg {
+            background-image: 
+                linear-gradient(to right, rgba(66, 71, 84, 0.1) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(66, 71, 84, 0.1) 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+        .vignette {
+            box-shadow: inset 0 0 100px rgba(11, 14, 21, 0.8);
+        }
+        /* PlantUML Syntax Highlighting Mock */
+        .token.keyword { color: #5de6ff; }
+        .token.actor { color: #ffb786; }
+        .token.arrow { color: #8c909f; }
+        .token.string { color: #adc6ff; }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md h-screen overflow-hidden flex selection:bg-primary-container selection:text-on-primary-container">
+<!-- SideNavBar {{DATA:COMPONENTS:COMPONENTS_9}} -->
+<nav class="bg-surface-container-low border-r border-outline-variant h-screen left-0 w-64 flex flex-col py-6 gap-2 shrink-0 z-40 hidden md:flex">
+<!-- Header -->
+<div class="px-6 mb-4 flex items-center gap-3">
+<div class="w-10 h-10 rounded bg-primary-container flex items-center justify-center shrink-0 border border-outline-variant">
+<span class="material-symbols-outlined text-on-primary-container" style="font-variation-settings: 'FILL' 1;">architecture</span>
+</div>
+<div class="overflow-hidden">
+<h2 class="font-headline-sm text-headline-sm text-on-surface truncate">Project Name</h2>
+<p class="font-eyebrow-mono text-eyebrow-mono text-on-surface-variant truncate opacity-80">Active Workspace</p>
+</div>
+</div>
+<!-- Navigation Tabs -->
+<div class="flex-1 overflow-y-auto px-3 space-y-1">
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="font-body-sm text-body-sm">Overview</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined">target</span>
+<span class="font-body-sm text-body-sm">Objectives</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined">description</span>
+<span class="font-body-sm text-body-sm">Documents</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined">topic</span>
+<span class="font-body-sm text-body-sm">Templates</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined">account_tree</span>
+<span class="font-body-sm text-body-sm">Use Cases</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined">rule</span>
+<span class="font-body-sm text-body-sm">Requirements</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined">architecture</span>
+<span class="font-body-sm text-body-sm">Design Elements</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined">fact_check</span>
+<span class="font-body-sm text-body-sm">Test Cases</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined">hub</span>
+<span class="font-body-sm text-body-sm">Traceability</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined">verified</span>
+<span class="font-body-sm text-body-sm">Validation</span>
+</a>
+<!-- Active Tab -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-secondary font-medium bg-secondary-container/10 border-r-2 border-secondary translate-x-1 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">account_tree</span>
+<span class="font-body-sm text-body-sm">Diagrams</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined">analytics</span>
+<span class="font-body-sm text-body-sm">Analytics</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined">history</span>
+<span class="font-body-sm text-body-sm">Versions</span>
+</a>
+</div>
+<div class="px-3 mt-auto pt-4 border-t border-outline-variant mx-3">
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined">settings</span>
+<span class="font-body-sm text-body-sm">Settings</span>
+</a>
+</div>
+</nav>
+<!-- Main Content Area -->
+<div class="flex-1 flex flex-col h-screen min-w-0 bg-background relative blueprint-bg">
+<!-- TopAppBar {{DATA:COMPONENTS:COMPONENTS_9}} -->
+<header class="bg-surface-container border-b border-outline-variant flex justify-between items-center w-full px-margin-desktop h-16 z-50 shrink-0">
+<div class="flex items-center gap-4">
+<h1 class="font-headline-sm text-headline-sm font-bold text-on-surface">DevDoc</h1>
+<!-- Search on left -->
+<div class="relative hidden sm:block w-64 ml-4">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-sm">search</span>
+<input class="w-full bg-surface-container-high border border-outline-variant rounded-full py-1.5 pl-9 pr-4 text-sm font-body-sm text-on-surface focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all placeholder:text-on-surface-variant/50 h-8" placeholder="Search diagrams..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-4">
+<button class="text-on-surface-variant hover:bg-surface-variant p-2 rounded-full transition-colors flex items-center justify-center h-9 w-9">
+<span class="material-symbols-outlined text-[20px]">dark_mode</span>
+</button>
+<button class="text-on-surface-variant hover:bg-surface-variant p-2 rounded-full transition-colors flex items-center justify-center h-9 w-9">
+<span class="material-symbols-outlined text-[20px]">help</span>
+</button>
+<div class="h-8 w-8 rounded-full bg-primary-container border border-outline-variant overflow-hidden ml-2 cursor-pointer border-2 border-transparent hover:border-primary transition-colors">
+<img alt="User Profile Avatar" class="w-full h-full object-cover" data-alt="A futuristic UI design project avatar featuring abstract glowing geometric shapes on a dark background, embodying the aesthetics of a modern technical blueprint environment. High-end, precise styling." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCTo_eSCzNusnQx-3OhLZy5amEmb6eU86y7cLpqk_HHI8kY4BTew36Vs3bO9PWZyigFc0F5Xmc1cUx-0wGauz152w-RIQy8tUh7YTGfysDfzJU-i4POBQpR3GtBMVlvEaR2DoiMU75o2c7D7wbqcsemtLM26pp4z2IA5NoZaTgwmaA5YZKnJtA6m4IMEU3EzO7saT55sB7xVjUBHo9ozeSjPsXXk81Bk47DPwBBJ_JU9qEA2Gdxzvnbg20jyav2dOyv-4nyvBN6LFE"/>
+</div>
+</div>
+</header>
+<!-- Page Header -->
+<div class="px-margin-desktop py-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-outline-variant bg-surface/50 backdrop-blur-sm shrink-0">
+<div>
+<h1 class="font-headline-lg text-headline-lg text-on-surface">Diagram Designer</h1>
+<p class="font-body-md text-body-md text-on-surface-variant mt-1">Author any UML diagram · 5 auto-generate from your project</p>
+</div>
+<div class="flex items-center gap-3">
+<button class="px-4 py-2 bg-surface-container border border-outline-variant text-on-surface rounded-xl font-body-sm text-body-sm hover:bg-surface-variant transition-colors flex items-center gap-2">
+                    Generate <span class="material-symbols-outlined text-[16px]">arrow_drop_down</span>
+</button>
+<button class="px-4 py-2 bg-[#3B82F6] text-white rounded-xl font-body-sm text-body-sm font-medium hover:bg-blue-600 transition-colors shadow-[0_2px_10px_rgba(59,130,246,0.3)]">
+                    New diagram
+                </button>
+</div>
+</div>
+<!-- Studio Area -->
+<div class="flex-1 flex overflow-hidden p-margin-desktop gap-gutter pb-0 relative">
+<!-- Left Sidebar: Diagram Library -->
+<div class="w-72 flex flex-col bg-surface-container border border-outline-variant rounded-t-xl overflow-hidden shrink-0">
+<div class="p-4 border-b border-outline-variant flex justify-between items-center bg-surface-container-high">
+<span class="font-eyebrow-mono text-eyebrow-mono text-on-surface">LIBRARY</span>
+<button class="text-on-surface-variant hover:text-on-surface"><span class="material-symbols-outlined text-[18px]">filter_list</span></button>
+</div>
+<div class="flex-1 overflow-y-auto p-2 space-y-6">
+<!-- Group 1 -->
+<div>
+<div class="px-2 py-1 mb-1">
+<span class="font-eyebrow-mono text-eyebrow-mono text-on-surface-variant text-[10px]">SYSTEM</span>
+</div>
+<div class="space-y-1">
+<button class="w-full text-left p-2 rounded-lg hover:bg-surface-variant border border-transparent transition-colors flex flex-col gap-1 group">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant group-hover:text-primary">architecture</span>
+<span class="font-body-sm text-body-sm text-on-surface truncate">System Overview</span>
+</div>
+<div class="flex items-center justify-between pl-6">
+<span class="font-eyebrow-mono text-[9px] text-primary bg-primary/10 px-1.5 py-0.5 rounded border border-primary/20">COMPONENT</span>
+<span class="font-body-sm text-[11px] text-on-surface-variant">2d ago</span>
+</div>
+</button>
+</div>
+</div>
+<!-- Group 2 -->
+<div>
+<div class="px-2 py-1 mb-1">
+<span class="font-eyebrow-mono text-eyebrow-mono text-on-surface-variant text-[10px]">INTERFACE</span>
+</div>
+<div class="space-y-1">
+<!-- Active Item -->
+<button class="w-full text-left p-2 rounded-lg bg-[#16273F] border border-outline-variant shadow-[0_2px_8px_rgba(0,0,0,0.2)] transition-colors flex flex-col gap-1 relative overflow-hidden">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-secondary"></div>
+<div class="flex items-center gap-2 pl-1">
+<span class="material-symbols-outlined text-[16px] text-secondary">swap_horiz</span>
+<span class="font-body-sm text-body-sm text-on-surface font-medium truncate">Auth Flow</span>
+</div>
+<div class="flex items-center justify-between pl-7">
+<span class="font-eyebrow-mono text-[9px] text-secondary bg-secondary/10 px-1.5 py-0.5 rounded border border-secondary/30">SEQUENCE</span>
+<span class="font-body-sm text-[11px] text-on-surface-variant">2m ago</span>
+</div>
+</button>
+<button class="w-full text-left p-2 rounded-lg hover:bg-surface-variant border border-transparent transition-colors flex flex-col gap-1 group">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant group-hover:text-primary">schema</span>
+<span class="font-body-sm text-body-sm text-on-surface truncate">Data Models</span>
+</div>
+<div class="flex items-center justify-between pl-6">
+<span class="font-eyebrow-mono text-[9px] text-tertiary bg-tertiary/10 px-1.5 py-0.5 rounded border border-tertiary/20">CLASS</span>
+<span class="font-body-sm text-[11px] text-on-surface-variant">5h ago</span>
+</div>
+</button>
+</div>
+</div>
+</div>
+</div>
+<!-- Main Editor/Preview Area -->
+<div class="flex-1 flex flex-col min-w-0 bg-surface-container-lowest border border-outline-variant rounded-t-xl overflow-hidden shadow-2xl z-10 relative">
+<!-- Studio Toolbar -->
+<div class="h-12 border-b border-outline-variant bg-surface-container flex items-center justify-between px-4 shrink-0">
+<div class="flex items-center gap-4">
+<div class="flex items-center gap-2 group cursor-text px-2 py-1 -ml-2 rounded hover:bg-surface-variant transition-colors border border-transparent hover:border-outline-variant">
+<span class="font-headline-sm text-body-md font-medium text-on-surface">Auth Sequence Diagram</span>
+<span class="material-symbols-outlined text-[14px] text-on-surface-variant opacity-0 group-hover:opacity-100 transition-opacity">edit</span>
+</div>
+<div class="h-4 w-px bg-outline-variant mx-1"></div>
+<div class="flex bg-surface-container-highest rounded border border-outline-variant p-0.5">
+<button class="px-3 py-1 text-[11px] font-eyebrow-mono bg-surface-container border border-outline-variant rounded text-on-surface shadow-sm">PlantUML</button>
+<button class="px-3 py-1 text-[11px] font-eyebrow-mono text-on-surface-variant hover:text-on-surface transition-colors">Mermaid</button>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<button class="text-on-surface-variant hover:text-on-surface hover:bg-surface-variant p-1.5 rounded transition-colors" title="Fullscreen">
+<span class="material-symbols-outlined text-[18px]">fullscreen</span>
+</button>
+<div class="h-4 w-px bg-outline-variant mx-1"></div>
+<button class="px-3 py-1.5 bg-surface border border-outline-variant text-on-surface rounded font-body-sm text-[12px] hover:bg-surface-variant transition-colors flex items-center gap-1">
+                            Export <span class="material-symbols-outlined text-[14px]">arrow_drop_down</span>
+</button>
+<button class="px-3 py-1.5 bg-primary/10 border border-primary/30 text-primary rounded font-body-sm text-[12px] hover:bg-primary/20 transition-colors flex items-center gap-1 font-medium">
+<span class="material-symbols-outlined text-[14px]">save</span> Save
+                        </button>
+</div>
+</div>
+<!-- Editor / Preview Split -->
+<div class="flex-1 flex min-h-0 relative">
+<!-- Code Editor (Left) -->
+<div class="w-1/3 min-w-[250px] border-r border-[#33517E]/50 bg-[#0B1526] flex flex-col">
+<div class="flex-1 overflow-auto p-4 font-code text-code leading-loose flex relative">
+<!-- Line numbers -->
+<div class="text-on-surface-variant/30 select-none pr-4 text-right flex flex-col font-mono text-[12px] border-r border-outline-variant/30 mr-4">
+<span>1</span>
+<span>2</span>
+<span>3</span>
+<span>4</span>
+</div>
+<!-- Code content -->
+<div class="text-on-surface font-mono text-[13px] whitespace-pre flex-1 outline-none" contenteditable="true" spellcheck="false">
+<span class="token keyword">@startuml</span>
+<span class="token actor">actor</span> <span class="token string">User</span>
+<span class="token string">User</span> <span class="token arrow">-&gt;</span> (Login)
+<span class="token keyword">@enduml</span>
+</div>
+<!-- Faux cursor -->
+<div class="absolute top-[68px] left-[132px] w-[2px] h-[16px] bg-secondary animate-pulse"></div>
+</div>
+</div>
+<!-- Live Preview (Right) -->
+<div class="flex-1 bg-[#0B1526] relative overflow-hidden vignette blueprint-bg flex items-center justify-center p-8 group">
+<!-- Floating Controls -->
+<div class="absolute top-4 right-4 flex items-center gap-1 bg-surface-container/80 backdrop-blur border border-outline-variant rounded p-1 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity">
+<button class="p-1 text-on-surface-variant hover:text-on-surface hover:bg-surface-variant rounded"><span class="material-symbols-outlined text-[16px]">zoom_in</span></button>
+<span class="font-eyebrow-mono text-[10px] text-on-surface px-1">100%</span>
+<button class="p-1 text-on-surface-variant hover:text-on-surface hover:bg-surface-variant rounded"><span class="material-symbols-outlined text-[16px]">zoom_out</span></button>
+<div class="w-px h-3 bg-outline-variant mx-1"></div>
+<button class="p-1 text-on-surface-variant hover:text-on-surface hover:bg-surface-variant rounded"><span class="material-symbols-outlined text-[16px]">fit_screen</span></button>
+</div>
+<!-- Rendered Diagram Mockup -->
+<div class="relative bg-transparent border-2 border-primary/20 p-8 rounded shadow-[0_0_30px_rgba(173,198,255,0.05)] backdrop-blur-sm">
+<!-- Simple SVG Mock of a Sequence Diagram -->
+<svg fill="none" height="200" viewbox="0 0 300 200" width="300" xmlns="http://www.w3.org/2000/svg">
+<!-- User Actor -->
+<g transform="translate(40, 20)">
+<circle cx="20" cy="10" fill="#0B1526" r="8" stroke="#adc6ff" stroke-width="2"></circle>
+<path d="M20 18v15M10 25h20M12 45l8-12 8 12" stroke="#adc6ff" stroke-linecap="round" stroke-width="2"></path>
+<text fill="#adc6ff" font-family="'JetBrains Mono', monospace" font-size="12" text-anchor="middle" x="20" y="60">User</text>
+</g>
+<!-- Login System -->
+<g transform="translate(180, 20)">
+<rect fill="#00515d" fill-opacity="0.3" height="30" rx="4" stroke="#5de6ff" stroke-width="2" width="80" x="0" y="0"></rect>
+<text fill="#5de6ff" font-family="'JetBrains Mono', monospace" font-size="12" text-anchor="middle" x="40" y="19">Login</text>
+</g>
+<!-- Lifelines -->
+<line stroke="#8c909f" stroke-dasharray="4 4" stroke-width="1" x1="60" x2="60" y1="90" y2="180"></line>
+<line stroke="#8c909f" stroke-dasharray="4 4" stroke-width="1" x1="220" x2="220" y1="60" y2="180"></line>
+<!-- Message Arrow -->
+<g transform="translate(0, 120)">
+<line stroke="#adc6ff" stroke-width="2" x1="65" x2="215" y1="0" y2="0"></line>
+<path d="M205 -5 L215 0 L205 5" fill="#adc6ff"></path>
+<text fill="#e1e2ec" font-family="'Inter', sans-serif" font-size="11" text-anchor="middle" x="140" y="-8">authenticate()</text>
+</g>
+</svg>
+</div>
+<!-- Blueprint Title Block Stamp -->
+<div class="absolute bottom-4 right-4 border border-[#33517E] bg-[#0B1526]/90 backdrop-blur flex flex-col text-[10px] font-eyebrow-mono text-on-surface-variant p-2 w-48 shadow-[2px_2px_0_rgba(51,81,126,0.5)]">
+<div class="border-b border-[#33517E] pb-1 mb-1 flex justify-between text-secondary">
+<span>DIAGRAM REF</span>
+<span>SEQ-042</span>
+</div>
+<div class="flex justify-between">
+<span>REV</span>
+<span class="text-on-surface">1.2.0</span>
+</div>
+<div class="flex justify-between">
+<span>STATUS</span>
+<span class="text-tertiary">DRAFT</span>
+</div>
+<div class="flex justify-between mt-1 pt-1 border-t border-[#33517E] border-dashed">
+<span>SCALE</span>
+<span>ZOOM 100%</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Footer Control (Section Linking) -->
+<div class="h-10 border-t border-[#33517E] bg-surface-container-high flex items-center px-4 justify-between shrink-0">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant">link</span>
+<span class="font-body-sm text-[12px] text-on-surface-variant">Traceability:</span>
+<button class="flex items-center gap-2 bg-surface border border-outline-variant px-2 py-0.5 rounded text-[11px] font-eyebrow-mono text-on-surface hover:border-primary transition-colors">
+<span class="w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></span>
+                            Link this diagram to a document section
+                            <span class="material-symbols-outlined text-[14px]">arrow_drop_down</span>
+</button>
+</div>
+<div class="flex items-center gap-2">
+<span class="font-eyebrow-mono text-[10px] text-on-surface-variant bg-surface-container-lowest px-1.5 py-0.5 rounded border border-outline-variant">ID: DIA-992-A</span>
+</div>
+</div>
+</div>
+</div>
+</div>
+</body></html>

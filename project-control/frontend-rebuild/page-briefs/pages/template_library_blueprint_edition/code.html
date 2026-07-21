@@ -1,0 +1,419 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>DevDoc - Templates</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500&amp;family=Space+Grotesk:wght@500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-primary-container": "#00285d",
+                        "primary-fixed": "#d8e2ff",
+                        "secondary": "#5de6ff",
+                        "secondary-container": "#00cbe6",
+                        "tertiary-fixed": "#ffdcc6",
+                        "surface-container-lowest": "#0b0e15",
+                        "on-surface-variant": "#c2c6d6",
+                        "tertiary-container": "#df7412",
+                        "inverse-on-surface": "#2e3038",
+                        "inverse-primary": "#005ac2",
+                        "surface-bright": "#363941",
+                        "error": "#ffb4ab",
+                        "primary": "#adc6ff",
+                        "on-surface": "#e1e2ec",
+                        "on-secondary-container": "#00515d",
+                        "on-tertiary": "#502400",
+                        "surface-container-high": "#272a31",
+                        "on-secondary-fixed-variant": "#004e5a",
+                        "on-error-container": "#ffdad6",
+                        "on-error": "#690005",
+                        "on-background": "#e1e2ec",
+                        "on-tertiary-fixed": "#311400",
+                        "on-primary-fixed": "#001a42",
+                        "surface-tint": "#adc6ff",
+                        "surface": "#10131a",
+                        "on-secondary": "#00363e",
+                        "tertiary": "#ffb786",
+                        "outline": "#8c909f",
+                        "surface-container": "#1d2027",
+                        "surface-dim": "#10131a",
+                        "on-primary": "#002e6a",
+                        "outline-variant": "#424754",
+                        "surface-container-highest": "#32353c",
+                        "surface-container-low": "#191b23",
+                        "on-tertiary-fixed-variant": "#723600",
+                        "tertiary-fixed-dim": "#ffb786",
+                        "background": "#10131a",
+                        "surface-variant": "#32353c",
+                        "secondary-fixed": "#a2eeff",
+                        "primary-container": "#4d8eff",
+                        "on-secondary-fixed": "#001f25",
+                        "primary-fixed-dim": "#adc6ff",
+                        "on-primary-fixed-variant": "#004395",
+                        "on-tertiary-container": "#461f00",
+                        "inverse-surface": "#e1e2ec",
+                        "error-container": "#93000a",
+                        "secondary-fixed-dim": "#2fd9f4"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "gutter": "16px",
+                        "grid-pattern": "24px",
+                        "margin-mobile": "16px",
+                        "base": "4px",
+                        "margin-desktop": "32px"
+                    },
+                    "fontFamily": {
+                        "code": ["JetBrains Mono"],
+                        "headline-lg": ["Space Grotesk"],
+                        "body-sm": ["Inter"],
+                        "body-md": ["Inter"],
+                        "body-lg": ["Inter"],
+                        "headline-sm": ["Space Grotesk"],
+                        "headline-md": ["Space Grotesk"],
+                        "eyebrow-mono": ["JetBrains Mono"]
+                    },
+                    "fontSize": {
+                        "code": ["13px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "headline-lg": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "body-sm": ["13px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                        "body-md": ["14px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                        "body-lg": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                        "headline-sm": ["18px", {"lineHeight": "1.4", "fontWeight": "500"}],
+                        "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                        "eyebrow-mono": ["11px", {"lineHeight": "16px", "letterSpacing": "0.15em", "fontWeight": "500"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .blueprint-bg {
+            background-image: 
+                linear-gradient(to right, rgba(140, 144, 159, 0.05) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(140, 144, 159, 0.05) 1px, transparent 1px);
+            background-size: 24px 24px;
+        }
+        .hairline-border {
+            border: 1px solid var(--tw-colors-outline-variant);
+        }
+        .traceability-line::before {
+            content: '';
+            position: absolute;
+            left: -12px;
+            top: 12px;
+            bottom: -12px;
+            width: 1px;
+            background-color: var(--tw-colors-outline-variant);
+        }
+        .traceability-line:last-child::before {
+            bottom: 12px;
+        }
+        .traceability-node::after {
+            content: '';
+            position: absolute;
+            left: -15px;
+            top: 10px;
+            width: 7px;
+            height: 7px;
+            border-radius: 2px;
+            background-color: var(--tw-colors-surface);
+            border: 1px solid var(--tw-colors-outline-variant);
+        }
+    </style>
+</head>
+<body class="bg-background text-on-surface font-body-md h-screen flex overflow-hidden">
+<!-- SideNavBar -->
+<nav class="hidden md:flex flex-col h-full py-6 gap-2 bg-surface-container-low border-r border-outline-variant docked h-screen left-0 w-64 z-40 shrink-0">
+<div class="px-6 mb-6 flex items-center gap-3">
+<div class="w-10 h-10 rounded-lg bg-surface border border-outline-variant flex items-center justify-center overflow-hidden shrink-0">
+<img class="w-full h-full object-cover" data-alt="A highly detailed geometric project avatar icon. Deep black canvas background with a glowing, precision-engineered wireframe cube in vibrant primary blue. Minimalist, clinical, and authoritative technical design aesthetic, resembling a digital blueprint or advanced terminal asset." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBi0hyuiiT_ts9fYC_g0Qxz4gFiFbUQyIOy4COxTduLRa0Gb99-Is2CIry2xJpTnjfWi7juP1yonSC2xfZdMvVnmlAP-r3m82CtrF9xL5UWuYwsdYz3sSgt2WiNxghfHbbyfHg5xa4xsT7kM3NYhXY39PzTasREh9TJWe7Pv25B7HZ-4gORm95UOMOdimnwWMsYpI7uLZFoHkp5lGcjPbCJrVT5Ut_gbN4KB6NdYWGjwJnvadGJAPHBgjKvjJZoV7s0Tz6Md4LY1Gg"/>
+</div>
+<div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface truncate">Project Name</h2>
+<p class="font-eyebrow-mono text-eyebrow-mono text-on-surface-variant truncate">Active Workspace</p>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto px-4 flex flex-col gap-1">
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 0;">dashboard</span>
+<span class="font-body-sm text-body-sm">Overview</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 0;">target</span>
+<span class="font-body-sm text-body-sm">Objectives</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 0;">description</span>
+<span class="font-body-sm text-body-sm">Documents</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-secondary font-medium bg-secondary-container/10 border-r-2 border-secondary translate-x-1 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">topic</span>
+<span class="font-body-sm text-body-sm">Templates</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 0;">account_tree</span>
+<span class="font-body-sm text-body-sm">Use Cases</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 0;">rule</span>
+<span class="font-body-sm text-body-sm">Requirements</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 0;">architecture</span>
+<span class="font-body-sm text-body-sm">Design Elements</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-lg text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 0;">fact_check</span>
+<span class="font-body-sm text-body-sm">Test Cases</span>
+</a>
+</div>
+</nav>
+<!-- Main Content Wrapper -->
+<div class="flex-1 flex flex-col min-w-0 bg-background blueprint-bg">
+<!-- TopAppBar -->
+<header class="bg-surface-container border-b border-outline-variant flex justify-between items-center w-full px-margin-desktop h-16 z-50 shrink-0">
+<div class="flex items-center gap-4">
+<span class="font-headline-sm text-headline-sm font-bold text-on-surface">DevDoc</span>
+</div>
+<div class="flex-1 max-w-md ml-8 mr-4 hidden md:block">
+<div class="relative flex items-center w-full h-9 rounded-lg bg-surface border border-outline-variant focus-within:border-primary focus-within:ring-1 focus-within:ring-primary transition-all">
+<span class="material-symbols-outlined absolute left-3 text-on-surface-variant text-[18px]">search</span>
+<input class="w-full h-full bg-transparent border-none focus:ring-0 pl-10 pr-4 font-body-sm text-body-sm text-on-surface placeholder-on-surface-variant" placeholder="Search resources..." type="text"/>
+<div class="absolute right-2 px-1.5 py-0.5 rounded border border-outline-variant bg-surface-container-high font-eyebrow-mono text-[9px] text-on-surface-variant tracking-widest">CMD K</div>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<button class="w-10 h-10 rounded-lg flex items-center justify-center text-on-surface-variant hover:bg-surface-variant transition-colors">
+<span class="material-symbols-outlined text-[20px]">dark_mode</span>
+</button>
+<button class="w-10 h-10 rounded-lg flex items-center justify-center text-on-surface-variant hover:bg-surface-variant transition-colors">
+<span class="material-symbols-outlined text-[20px]">help</span>
+</button>
+<div class="w-8 h-8 rounded-full ml-2 border border-outline-variant overflow-hidden">
+<img class="w-full h-full object-cover" data-alt="A stark, high-contrast user profile avatar. A stylized, faceless humanoid wireframe silhouette against a deep black #0B0E15 background. Accents of cyan and primary blue highlight technical nodes on the avatar, conveying a clinical, engineering-focused identity suitable for a documentation IDE." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAHrvBtY4HAPvigDvR2ET92Esh56Ybp_uFV40LISoa8ggeB1vJRILwLmyDM3A6AcnisGvT3rwtoLw39rQsWLAvwIJaYVvynY4uUQGPrU3-sQDWSI1PlsNrGE7V16ziBmDJcbG_T6huBvJKzx4DjcPFTEcfAfJ8VjRc0L_nmCYELfmGG3k0tAMo02B2clEnMg3ZCqlbYN9ew3QGu04WtdmT6TH78izrlXeseWo_0WKVvb1zcTw8YhqmQszKXAfok7DPrSJ7y1rsfgIs"/>
+</div>
+</div>
+</header>
+<!-- Canvas Area -->
+<main class="flex-1 overflow-hidden flex flex-col">
+<!-- Page Header -->
+<div class="px-margin-desktop py-8 shrink-0">
+<h1 class="font-headline-lg text-headline-lg text-on-surface mb-2">Templates</h1>
+<p class="font-body-lg text-body-lg text-on-surface-variant max-w-2xl">Create a document from a structured template</p>
+</div>
+<!-- Filters -->
+<div class="px-margin-desktop pb-6 shrink-0 flex flex-col gap-4 border-b border-outline-variant bg-background/80 backdrop-blur-sm z-10 sticky top-0">
+<div class="flex flex-wrap gap-6 items-center justify-between">
+<!-- Segmented Control -->
+<div class="flex p-1 rounded-lg bg-surface-container border border-outline-variant shrink-0">
+<button class="px-4 py-1.5 rounded-md bg-surface-variant border border-outline-variant shadow-sm font-body-sm text-body-sm text-on-surface font-medium">Standard</button>
+<button class="px-4 py-1.5 rounded-md text-on-surface-variant hover:text-on-surface font-body-sm text-body-sm transition-colors">Academic</button>
+<button class="px-4 py-1.5 rounded-md text-on-surface-variant hover:text-on-surface font-body-sm text-body-sm transition-colors">Company</button>
+</div>
+<!-- Doc Type Chips -->
+<div class="flex flex-wrap gap-2">
+<button class="px-3 py-1.5 rounded-full border border-primary bg-primary/10 text-primary font-code text-code flex items-center gap-1.5 transition-colors">
+<span class="w-2 h-2 rounded-full bg-primary"></span>
+                            All Types
+                        </button>
+<button class="px-3 py-1.5 rounded-full border border-outline-variant bg-surface hover:border-outline text-on-surface-variant font-code text-code transition-colors">Scope</button>
+<button class="px-3 py-1.5 rounded-full border border-outline-variant bg-surface hover:border-outline text-on-surface-variant font-code text-code transition-colors">SRS</button>
+<button class="px-3 py-1.5 rounded-full border border-outline-variant bg-surface hover:border-outline text-on-surface-variant font-code text-code transition-colors">SDS</button>
+<button class="px-3 py-1.5 rounded-full border border-outline-variant bg-surface hover:border-outline text-on-surface-variant font-code text-code transition-colors">STP</button>
+</div>
+</div>
+</div>
+<!-- Grid & Drawer Container -->
+<div class="flex-1 flex overflow-hidden relative">
+<!-- Grid Scroll Area -->
+<div class="flex-1 overflow-y-auto p-margin-desktop">
+<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 max-w-[1440px] mx-auto">
+<!-- Card 1 (Active) -->
+<div class="rounded-xl bg-surface border border-primary relative shadow-[4px_4px_0px_0px_rgba(77,142,255,0.2)] transition-all flex flex-col group overflow-hidden">
+<div class="absolute top-0 left-0 w-1 h-full bg-primary"></div>
+<div class="p-5 flex flex-col h-full gap-4">
+<div class="flex justify-between items-start">
+<div class="w-10 h-10 rounded-lg bg-primary/10 border border-primary/20 flex items-center justify-center text-primary shrink-0">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">description</span>
+</div>
+<span class="px-2 py-1 rounded bg-surface-container-high border border-outline-variant font-eyebrow-mono text-eyebrow-mono text-on-surface-variant">STANDARD</span>
+</div>
+<div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-1">Software Requirements Spec</h3>
+<p class="font-code text-code text-on-surface-variant text-[12px] mb-3">24 sections · IEEE-830 structure</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">Comprehensive template for documenting functional and non-functional software requirements.</p>
+</div>
+<div class="mt-auto pt-4 flex gap-3">
+<button class="flex-1 bg-primary hover:bg-primary-container text-on-primary font-body-sm text-body-sm font-medium py-2 px-4 rounded-lg transition-colors border border-transparent">Use template</button>
+<button class="px-4 py-2 rounded-lg border border-outline-variant text-on-surface hover:bg-surface-variant font-body-sm text-body-sm transition-colors">Preview</button>
+</div>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="rounded-xl bg-surface border border-outline-variant hover:border-outline relative transition-all flex flex-col group overflow-hidden hover:-translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(66,71,84,0.5)]">
+<div class="absolute top-0 left-0 w-1 h-full bg-secondary"></div>
+<div class="p-5 flex flex-col h-full gap-4">
+<div class="flex justify-between items-start">
+<div class="w-10 h-10 rounded-lg bg-secondary/10 border border-secondary/20 flex items-center justify-center text-secondary shrink-0">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">architecture</span>
+</div>
+<span class="px-2 py-1 rounded bg-surface-container-high border border-outline-variant font-eyebrow-mono text-eyebrow-mono text-on-surface-variant">STANDARD</span>
+</div>
+<div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-1">System Design Document</h3>
+<p class="font-code text-code text-on-surface-variant text-[12px] mb-3">18 sections · High-Level Architecture</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">Blueprint for defining software architecture, data models, and system interfaces.</p>
+</div>
+<div class="mt-auto pt-4 flex gap-3">
+<button class="flex-1 bg-surface-variant hover:bg-surface-container-highest border border-outline-variant text-on-surface font-body-sm text-body-sm font-medium py-2 px-4 rounded-lg transition-colors">Use template</button>
+<button class="px-4 py-2 rounded-lg border border-outline-variant text-on-surface hover:bg-surface-variant font-body-sm text-body-sm transition-colors">Preview</button>
+</div>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="rounded-xl bg-surface border border-outline-variant hover:border-outline relative transition-all flex flex-col group overflow-hidden hover:-translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(66,71,84,0.5)]">
+<div class="absolute top-0 left-0 w-1 h-full bg-tertiary"></div>
+<div class="p-5 flex flex-col h-full gap-4">
+<div class="flex justify-between items-start">
+<div class="w-10 h-10 rounded-lg bg-tertiary/10 border border-tertiary/20 flex items-center justify-center text-tertiary shrink-0">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">fact_check</span>
+</div>
+<span class="px-2 py-1 rounded bg-surface-container-high border border-outline-variant font-eyebrow-mono text-eyebrow-mono text-on-surface-variant">COMPANY</span>
+</div>
+<div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-1">Software Test Plan</h3>
+<p class="font-code text-code text-on-surface-variant text-[12px] mb-3">12 sections · QA Standard v2</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">Framework for planning and executing unit, integration, and system tests.</p>
+</div>
+<div class="mt-auto pt-4 flex gap-3">
+<button class="flex-1 bg-surface-variant hover:bg-surface-container-highest border border-outline-variant text-on-surface font-body-sm text-body-sm font-medium py-2 px-4 rounded-lg transition-colors">Use template</button>
+<button class="px-4 py-2 rounded-lg border border-outline-variant text-on-surface hover:bg-surface-variant font-body-sm text-body-sm transition-colors">Preview</button>
+</div>
+</div>
+</div>
+<!-- Card 4 -->
+<div class="rounded-xl bg-surface border border-outline-variant hover:border-outline relative transition-all flex flex-col group overflow-hidden hover:-translate-y-1 hover:shadow-[4px_4px_0px_0px_rgba(66,71,84,0.5)]">
+<div class="absolute top-0 left-0 w-1 h-full bg-surface-variant"></div>
+<div class="p-5 flex flex-col h-full gap-4">
+<div class="flex justify-between items-start">
+<div class="w-10 h-10 rounded-lg bg-surface-variant border border-outline-variant flex items-center justify-center text-on-surface-variant shrink-0">
+<span class="material-symbols-outlined text-[20px]" style="font-variation-settings: 'FILL' 1;">assignment</span>
+</div>
+<span class="px-2 py-1 rounded bg-surface-container-high border border-outline-variant font-eyebrow-mono text-eyebrow-mono text-on-surface-variant">ACADEMIC</span>
+</div>
+<div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-1">Project Scope Statement</h3>
+<p class="font-code text-code text-on-surface-variant text-[12px] mb-3">8 sections · Initial Phase</p>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-2">High-level definition of project deliverables, boundaries, and acceptance criteria.</p>
+</div>
+<div class="mt-auto pt-4 flex gap-3">
+<button class="flex-1 bg-surface-variant hover:bg-surface-container-highest border border-outline-variant text-on-surface font-body-sm text-body-sm font-medium py-2 px-4 rounded-lg transition-colors">Use template</button>
+<button class="px-4 py-2 rounded-lg border border-outline-variant text-on-surface hover:bg-surface-variant font-body-sm text-body-sm transition-colors">Preview</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Preview Drawer -->
+<aside class="w-96 shrink-0 border-l border-outline-variant bg-surface flex flex-col h-full shadow-[-8px_0_24px_rgba(0,0,0,0.5)] transform transition-transform duration-300 ease-out z-20">
+<div class="p-6 border-b border-outline-variant shrink-0 flex justify-between items-start">
+<div>
+<div class="flex items-center gap-2 mb-2">
+<span class="material-symbols-outlined text-primary text-[20px]" style="font-variation-settings: 'FILL' 1;">description</span>
+<span class="font-eyebrow-mono text-eyebrow-mono text-on-surface-variant tracking-widest">TEMPLATE PREVIEW</span>
+</div>
+<h2 class="font-headline-md text-headline-md text-on-surface">Software Requirements Spec</h2>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1">IEEE-830 Compliant</p>
+</div>
+<button class="w-8 h-8 flex items-center justify-center rounded-lg text-on-surface-variant hover:bg-surface-variant transition-colors">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+</div>
+<div class="flex-1 overflow-y-auto p-6 relative">
+<!-- Traceability Tree -->
+<div class="pl-6 relative">
+<!-- Section 1 -->
+<div class="relative traceability-line traceability-node pb-6">
+<div class="flex items-center justify-between mb-1">
+<span class="font-code text-code text-on-surface">1. Introduction</span>
+<span class="px-2 py-0.5 rounded bg-surface-variant border border-outline-variant font-eyebrow-mono text-[9px] text-on-surface">REQ</span>
+</div>
+<div class="pl-4 mt-2 space-y-2 relative border-l border-outline-variant ml-[-12px] pt-1 pb-1">
+<div class="flex items-center gap-2 pl-3 relative">
+<div class="absolute left-0 top-1/2 w-3 h-px bg-outline-variant"></div>
+<span class="font-code text-[12px] text-on-surface-variant">1.1 Purpose</span>
+</div>
+<div class="flex items-center gap-2 pl-3 relative">
+<div class="absolute left-0 top-1/2 w-3 h-px bg-outline-variant"></div>
+<span class="font-code text-[12px] text-on-surface-variant">1.2 Document Conventions</span>
+</div>
+<div class="flex items-center gap-2 pl-3 relative">
+<div class="absolute left-0 top-1/2 w-3 h-px bg-outline-variant"></div>
+<span class="font-code text-[12px] text-on-surface-variant">1.3 Intended Audience</span>
+</div>
+</div>
+</div>
+<!-- Section 2 -->
+<div class="relative traceability-line traceability-node pb-6">
+<div class="flex items-center justify-between mb-1">
+<span class="font-code text-code text-on-surface">2. Overall Description</span>
+<span class="px-2 py-0.5 rounded bg-surface-variant border border-outline-variant font-eyebrow-mono text-[9px] text-on-surface">REQ</span>
+</div>
+<!-- Guidance Snippet -->
+<div class="mt-2 p-3 rounded-lg bg-primary/5 border border-primary/20 flex gap-3 items-start">
+<span class="material-symbols-outlined text-primary text-[16px] mt-0.5">info</span>
+<p class="font-body-sm text-body-sm text-on-surface-variant text-[12px] leading-relaxed">
+                                        Ensure operational environment details map directly to the defined user characteristics.
+                                    </p>
+</div>
+</div>
+<!-- Section 3 -->
+<div class="relative traceability-line traceability-node pb-6">
+<div class="flex items-center justify-between mb-1">
+<span class="font-code text-code text-on-surface">3. System Features</span>
+<span class="px-2 py-0.5 rounded bg-surface-variant border border-outline-variant font-eyebrow-mono text-[9px] text-on-surface">REQ</span>
+</div>
+<div class="pl-4 mt-2 space-y-2 relative border-l border-outline-variant ml-[-12px] pt-1 pb-1">
+<div class="flex items-center gap-2 pl-3 relative">
+<div class="absolute left-0 top-1/2 w-3 h-px bg-outline-variant"></div>
+<span class="font-code text-[12px] text-on-surface-variant">3.1 System Feature 1</span>
+</div>
+<div class="flex items-center gap-2 pl-3 relative">
+<div class="absolute left-0 top-1/2 w-3 h-px bg-outline-variant"></div>
+<span class="font-code text-[12px] text-on-surface-variant">3.2 System Feature 2 (Optional)</span>
+</div>
+</div>
+</div>
+<!-- Section 4 -->
+<div class="relative traceability-line traceability-node">
+<div class="flex items-center justify-between mb-1">
+<span class="font-code text-code text-on-surface">4. External Interface Reqs</span>
+<span class="px-2 py-0.5 rounded bg-surface-variant border border-outline-variant font-eyebrow-mono text-[9px] text-on-surface-variant">OPT</span>
+</div>
+</div>
+</div>
+</div>
+<div class="p-6 border-t border-outline-variant bg-surface shrink-0">
+<button class="w-full bg-primary hover:bg-primary-container text-on-primary font-body-md text-body-md font-medium py-2.5 px-4 rounded-lg transition-colors flex items-center justify-center gap-2 shadow-[0_0_15px_rgba(77,142,255,0.2)]">
+<span class="material-symbols-outlined text-[18px]">add</span>
+                            Create document
+                        </button>
+</div>
+</aside>
+</div>
+</main>
+</div>
+</body></html>

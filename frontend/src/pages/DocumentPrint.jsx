@@ -1,4 +1,5 @@
 import { useMemo } from "react";
+import DOMPurify from "dompurify";
 import { Icon } from "../components/ui";
 import { Link, useParams } from "react-router-dom";
 import { useDocument } from "../api/documents";
@@ -113,7 +114,7 @@ export default function DocumentPrint() {
                 </h2>
                 {s.content && s.content.trim() ? (
                   <div className="prose-sm max-w-none leading-relaxed" style={{ color: "#333" }}
-                    dangerouslySetInnerHTML={{ __html: s.content }} />
+                    dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(s.content) }} />
                 ) : (
                   <p className="text-sm italic" style={{ color: "#aaa" }}>This section is empty.</p>
                 )}

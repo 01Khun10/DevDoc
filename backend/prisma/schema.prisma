@@ -345,7 +345,7 @@ model ShareToken {
   id        String    @id @default(cuid())
   token     String    @unique
   projectId String
-  expiresAt DateTime?
+  expiresAt DateTime
   project   Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
   createdAt DateTime  @default(now())
 

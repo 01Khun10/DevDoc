@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { Icon } from "../components/ui";
-import { Link, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 import { useValidationRuns } from "../api/validation";
 
 function scoreColor(s) {
@@ -26,20 +26,6 @@ export default function ProjectVersions() {
       </div>
 
       <div className="mx-auto max-w-4xl px-6 py-6">
-        {/* honest "coming soon" for full snapshots */}
-        <div className="mb-6 rounded-lg border p-6" style={{ borderColor: "var(--devdoc-border)", backgroundColor: "var(--devdoc-surface)", backgroundImage: "linear-gradient(var(--devdoc-grid-line) 1px, transparent 1px), linear-gradient(90deg, var(--devdoc-grid-line) 1px, transparent 1px)", backgroundSize: "24px 24px" }}>
-          <p className="mb-1 font-mono text-[11px] uppercase tracking-[0.15em] text-[var(--devdoc-highlight)]">Coming soon</p>
-          <h2 className="font-headline text-lg font-semibold">Full version snapshots are on the way</h2>
-          <p className="mt-2 max-w-xl text-sm text-[var(--devdoc-muted)]">
-            For now, every validation run records a readiness score — your project's history is captured below.
-            Explore trends in Analytics or run a fresh check in Validation.
-          </p>
-          <div className="mt-4 flex gap-2">
-            <Link to={`/projects/${id}/analytics`} className="rounded-md border px-3 py-1.5 text-sm" style={{ borderColor: "var(--devdoc-border)", color: "var(--devdoc-text-secondary)" }}>View analytics</Link>
-            <Link to={`/projects/${id}/validation`} className="rounded-md px-3 py-1.5 text-sm font-medium text-white" style={{ backgroundColor: "var(--devdoc-primary)" }}>Run validation</Link>
-          </div>
-        </div>
-
         {/* run history */}
         <p className="mb-3 font-mono text-[11px] uppercase tracking-[0.15em] text-[var(--devdoc-muted)]">Validation history</p>
         <div className="overflow-hidden rounded-lg border" style={{ borderColor: "var(--devdoc-border)", backgroundColor: "var(--devdoc-surface)" }}>

@@ -143,28 +143,6 @@ export default function Help() {
           ) : null}
         </section>
 
-        {/* feedback */}
-        <section id="feedback" className="max-w-3xl">
-          <Card>
-            <h3 className="mb-1 font-headline text-lg font-medium">Still stuck?</h3>
-            <p className="mb-4 text-sm text-[var(--devdoc-muted)]">
-              Send us a message and we'll get back to you.
-            </p>
-            <textarea
-              rows={4}
-              disabled
-              placeholder="Describe your issue or suggestion…"
-              className="w-full resize-none rounded-md border p-3 text-sm outline-none transition-colors placeholder:text-[var(--devdoc-subtle)] focus:border-[var(--devdoc-highlight)]"
-              style={{ backgroundColor: "var(--devdoc-surface-inset)", borderColor: "var(--devdoc-border)", color: "var(--devdoc-text)" }}
-            />
-            <div className="mt-3 flex justify-end">
-              <button disabled className="rounded-lg px-5 py-2.5 text-sm font-medium text-white opacity-60"
-                style={{ backgroundColor: "var(--devdoc-primary)" }}>
-                Feedback channel not configured
-              </button>
-            </div>
-          </Card>
-        </section>
       </div>
     </main>
   );

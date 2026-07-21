@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>DevDoc - Traceability Builder</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;family=Space+Grotesk:wght@500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-container": "#1d2027",
+                    "secondary-fixed": "#a2eeff",
+                    "error": "#ffb4ab",
+                    "tertiary": "#ffb786",
+                    "on-primary": "#002e6a",
+                    "primary-fixed": "#d8e2ff",
+                    "on-error": "#690005",
+                    "on-secondary": "#00363e",
+                    "on-primary-fixed": "#001a42",
+                    "surface-dim": "#10131a",
+                    "surface-bright": "#363941",
+                    "on-tertiary-fixed-variant": "#723600",
+                    "primary-container": "#4d8eff",
+                    "secondary-container": "#00cbe6",
+                    "background": "#10131a",
+                    "tertiary-fixed-dim": "#ffb786",
+                    "surface-variant": "#32353c",
+                    "surface-container-lowest": "#0b0e15",
+                    "secondary": "#5de6ff",
+                    "on-primary-container": "#00285d",
+                    "inverse-surface": "#e1e2ec",
+                    "inverse-primary": "#005ac2",
+                    "error-container": "#93000a",
+                    "on-secondary-container": "#00515d",
+                    "surface-container-highest": "#32353c",
+                    "surface-tint": "#adc6ff",
+                    "on-error-container": "#ffdad6",
+                    "tertiary-container": "#df7412",
+                    "on-secondary-fixed-variant": "#004e5a",
+                    "surface-container-high": "#272a31",
+                    "secondary-fixed-dim": "#2fd9f4",
+                    "outline-variant": "#424754",
+                    "surface-container-low": "#191b23",
+                    "on-surface": "#e1e2ec",
+                    "on-background": "#e1e2ec",
+                    "surface": "#10131a",
+                    "outline": "#8c909f",
+                    "on-tertiary-fixed": "#311400",
+                    "tertiary-fixed": "#ffdcc6",
+                    "on-surface-variant": "#c2c6d6",
+                    "primary": "#adc6ff",
+                    "on-tertiary-container": "#461f00",
+                    "inverse-on-surface": "#2e3038",
+                    "on-primary-fixed-variant": "#004395",
+                    "on-secondary-fixed": "#001f25",
+                    "on-tertiary": "#502400",
+                    "primary-fixed-dim": "#adc6ff"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "margin-mobile": "16px",
+                    "grid-pattern": "24px",
+                    "margin-desktop": "32px",
+                    "base": "4px",
+                    "gutter": "16px"
+            },
+            "fontFamily": {
+                    "code": [
+                            "JetBrains Mono"
+                    ],
+                    "body-sm": [
+                            "Inter"
+                    ],
+                    "body-md": [
+                            "Inter"
+                    ],
+                    "eyebrow-mono": [
+                            "JetBrains Mono"
+                    ],
+                    "headline-md": [
+                            "Space Grotesk"
+                    ],
+                    "headline-lg": [
+                            "Space Grotesk"
+                    ],
+                    "body-lg": [
+                            "Inter"
+                    ],
+                    "headline-sm": [
+                            "Space Grotesk"
+                    ]
+            },
+            "fontSize": {
+                    "code": [
+                            "13px",
+                            {
+                                    "lineHeight": "20px",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "body-sm": [
+                            "13px",
+                            {
+                                    "lineHeight": "1.5",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "body-md": [
+                            "14px",
+                            {
+                                    "lineHeight": "1.5",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "eyebrow-mono": [
+                            "11px",
+                            {
+                                    "lineHeight": "16px",
+                                    "letterSpacing": "0.15em",
+                                    "fontWeight": "500"
+                            }
+                    ],
+                    "headline-md": [
+                            "24px",
+                            {
+                                    "lineHeight": "1.3",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "headline-lg": [
+                            "32px",
+                            {
+                                    "lineHeight": "1.2",
+                                    "letterSpacing": "-0.02em",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "body-lg": [
+                            "16px",
+                            {
+                                    "lineHeight": "1.6",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "headline-sm": [
+                            "18px",
+                            {
+                                    "lineHeight": "1.4",
+                                    "fontWeight": "500"
+                            }
+                    ]
+            }
+          },
+        },
+      }
+    </script>
+<style>
+        body {
+            background-color: theme('colors.background');
+            color: theme('colors.on-background');
+        }
+        
+        .blueprint-grid {
+            background-size: 24px 24px;
+            background-image: linear-gradient(to right, rgba(66, 71, 84, 0.1) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(66, 71, 84, 0.1) 1px, transparent 1px);
+        }
+
+        .hairline-border {
+            border: 1px solid theme('colors.outline-variant');
+        }
+        
+        .trace-line {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background-color: theme('colors.outline-variant');
+            z-index: 0;
+            border-top: 1px dashed theme('colors.outline-variant');
+            background-color: transparent;
+        }
+
+        /* Isometric lift effect for active items */
+        .iso-lift {
+            box-shadow: 2px 2px 0px theme('colors.primary-container');
+            transform: translate(-2px, -2px);
+            transition: all 0.2s ease;
+        }
+        
+        .iso-lift:active {
+            box-shadow: 0px 0px 0px theme('colors.primary-container');
+            transform: translate(0px, 0px);
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: theme('colors.surface-bright');
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: theme('colors.outline');
+        }
+    </style>
+</head>
+<body class="h-screen w-full flex overflow-hidden bg-background">
+<!-- SideNavBar -->
+<nav class="bg-surface-container-low dark:bg-surface-container-low docked h-screen left-0 w-64 border-r border-outline-variant dark:border-outline-variant flat no shadows flex flex-col h-full py-6 gap-2 z-40 hidden md:flex shrink-0">
+<div class="px-6 mb-6">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded bg-primary-container flex items-center justify-center shrink-0">
+<span class="font-headline-sm text-headline-sm text-on-surface font-bold text-on-primary-container">PN</span>
+</div>
+<div>
+<h2 class="font-headline-sm text-headline-sm text-on-surface truncate">Project Name</h2>
+<p class="font-eyebrow-mono text-eyebrow-mono text-secondary truncate">Active Workspace</p>
+</div>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto px-4 flex flex-col gap-1">
+<a class="flex items-center gap-3 px-3 py-2 rounded-DEFAULT text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">dashboard</span>
+<span class="font-body-sm text-body-sm">Overview</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-DEFAULT text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">target</span>
+<span class="font-body-sm text-body-sm">Objectives</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-DEFAULT text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">description</span>
+<span class="font-body-sm text-body-sm">Documents</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-DEFAULT text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">topic</span>
+<span class="font-body-sm text-body-sm">Templates</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-DEFAULT text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">account_tree</span>
+<span class="font-body-sm text-body-sm">Use Cases</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-DEFAULT text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">rule</span>
+<span class="font-body-sm text-body-sm">Requirements</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-DEFAULT text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">architecture</span>
+<span class="font-body-sm text-body-sm">Design Elements</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-DEFAULT text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">fact_check</span>
+<span class="font-body-sm text-body-sm">Test Cases</span>
+</a>
+<!-- Active Tab -->
+<a class="flex items-center gap-3 px-3 py-2 rounded-DEFAULT text-secondary font-medium bg-secondary-container/10 border-r-2 border-secondary translate-x-1 transition-transform duration-200" href="#">
+<span class="material-symbols-outlined text-[20px]">hub</span>
+<span class="font-body-sm text-body-sm">Traceability</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-DEFAULT text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">verified</span>
+<span class="font-body-sm text-body-sm">Validation</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-DEFAULT text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">account_tree</span>
+<span class="font-body-sm text-body-sm">Diagrams</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-DEFAULT text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">analytics</span>
+<span class="font-body-sm text-body-sm">Analytics</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded-DEFAULT text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">history</span>
+<span class="font-body-sm text-body-sm">Versions</span>
+</a>
+<div class="mt-auto pt-4 border-t border-outline-variant">
+<a class="flex items-center gap-3 px-3 py-2 rounded-DEFAULT text-on-surface-variant dark:text-on-surface-variant hover:bg-surface-container-high dark:hover:bg-surface-container-high hover:text-on-surface transition-colors" href="#">
+<span class="material-symbols-outlined text-[20px]">settings</span>
+<span class="font-body-sm text-body-sm">Settings</span>
+</a>
+</div>
+</div>
+</nav>
+<!-- Main Content Area -->
+<div class="flex-1 flex flex-col h-screen overflow-hidden">
+<!-- TopAppBar -->
+<header class="bg-surface-container dark:bg-surface-container border-b border-outline-variant dark:border-outline-variant flat no shadows flex justify-between items-center w-full px-margin-desktop h-16 z-50 shrink-0">
+<div class="flex items-center gap-4">
+<div class="md:hidden">
+<button class="text-on-surface hover:bg-surface-variant p-2 rounded-full transition-colors flex items-center justify-center">
+<span class="material-symbols-outlined">menu</span>
+</button>
+</div>
+<h1 class="font-headline-sm text-headline-sm font-bold text-on-surface dark:text-on-surface">DevDoc</h1>
+</div>
+<div class="flex-1 max-w-xl mx-8 hidden md:block">
+<div class="relative w-full">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]">search</span>
+<input class="w-full bg-surface text-on-surface placeholder:text-on-surface-variant border-outline-variant rounded-full pl-10 pr-4 py-2 font-body-sm text-body-sm focus:border-primary focus:ring-1 focus:ring-primary transition-all" placeholder="Search documentation..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<button class="text-on-surface hover:bg-surface-variant p-2 rounded-full transition-colors flex items-center justify-center">
+<span class="material-symbols-outlined">dark_mode</span>
+</button>
+<button class="text-on-surface hover:bg-surface-variant p-2 rounded-full transition-colors flex items-center justify-center">
+<span class="material-symbols-outlined">help</span>
+</button>
+<div class="w-8 h-8 rounded-full bg-secondary-container overflow-hidden ml-2 flex-shrink-0 cursor-pointer hover:opacity-80 transition-opacity">
+<img alt="User Profile Avatar" class="w-full h-full object-cover" data-alt="A small, stylized profile avatar of a user in a dark mode UI, featuring a technical or clinical aesthetic with subtle blue and gray tones, clean vector style." src="https://lh3.googleusercontent.com/aida-public/AB6AXuA7Gj_xpf9WT8snil1opEVS0qbguFgzPkGXVuzQhP2aoP_hL9fIQqkh0LGJS0UIBJa02JpGkwUjDfgByTQFeRaUcj9AnEhi01gFkg6YTDJE6vBFINZ9YLH1mb1tSxZcqCHzu9cMrV_jFbARGuMOLbABFbcsLrd1bDUtncHAhS_QuM6Aey5hM5fRQdZ-2JbSu7zNU2j7sYujcaDZnFiszom-61BTn58JJKkBh07TIZ-L3-cWrGw7zcV8XE1W8jK-0CB51q79U0a5Huo"/>
+</div>
+</div>
+</header>
+<!-- Canvas / Blueprint Area -->
+<main class="flex-1 overflow-y-auto blueprint-grid relative">
+<div class="max-w-[1440px] mx-auto px-margin-mobile md:px-margin-desktop py-8 flex flex-col gap-6 h-full">
+<!-- Page Header & Tabs -->
+<div class="flex flex-col gap-4 shrink-0">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-on-surface">Traceability</h2>
+<p class="font-body-lg text-body-lg text-on-surface-variant mt-1">Link artifacts across the chain</p>
+</div>
+<div class="flex items-center gap-1 border-b border-outline-variant w-full overflow-x-auto pb-[-1px]">
+<button class="px-4 py-2 font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface hover:bg-surface-variant transition-colors whitespace-nowrap">Grid</button>
+<button class="px-4 py-2 font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface hover:bg-surface-variant transition-colors whitespace-nowrap">Graph</button>
+<button class="px-4 py-2 font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface hover:bg-surface-variant transition-colors whitespace-nowrap">Map</button>
+<button class="px-4 py-2 font-body-sm text-body-sm text-primary font-bold border-b-2 border-primary -mb-[1px] whitespace-nowrap">Builder</button>
+<button class="px-4 py-2 font-body-sm text-body-sm text-on-surface-variant hover:text-on-surface hover:bg-surface-variant transition-colors whitespace-nowrap">Suggestions</button>
+</div>
+</div>
+<!-- Builder Workspace -->
+<div class="flex-1 flex flex-col gap-6 min-h-0">
+<!-- Top Section: Guided Picker -->
+<div class="flex flex-col lg:flex-row gap-gutter h-[400px] shrink-0">
+<!-- Left Column: Source -->
+<div class="flex-1 bg-surface hairline-border rounded-lg flex flex-col overflow-hidden relative group">
+<div class="p-3 border-b border-outline-variant bg-surface-container-lowest shrink-0 flex items-center justify-between">
+<span class="font-eyebrow-mono text-eyebrow-mono text-on-surface-variant">SOURCE_ARTIFACT</span>
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant">filter_list</span>
+</div>
+<div class="p-3 border-b border-outline-variant shrink-0">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-2 top-1/2 -translate-y-1/2 text-on-surface-variant text-[16px]">search</span>
+<input class="w-full bg-background text-on-surface border-outline-variant rounded-DEFAULT pl-8 pr-2 py-1.5 font-code text-code focus:border-secondary focus:ring-1 focus:ring-secondary transition-all" placeholder="Search source..." type="text"/>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto p-2 flex flex-col gap-1">
+<!-- Source Item 1 (Active) -->
+<div class="p-2 flex flex-col gap-2 rounded bg-surface-container-high hairline-border iso-lift cursor-pointer relative overflow-hidden">
+<div class="absolute inset-y-0 left-0 w-1 bg-tertiary"></div>
+<div class="flex items-center gap-2 pl-2">
+<span class="px-1.5 py-0.5 rounded-sm bg-tertiary/20 text-tertiary font-code text-[10px] uppercase tracking-wider">REQ</span>
+<span class="font-code text-code text-on-surface truncate">AUTH-001</span>
+</div>
+<div class="pl-2">
+<p class="font-body-sm text-body-sm text-on-surface-variant truncate">User authentication via OAuth2</p>
+</div>
+</div>
+<!-- Source Item 2 -->
+<div class="p-2 flex flex-col gap-2 rounded hover:bg-surface-variant cursor-pointer border border-transparent transition-colors relative">
+<div class="flex items-center gap-2 pl-2">
+<span class="px-1.5 py-0.5 rounded-sm bg-tertiary/20 text-tertiary font-code text-[10px] uppercase tracking-wider">REQ</span>
+<span class="font-code text-code text-on-surface truncate">AUTH-002</span>
+</div>
+<div class="pl-2">
+<p class="font-body-sm text-body-sm text-on-surface-variant truncate">Multi-factor authentication (MFA) enforcement</p>
+</div>
+</div>
+<!-- Source Item 3 -->
+<div class="p-2 flex flex-col gap-2 rounded hover:bg-surface-variant cursor-pointer border border-transparent transition-colors relative">
+<div class="flex items-center gap-2 pl-2">
+<span class="px-1.5 py-0.5 rounded-sm bg-primary/20 text-primary font-code text-[10px] uppercase tracking-wider">UC</span>
+<span class="font-code text-code text-on-surface truncate">UC-LOGIN-01</span>
+</div>
+<div class="pl-2">
+<p class="font-body-sm text-body-sm text-on-surface-variant truncate">Standard user login flow</p>
+</div>
+</div>
+</div>
+</div>
+<!-- Center: Link Action -->
+<div class="flex lg:flex-col items-center justify-center gap-4 py-4 lg:py-0 shrink-0 w-full lg:w-48 relative">
+<!-- Visual connection line (desktop only) -->
+<div class="hidden lg:block absolute top-1/2 left-0 right-0 h-px bg-outline-variant -z-10 border-t border-dashed border-outline-variant" style="background:transparent;"></div>
+<div class="bg-surface hairline-border rounded-full p-2 flex items-center justify-center z-10">
+<span class="material-symbols-outlined text-secondary">link</span>
+</div>
+<div class="bg-surface-container hairline-border rounded-DEFAULT p-3 flex flex-col gap-3 w-full z-10">
+<div class="flex flex-col gap-1">
+<label class="font-eyebrow-mono text-eyebrow-mono text-on-surface-variant">RELATION_TYPE</label>
+<select class="w-full bg-background text-on-surface border-outline-variant rounded-DEFAULT py-1.5 px-2 font-code text-code focus:border-secondary focus:ring-1 focus:ring-secondary text-sm">
+<option>Implements</option>
+<option>Verifies</option>
+<option>Depends On</option>
+<option>Satisfies</option>
+</select>
+</div>
+<button class="w-full bg-primary text-on-primary font-body-sm text-body-sm font-medium py-2 rounded-lg hover:bg-primary/90 transition-colors">
+                                    Create Link
+                                </button>
+</div>
+</div>
+<!-- Right Column: Target -->
+<div class="flex-1 bg-surface hairline-border rounded-lg flex flex-col overflow-hidden">
+<div class="p-3 border-b border-outline-variant bg-surface-container-lowest shrink-0 flex items-center justify-between">
+<span class="font-eyebrow-mono text-eyebrow-mono text-on-surface-variant">TARGET_ARTIFACT</span>
+<span class="material-symbols-outlined text-[16px] text-on-surface-variant">filter_list</span>
+</div>
+<div class="p-3 border-b border-outline-variant shrink-0">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-2 top-1/2 -translate-y-1/2 text-on-surface-variant text-[16px]">search</span>
+<input class="w-full bg-background text-on-surface border-outline-variant rounded-DEFAULT pl-8 pr-2 py-1.5 font-code text-code focus:border-secondary focus:ring-1 focus:ring-secondary transition-all" placeholder="Search target..." type="text"/>
+</div>
+</div>
+<div class="flex-1 overflow-y-auto p-2 flex flex-col gap-1">
+<!-- Target Item 1 -->
+<div class="p-2 flex flex-col gap-2 rounded hover:bg-surface-variant cursor-pointer border border-transparent transition-colors relative">
+<div class="flex items-center gap-2 pl-2">
+<span class="px-1.5 py-0.5 rounded-sm bg-secondary/20 text-secondary font-code text-[10px] uppercase tracking-wider">DSGN</span>
+<span class="font-code text-code text-on-surface truncate">DB-SCHEMA-USERS</span>
+</div>
+<div class="pl-2">
+<p class="font-body-sm text-body-sm text-on-surface-variant truncate">User credentials table schema</p>
+</div>
+</div>
+<!-- Target Item 2 (Active/Selected as Target) -->
+<div class="p-2 flex flex-col gap-2 rounded bg-surface-container-high hairline-border iso-lift cursor-pointer relative overflow-hidden">
+<div class="absolute inset-y-0 left-0 w-1 bg-secondary"></div>
+<div class="flex items-center gap-2 pl-2">
+<span class="px-1.5 py-0.5 rounded-sm bg-secondary/20 text-secondary font-code text-[10px] uppercase tracking-wider">DSGN</span>
+<span class="font-code text-code text-on-surface truncate">API-AUTH-EP</span>
+</div>
+<div class="pl-2">
+<p class="font-body-sm text-body-sm text-on-surface-variant truncate">Authentication REST API endpoints</p>
+</div>
+</div>
+<!-- Target Item 3 -->
+<div class="p-2 flex flex-col gap-2 rounded hover:bg-surface-variant cursor-pointer border border-transparent transition-colors relative">
+<div class="flex items-center gap-2 pl-2">
+<span class="px-1.5 py-0.5 rounded-sm bg-error/20 text-error font-code text-[10px] uppercase tracking-wider">TEST</span>
+<span class="font-code text-code text-on-surface truncate">TC-AUTH-01</span>
+</div>
+<div class="pl-2">
+<p class="font-body-sm text-body-sm text-on-surface-variant truncate">Verify successful login with valid credentials</p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<!-- Bottom Section: Existing Links -->
+<div class="flex-1 bg-surface hairline-border rounded-lg flex flex-col overflow-hidden min-h-[200px]">
+<div class="p-3 border-b border-outline-variant bg-surface-container-lowest shrink-0">
+<span class="font-eyebrow-mono text-eyebrow-mono text-on-surface-variant">EXISTING_LINKS</span>
+</div>
+<div class="flex-1 overflow-y-auto p-4 flex flex-col gap-4 relative">
+<!-- Link Row 1 -->
+<div class="flex items-center justify-between group relative">
+<div class="flex-1 flex items-center relative z-10">
+<!-- Source Chip -->
+<div class="bg-surface-container hairline-border px-3 py-1.5 rounded flex items-center gap-2 w-48 shrink-0">
+<span class="w-2 h-2 rounded-full bg-tertiary"></span>
+<span class="font-code text-code text-on-surface truncate">AUTH-001</span>
+</div>
+<!-- Trace Line & Label -->
+<div class="flex-1 flex items-center justify-center relative h-8 mx-4">
+<div class="absolute inset-0 top-1/2 -translate-y-[0.5px] border-t border-dashed border-outline-variant -z-10"></div>
+<div class="bg-surface-container-high px-2 py-0.5 rounded border border-outline-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px] text-secondary">arrow_forward</span>
+<span class="font-eyebrow-mono text-[10px] text-on-surface-variant uppercase">Implements</span>
+</div>
+</div>
+<!-- Target Chip -->
+<div class="bg-surface-container hairline-border px-3 py-1.5 rounded flex items-center gap-2 w-48 shrink-0">
+<span class="w-2 h-2 rounded-full bg-secondary"></span>
+<span class="font-code text-code text-on-surface truncate">API-AUTH-EP</span>
+</div>
+</div>
+<div class="ml-4 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+<button class="text-error hover:bg-error/10 p-1.5 rounded border border-transparent hover:border-error/30 transition-colors flex items-center justify-center">
+<span class="material-symbols-outlined text-[18px]">link_off</span>
+</button>
+</div>
+</div>
+<!-- Link Row 2 -->
+<div class="flex items-center justify-between group relative">
+<div class="flex-1 flex items-center relative z-10">
+<!-- Source Chip -->
+<div class="bg-surface-container hairline-border px-3 py-1.5 rounded flex items-center gap-2 w-48 shrink-0">
+<span class="w-2 h-2 rounded-full bg-tertiary"></span>
+<span class="font-code text-code text-on-surface truncate">AUTH-001</span>
+</div>
+<!-- Trace Line & Label -->
+<div class="flex-1 flex items-center justify-center relative h-8 mx-4">
+<div class="absolute inset-0 top-1/2 -translate-y-[0.5px] border-t border-dashed border-outline-variant -z-10"></div>
+<div class="bg-surface-container-high px-2 py-0.5 rounded border border-outline-variant flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px] text-error">arrow_forward</span>
+<span class="font-eyebrow-mono text-[10px] text-on-surface-variant uppercase">Verifies</span>
+</div>
+</div>
+<!-- Target Chip -->
+<div class="bg-surface-container hairline-border px-3 py-1.5 rounded flex items-center gap-2 w-48 shrink-0">
+<span class="w-2 h-2 rounded-full bg-error"></span>
+<span class="font-code text-code text-on-surface truncate">TC-AUTH-01</span>
+</div>
+</div>
+<div class="ml-4 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+<button class="text-error hover:bg-error/10 p-1.5 rounded border border-transparent hover:border-error/30 transition-colors flex items-center justify-center">
+<span class="material-symbols-outlined text-[18px]">link_off</span>
+</button>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

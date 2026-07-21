@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>DevDoc Sign In</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400&amp;family=JetBrains+Mono:wght@400;500;700&amp;family=Space+Grotesk:wght@600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "on-secondary": "#00363e",
+                      "on-error-container": "#ffdad6",
+                      "inverse-primary": "#005ac2",
+                      "tertiary-fixed-dim": "#ffb786",
+                      "outline-variant": "#424754",
+                      "inverse-on-surface": "#2e3038",
+                      "on-tertiary": "#502400",
+                      "primary-container": "#4d8eff",
+                      "secondary-container": "#00cbe6",
+                      "surface-tint": "#adc6ff",
+                      "on-secondary-fixed": "#001f25",
+                      "on-tertiary-fixed-variant": "#723600",
+                      "surface-dim": "#10131a",
+                      "on-secondary-container": "#00515d",
+                      "background": "#10131a",
+                      "surface-bright": "#363941",
+                      "surface": "#10131a",
+                      "surface-container-low": "#191b23",
+                      "on-primary-fixed-variant": "#004395",
+                      "on-surface-variant": "#c2c6d6",
+                      "tertiary-container": "#df7412",
+                      "on-primary-container": "#00285d",
+                      "surface-container-lowest": "#0b0e15",
+                      "on-error": "#690005",
+                      "error-container": "#93000a",
+                      "error": "#ffb4ab",
+                      "surface-container-high": "#272a31",
+                      "on-surface": "#e1e2ec",
+                      "on-secondary-fixed-variant": "#004e5a",
+                      "surface-variant": "#32353c",
+                      "secondary": "#5de6ff",
+                      "on-background": "#e1e2ec",
+                      "surface-container": "#1d2027",
+                      "tertiary": "#ffb786",
+                      "on-tertiary-container": "#461f00",
+                      "secondary-fixed-dim": "#2fd9f4",
+                      "primary-fixed": "#d8e2ff",
+                      "on-primary": "#002e6a",
+                      "surface-container-highest": "#32353c",
+                      "inverse-surface": "#e1e2ec",
+                      "on-tertiary-fixed": "#311400",
+                      "primary-fixed-dim": "#adc6ff",
+                      "outline": "#8c909f",
+                      "on-primary-fixed": "#001a42",
+                      "secondary-fixed": "#a2eeff",
+                      "primary": "#adc6ff",
+                      "tertiary-fixed": "#ffdcc6",
+                      "canvas": "#0B1526",
+                      "card": "#16273F",
+                      "blueprint": "#33517E",
+                      "input-dark": "#0D1A2E",
+                      "cyan-accent": "#22D3EE",
+                      "btn-primary": "#3B82F6"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.25rem",
+                      "lg": "0.5rem",
+                      "xl": "0.75rem",
+                      "full": "9999px"
+              },
+              "spacing": {
+                      "unit": "4px",
+                      "margin-mobile": "16px",
+                      "gutter": "24px",
+                      "margin-desktop": "48px",
+                      "container-max": "1280px"
+              },
+              "fontFamily": {
+                      "code-block": [
+                              "JetBrains Mono"
+                      ],
+                      "h2": [
+                              "Space Grotesk"
+                      ],
+                      "h1-mobile": [
+                              "Space Grotesk"
+                      ],
+                      "h3": [
+                              "Space Grotesk"
+                      ],
+                      "body-md": [
+                              "Inter"
+                      ],
+                      "h1": [
+                              "Space Grotesk"
+                      ],
+                      "body-lg": [
+                              "Inter"
+                      ],
+                      "label-sm": [
+                              "JetBrains Mono"
+                      ]
+              },
+              "fontSize": {
+                      "code-block": [
+                              "14px",
+                              {
+                                      "lineHeight": "1.7",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "h2": [
+                              "30px",
+                              {
+                                      "lineHeight": "1.3",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "h1-mobile": [
+                              "32px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "h3": [
+                              "24px",
+                              {
+                                      "lineHeight": "1.3",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "body-md": [
+                              "16px",
+                              {
+                                      "lineHeight": "1.6",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "h1": [
+                              "40px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "body-lg": [
+                              "18px",
+                              {
+                                      "lineHeight": "1.6",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "label-sm": [
+                              "12px",
+                              {
+                                      "lineHeight": "1",
+                                      "letterSpacing": "0.05em",
+                                      "fontWeight": "500"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+      </script>
+<style>
+        .bg-blueprint-grid {
+            background-size: 40px 40px;
+            background-image: 
+                linear-gradient(to right, rgba(51, 81, 126, 0.1) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(51, 81, 126, 0.1) 1px, transparent 1px);
+        }
+        .vignette {
+            background: radial-gradient(circle at center, transparent 0%, #0B1526 100%);
+        }
+    </style>
+</head>
+<body class="bg-canvas min-h-screen flex items-center justify-center relative overflow-hidden font-body-md text-on-surface">
+<!-- Ambient Background -->
+<div class="absolute inset-0 bg-blueprint-grid"></div>
+<div class="absolute inset-0 vignette pointer-events-none"></div>
+<!-- Main Content Container -->
+<main class="relative z-10 w-full max-w-[400px] px-margin-mobile md:px-0">
+<!-- Sign In Card -->
+<div class="bg-card border border-blueprint rounded-lg p-8 relative shadow-[0_4px_20px_rgba(59,130,246,0.05)]">
+<!-- Header -->
+<div class="text-center mb-8">
+<div class="flex flex-col items-center gap-2 mb-4">
+<span class="font-h2 text-h2 lowercase text-on-surface tracking-tight">devdoc</span>
+<span class="font-label-sm text-label-sm text-outline px-2 py-1 border border-blueprint/50 rounded bg-input-dark/50">SIGN IN</span>
+</div>
+<h1 class="font-h1-mobile md:font-h1 text-h1-mobile md:text-h1 text-on-surface">Welcome back</h1>
+</div>
+<!-- Form -->
+<form class="space-y-6">
+<!-- Email Field (Error State Example available by adding classes below) -->
+<!-- To test error: add 'border-error' to input, remove 'border-blueprint'. Show error message span. -->
+<div class="space-y-2">
+<label class="block font-label-sm text-label-sm text-on-surface-variant" for="email">Email Address</label>
+<input class="w-full bg-input-dark border border-blueprint rounded-DEFAULT px-4 py-3 text-on-surface font-code-block text-code-block focus:outline-none focus:border-cyan-accent focus:ring-1 focus:ring-cyan-accent transition-colors" id="email" name="email" placeholder="name@company.com" type="email" value="architect@devdoc.local"/>
+<!-- Error Message (Hidden by default) -->
+<!-- <span class="font-label-sm text-label-sm text-error flex items-center gap-1 mt-1">
+                        <span class="material-symbols-outlined text-[14px]">error</span> Invalid credentials
+                    </span> -->
+</div>
+<!-- Password Field -->
+<div class="space-y-2">
+<label class="block font-label-sm text-label-sm text-on-surface-variant" for="password">Password</label>
+<div class="relative">
+<input class="w-full bg-input-dark border border-blueprint rounded-DEFAULT px-4 py-3 text-on-surface font-code-block text-code-block focus:outline-none focus:border-cyan-accent focus:ring-1 focus:ring-cyan-accent transition-colors pr-10" id="password" name="password" type="password" value="••••••••"/>
+<button aria-label="Toggle password visibility" class="absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant hover:text-cyan-accent transition-colors" type="button">
+<span class="material-symbols-outlined text-[20px]">visibility</span>
+</button>
+</div>
+</div>
+<!-- Remember & Forgot -->
+<div class="flex items-center justify-between">
+<label class="flex items-center gap-2 cursor-pointer group">
+<input class="w-4 h-4 rounded-sm border-blueprint bg-input-dark text-btn-primary focus:ring-cyan-accent focus:ring-offset-input-dark" type="checkbox"/>
+<span class="font-body-md text-[14px] text-on-surface-variant group-hover:text-on-surface transition-colors">Remember me</span>
+</label>
+<a class="font-body-md text-[14px] text-btn-primary hover:text-cyan-accent transition-colors" href="#">Forgot password?</a>
+</div>
+<!-- Primary Action (Loading state example available) -->
+<!-- To test loading: add 'opacity-80 cursor-not-allowed' to button, show spinner, hide text -->
+<button class="w-full bg-btn-primary hover:bg-btn-primary/90 text-on-surface font-code-block text-code-block font-bold rounded-DEFAULT py-3 flex items-center justify-center gap-2 transition-all relative overflow-hidden group" type="submit">
+<span class="relative z-10">Sign in</span>
+<!-- Loading Spinner (Hidden by default) -->
+<!-- <span class="material-symbols-outlined animate-spin text-[20px]">progress_activity</span> -->
+<div class="absolute inset-0 bg-white/20 translate-y-[100%] group-hover:translate-y-0 transition-transform duration-300"></div>
+</button>
+<!-- Divider -->
+<div class="relative flex items-center py-2">
+<div class="flex-grow border-t border-blueprint"></div>
+<span class="flex-shrink-0 mx-4 font-label-sm text-label-sm text-outline">OR</span>
+<div class="flex-grow border-t border-blueprint"></div>
+</div>
+<!-- Secondary Action -->
+<button class="w-full bg-transparent border border-blueprint hover:border-cyan-accent/50 hover:bg-input-dark text-cyan-accent font-code-block text-code-block rounded-DEFAULT py-3 flex flex-col items-center justify-center transition-all" type="button">
+<span>Try the demo project</span>
+<span class="text-[10px] text-cyan-accent/70 mt-1">demo@devdoc.local</span>
+</button>
+</form>
+<!-- Bottom Link -->
+<div class="mt-8 text-center">
+<a class="font-body-md text-[14px] text-on-surface-variant hover:text-btn-primary transition-colors" href="#">
+                    New to DevDoc? <span class="text-btn-primary">Create an account</span>
+</a>
+</div>
+<!-- Title Block Stamp -->
+<div class="absolute bottom-2 right-4 font-label-sm text-[10px] text-blueprint opacity-50 tracking-widest">
+                rev 3.0
+            </div>
+</div>
+<!-- Microcopy Footer -->
+<div class="mt-8 text-center">
+<p class="font-label-sm text-label-sm text-outline opacity-60">
+                Structured docs • Validation • Traceability • Export
+            </p>
+</div>
+</main>
+<script>
+        // Simple password toggle logic for the demo
+        document.querySelector('button[aria-label="Toggle password visibility"]').addEventListener('click', function() {
+            const input = document.getElementById('password');
+            const icon = this.querySelector('span');
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.textContent = 'visibility_off';
+            } else {
+                input.type = 'password';
+                icon.textContent = 'visibility';
+            }
+        });
+    </script>
+</body></html>

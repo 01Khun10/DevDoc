@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>DevDoc - Documents Library</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500;600&amp;family=Space+Grotesk:wght@500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "secondary-fixed-dim": "#2fd9f4",
+                      "on-surface": "#e1e2ec",
+                      "inverse-surface": "#e1e2ec",
+                      "surface-container": "#1d2027",
+                      "on-tertiary-fixed": "#311400",
+                      "surface-dim": "#10131a",
+                      "on-primary-fixed-variant": "#004395",
+                      "on-surface-variant": "#c2c6d6",
+                      "secondary-container": "#00cbe6",
+                      "on-primary-container": "#00285d",
+                      "surface-container-high": "#272a31",
+                      "primary-container": "#4d8eff",
+                      "background": "#10131a",
+                      "secondary-fixed": "#a2eeff",
+                      "tertiary-fixed": "#ffdcc6",
+                      "tertiary-container": "#df7412",
+                      "surface-container-lowest": "#0b0e15",
+                      "surface-tint": "#adc6ff",
+                      "outline": "#8c909f",
+                      "primary-fixed-dim": "#adc6ff",
+                      "on-error": "#690005",
+                      "surface-container-low": "#191b23",
+                      "on-primary": "#002e6a",
+                      "on-secondary-fixed-variant": "#004e5a",
+                      "on-primary-fixed": "#001a42",
+                      "inverse-on-surface": "#2e3038",
+                      "on-secondary-container": "#00515d",
+                      "on-background": "#e1e2ec",
+                      "surface": "#10131a",
+                      "secondary": "#5de6ff",
+                      "on-secondary-fixed": "#001f25",
+                      "on-error-container": "#ffdad6",
+                      "surface-bright": "#363941",
+                      "on-tertiary": "#502400",
+                      "inverse-primary": "#005ac2",
+                      "tertiary": "#ffb786",
+                      "outline-variant": "#424754",
+                      "surface-variant": "#32353c",
+                      "error-container": "#93000a",
+                      "on-secondary": "#00363e",
+                      "tertiary-fixed-dim": "#ffb786",
+                      "on-tertiary-fixed-variant": "#723600",
+                      "primary-fixed": "#d8e2ff",
+                      "error": "#ffb4ab",
+                      "surface-container-highest": "#32353c",
+                      "primary": "#adc6ff",
+                      "on-tertiary-container": "#461f00"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "grid-pattern": "24px",
+                      "margin-mobile": "16px",
+                      "base": "4px",
+                      "margin-desktop": "32px",
+                      "gutter": "16px"
+              },
+              "fontFamily": {
+                      "headline-md": [
+                              "Space Grotesk"
+                      ],
+                      "eyebrow-mono": [
+                              "JetBrains Mono"
+                      ],
+                      "body-md": [
+                              "Inter"
+                      ],
+                      "headline-sm": [
+                              "Space Grotesk"
+                      ],
+                      "body-lg": [
+                              "Inter"
+                      ],
+                      "headline-lg": [
+                              "Space Grotesk"
+                      ],
+                      "code": [
+                              "JetBrains Mono"
+                      ],
+                      "body-sm": [
+                              "Inter"
+                      ]
+              },
+              "fontSize": {
+                      "headline-md": [
+                              "24px",
+                              {
+                                      "lineHeight": "1.3",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "eyebrow-mono": [
+                              "11px",
+                              {
+                                      "lineHeight": "16px",
+                                      "letterSpacing": "0.15em",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "body-md": [
+                              "14px",
+                              {
+                                      "lineHeight": "1.5",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-sm": [
+                              "18px",
+                              {
+                                      "lineHeight": "1.4",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "body-lg": [
+                              "16px",
+                              {
+                                      "lineHeight": "1.6",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-lg": [
+                              "32px",
+                              {
+                                      "lineHeight": "1.2",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "code": [
+                              "13px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "body-sm": [
+                              "13px",
+                              {
+                                      "lineHeight": "1.5",
+                                      "fontWeight": "400"
+                              }
+                      ]
+              }
+            },
+          }
+        }
+      </script>
+<style>
+        .blueprint-grid {
+            background-size: 24px 24px;
+            background-image: 
+                linear-gradient(to right, rgba(51, 81, 126, 0.1) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(51, 81, 126, 0.1) 1px, transparent 1px);
+        }
+      </style>
+</head>
+<body class="bg-background text-on-background min-h-screen blueprint-grid selection:bg-primary-container selection:text-on-primary-container">
+<!-- TopAppBar -->
+<header class="bg-surface-container border-b border-outline-variant flex justify-between items-center w-full px-margin-desktop h-16 z-50 sticky top-0 full-width">
+<div class="flex items-center gap-4">
+<span class="font-headline-sm text-headline-sm font-bold text-on-surface">DevDoc</span>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative hidden md:flex items-center">
+<span class="material-symbols-outlined absolute left-3 text-on-surface-variant" style="font-variation-settings: 'FILL' 0;">search</span>
+<input class="bg-surface border-outline-variant border rounded text-body-sm font-body-sm pl-10 pr-4 py-1.5 text-on-surface placeholder:text-on-surface-variant focus:border-secondary focus:ring-1 focus:ring-secondary focus:outline-none w-64 transition-all" placeholder="Search..." type="text"/>
+</div>
+<button aria-label="Dark Mode" class="p-2 text-on-surface hover:bg-surface-variant transition-colors rounded-full">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">dark_mode</span>
+</button>
+<button aria-label="Help" class="p-2 text-on-surface hover:bg-surface-variant transition-colors rounded-full">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">help</span>
+</button>
+<div class="w-8 h-8 rounded-full bg-surface-variant border border-outline-variant overflow-hidden ml-2 cursor-pointer">
+<img alt="User Profile Avatar" class="w-full h-full object-cover" data-alt="A small, professional user profile avatar showing a modern, diverse professional in a studio setting. The lighting is crisp and the background is a neutral cool tone, fitting a technical documentation platform. 50-100 words." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBXDnaj_tiDMacgzjOfYhicGBgTWcGBUlyjmalEQz-ivJHe4a_cHjWLMMxNQDspDJZPkvQl1y39aXw0IzBprz-4yRlOnRYno0XqtpWUWyrdpj_N73nag3m0S_6DS1NUACkYHNhrmRT6JzAdHbUIi0DEuV0HPCbjbT_kvij6z8L6o4V-sQI_Q9ahpXdi6ZFoGtzY1ox2m31r-uQZe7X1DeOKGQlCYyUxMsigKyyELcvnUig-2qQ501CoaSHsU4hujBBHh5O-Sgm1TBU"/>
+</div>
+</div>
+</header>
+<div class="flex h-[calc(100vh-4rem)] overflow-hidden">
+<!-- SideNavBar -->
+<nav class="bg-surface-container-low border-r border-outline-variant hidden md:flex flex-col h-full w-64 flex-shrink-0 z-40 overflow-y-auto">
+<div class="p-6 border-b border-outline-variant">
+<div class="flex items-center gap-3 mb-2">
+<div class="w-10 h-10 rounded border border-outline-variant bg-surface-container-high flex items-center justify-center overflow-hidden shrink-0">
+<img alt="Project Avatar" class="w-full h-full object-cover" data-alt="A stylized geometric project avatar consisting of sharp, overlapping technical shapes in deep blues and bright cyan. It evokes a sense of architectural structure and blueprint precision, matching the clinical technical minimal aesthetic. 50-100 words." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDH3D8X2bN2JMlQ2A6MvrsszZDGojJ1kFxh28rhGmE3IuXM8PK3Pyg8Q-DAjj72ENYVg59UkV7kYMiN76Y7AJVSFFXfIakLnuP5DzQR3trMAHqJc9ubFv9-TqZ0Ke8ujfhhTgvcO-sZ6NqbJrlsma60hfz29eOAtAEtdq1JlXwUWqyW5DpmnExqUmd4vYrUD0kZ9THCUsyLd7vOad_rXB0Kb5LDsrgxnXk6zEqXIsYcDr2agHoHuFCq6fmSwxSh0Z5qIgKm7uOBZ0Y"/>
+</div>
+<div class="overflow-hidden">
+<h2 class="font-headline-sm text-headline-sm text-on-surface truncate">Project Name</h2>
+<p class="font-eyebrow-mono text-eyebrow-mono text-on-surface-variant truncate">Active Workspace</p>
+</div>
+</div>
+</div>
+<div class="flex flex-col py-6 gap-2 px-4">
+<a class="flex items-center gap-3 px-3 py-2 rounded text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-body-sm text-body-sm" href="#">
+<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 0;">dashboard</span>
+<span>Overview</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-body-sm text-body-sm" href="#">
+<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 0;">target</span>
+<span>Objectives</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded text-secondary font-medium bg-secondary-container/10 border-r-2 border-secondary translate-x-1 transition-transform duration-200 font-body-sm text-body-sm" href="#">
+<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 1;">description</span>
+<span>Documents</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-body-sm text-body-sm" href="#">
+<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 0;">topic</span>
+<span>Templates</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-body-sm text-body-sm" href="#">
+<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 0;">account_tree</span>
+<span>Use Cases</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-body-sm text-body-sm" href="#">
+<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 0;">rule</span>
+<span>Requirements</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-body-sm text-body-sm" href="#">
+<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 0;">architecture</span>
+<span>Design Elements</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-body-sm text-body-sm" href="#">
+<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 0;">fact_check</span>
+<span>Test Cases</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-body-sm text-body-sm" href="#">
+<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 0;">hub</span>
+<span>Traceability</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-body-sm text-body-sm" href="#">
+<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 0;">verified</span>
+<span>Validation</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-body-sm text-body-sm" href="#">
+<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 0;">account_tree</span>
+<span>Diagrams</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-body-sm text-body-sm" href="#">
+<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 0;">analytics</span>
+<span>Analytics</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-body-sm text-body-sm" href="#">
+<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 0;">history</span>
+<span>Versions</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2 rounded text-on-surface-variant hover:bg-surface-container-high hover:text-on-surface transition-colors font-body-sm text-body-sm mt-auto" href="#">
+<span class="material-symbols-outlined text-lg" style="font-variation-settings: 'FILL' 0;">settings</span>
+<span>Settings</span>
+</a>
+</div>
+</nav>
+<!-- Main Content Area -->
+<main class="flex-1 overflow-y-auto relative">
+<!-- Blueprint Stamp -->
+<div class="fixed bottom-6 right-6 border border-outline-variant bg-surface/80 backdrop-blur p-3 pointer-events-none z-10 flex flex-col items-end gap-1 shadow-[4px_4px_0px_0px_rgba(59,130,246,0.15)] rounded-sm">
+<span class="font-eyebrow-mono text-eyebrow-mono text-on-surface-variant tracking-widest">REV 1.0.4</span>
+<span class="font-eyebrow-mono text-eyebrow-mono text-secondary tracking-widest flex items-center gap-1"><span class="w-1.5 h-1.5 bg-secondary rounded-full animate-pulse"></span> STATUS: ACTIVE</span>
+</div>
+<div class="max-w-[1440px] mx-auto p-margin-mobile md:p-margin-desktop w-full grid grid-cols-1 lg:grid-cols-12 gap-gutter">
+<!-- Header -->
+<div class="col-span-1 lg:col-span-12 flex flex-col md:flex-row md:items-end justify-between mb-8 gap-4 border-b border-outline-variant pb-6">
+<div>
+<div class="font-eyebrow-mono text-eyebrow-mono text-on-surface-variant mb-2">PROJECT ALPHA</div>
+<h1 class="font-headline-lg text-headline-lg text-on-surface flex items-baseline gap-4">
+                            Documents 
+                            <span class="font-body-md text-body-md text-on-surface-variant font-normal">4 documents</span>
+</h1>
+</div>
+<button class="bg-primary text-on-primary font-body-md text-body-md px-4 py-2 rounded-lg font-medium hover:bg-primary-fixed transition-colors flex items-center gap-2 border border-transparent self-start md:self-auto">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 0;">add</span>
+                        New from template
+                    </button>
+</div>
+<!-- Main Column (Left) -->
+<div class="col-span-1 lg:col-span-8 flex flex-col gap-4">
+<!-- Card 1: SRS -->
+<div class="bg-surface border border-outline-variant rounded-lg overflow-hidden flex flex-col relative group transition-all hover:border-outline shadow-[2px_2px_0px_0px_rgba(59,130,246,0.05)] hover:shadow-[4px_4px_0px_0px_rgba(59,130,246,0.1)]">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-primary"></div>
+<div class="p-5 pl-6 flex flex-col gap-4">
+<div class="flex justify-between items-start">
+<div>
+<div class="flex items-center gap-2 mb-1">
+<span class="px-1.5 py-0.5 rounded-sm bg-primary/10 text-primary font-code text-code border border-primary/20">DOC-002</span>
+<span class="px-2 py-0.5 rounded bg-surface-variant text-on-surface font-eyebrow-mono text-eyebrow-mono border border-outline-variant">In progress</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface">Software Requirements Specification</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1 flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">schedule</span>
+                                        Created 12 Oct · Updated 2h ago
+                                    </p>
+</div>
+<button class="text-on-surface-variant hover:text-on-surface transition-colors p-1">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+<!-- Progress -->
+<div class="flex items-center gap-3">
+<div class="h-1.5 flex-1 bg-surface-container-high rounded-full overflow-hidden border border-outline-variant">
+<div class="h-full bg-secondary w-[81%]"></div>
+</div>
+<span class="font-code text-code text-secondary">81%</span>
+</div>
+<!-- Actions -->
+<div class="flex items-center gap-3 pt-2 border-t border-outline-variant/50">
+<button class="bg-surface-container-high text-on-surface font-body-sm text-body-sm px-3 py-1.5 rounded hover:bg-surface-variant transition-colors border border-outline-variant flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px]">edit_document</span>
+                                    Open editor
+                                </button>
+<button class="text-on-surface-variant font-body-sm text-body-sm px-3 py-1.5 rounded hover:text-on-surface hover:bg-surface-variant/50 transition-colors flex items-center gap-1.5" onclick="this.parentElement.nextElementSibling.classList.toggle('hidden')">
+<span class="material-symbols-outlined text-[16px]">expand_more</span>
+                                    View sections
+                                </button>
+</div>
+</div>
+<!-- Accordion Content -->
+<div class="hidden border-t border-outline-variant bg-surface-container-lowest/50 p-0">
+<div class="flex flex-col">
+<div class="flex items-center justify-between py-2 px-6 border-b border-outline-variant/30 hover:bg-surface-container-low transition-colors group/item cursor-pointer">
+<div class="flex items-center gap-3">
+<span class="text-secondary"><span class="material-symbols-outlined text-[16px]">check_circle</span></span>
+<span class="font-code text-code text-on-surface-variant w-8">1.1</span>
+<span class="font-body-sm text-body-sm text-on-surface">Purpose</span>
+</div>
+<span class="font-eyebrow-mono text-eyebrow-mono text-secondary opacity-0 group-hover/item:opacity-100 transition-opacity">EDIT</span>
+</div>
+<div class="flex items-center justify-between py-2 px-6 border-b border-outline-variant/30 hover:bg-surface-container-low transition-colors group/item cursor-pointer">
+<div class="flex items-center gap-3">
+<span class="text-secondary"><span class="material-symbols-outlined text-[16px]">check_circle</span></span>
+<span class="font-code text-code text-on-surface-variant w-8">1.2</span>
+<span class="font-body-sm text-body-sm text-on-surface">Scope</span>
+</div>
+<span class="font-eyebrow-mono text-eyebrow-mono text-secondary opacity-0 group-hover/item:opacity-100 transition-opacity">EDIT</span>
+</div>
+<div class="flex items-center justify-between py-2 px-6 hover:bg-surface-container-low transition-colors group/item cursor-pointer">
+<div class="flex items-center gap-3">
+<span class="text-outline"><span class="material-symbols-outlined text-[16px]">radio_button_unchecked</span></span>
+<span class="font-code text-code text-on-surface-variant w-8">2.1</span>
+<span class="font-body-sm text-body-sm text-on-surface">User Classes</span>
+</div>
+<span class="font-eyebrow-mono text-eyebrow-mono text-secondary opacity-0 group-hover/item:opacity-100 transition-opacity">EDIT</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Card 2: Scope -->
+<div class="bg-surface border border-outline-variant rounded-lg overflow-hidden flex flex-col relative group transition-all hover:border-outline shadow-[2px_2px_0px_0px_rgba(59,130,246,0.05)] hover:shadow-[4px_4px_0px_0px_rgba(59,130,246,0.1)] opacity-75 hover:opacity-100">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-tertiary-container"></div>
+<div class="p-5 pl-6 flex flex-col gap-4">
+<div class="flex justify-between items-start">
+<div>
+<div class="flex items-center gap-2 mb-1">
+<span class="px-1.5 py-0.5 rounded-sm bg-tertiary-container/10 text-tertiary-container font-code text-code border border-tertiary-container/20">DOC-001</span>
+<span class="px-2 py-0.5 rounded bg-surface-variant text-on-surface-variant font-eyebrow-mono text-eyebrow-mono border border-outline-variant">Draft</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface">Project Scope &amp; Vision</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1 flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">schedule</span>
+                                        Created 10 Oct · Updated 1d ago
+                                    </p>
+</div>
+<button class="text-on-surface-variant hover:text-on-surface transition-colors p-1">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+<!-- Progress -->
+<div class="flex items-center gap-3">
+<div class="h-1.5 flex-1 bg-surface-container-high rounded-full overflow-hidden border border-outline-variant">
+<div class="h-full bg-tertiary-container w-[45%]"></div>
+</div>
+<span class="font-code text-code text-tertiary-container">45%</span>
+</div>
+<!-- Actions -->
+<div class="flex items-center gap-3 pt-2 border-t border-outline-variant/50">
+<button class="bg-surface-container-high text-on-surface font-body-sm text-body-sm px-3 py-1.5 rounded hover:bg-surface-variant transition-colors border border-outline-variant flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px]">edit_document</span>
+                                    Open editor
+                                </button>
+<button class="text-on-surface-variant font-body-sm text-body-sm px-3 py-1.5 rounded hover:text-on-surface hover:bg-surface-variant/50 transition-colors flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px]">expand_more</span>
+                                    View sections
+                                </button>
+</div>
+</div>
+</div>
+<!-- Card 3: SDS -->
+<div class="bg-surface border border-outline-variant rounded-lg overflow-hidden flex flex-col relative group transition-all hover:border-outline shadow-[2px_2px_0px_0px_rgba(59,130,246,0.05)] hover:shadow-[4px_4px_0px_0px_rgba(59,130,246,0.1)]">
+<div class="absolute left-0 top-0 bottom-0 w-1 bg-error"></div>
+<div class="p-5 pl-6 flex flex-col gap-4">
+<div class="flex justify-between items-start">
+<div>
+<div class="flex items-center gap-2 mb-1">
+<span class="px-1.5 py-0.5 rounded-sm bg-error/10 text-error font-code text-code border border-error/20">DOC-003</span>
+<span class="px-2 py-0.5 rounded bg-surface-variant text-on-surface font-eyebrow-mono text-eyebrow-mono border border-outline-variant">Complete</span>
+</div>
+<h3 class="font-headline-md text-headline-md text-on-surface">System Design Specification</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-1 flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">schedule</span>
+                                        Created 15 Oct · Updated 5m ago
+                                    </p>
+</div>
+<button class="text-on-surface-variant hover:text-on-surface transition-colors p-1">
+<span class="material-symbols-outlined">more_vert</span>
+</button>
+</div>
+<!-- Progress -->
+<div class="flex items-center gap-3">
+<div class="h-1.5 flex-1 bg-surface-container-high rounded-full overflow-hidden border border-outline-variant">
+<div class="h-full bg-secondary w-[100%]"></div>
+</div>
+<span class="font-code text-code text-secondary">100%</span>
+</div>
+<!-- Actions -->
+<div class="flex items-center gap-3 pt-2 border-t border-outline-variant/50">
+<button class="bg-surface-container-high text-on-surface font-body-sm text-body-sm px-3 py-1.5 rounded hover:bg-surface-variant transition-colors border border-outline-variant flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px]">visibility</span>
+                                    View document
+                                </button>
+<button class="text-on-surface-variant font-body-sm text-body-sm px-3 py-1.5 rounded hover:text-on-surface hover:bg-surface-variant/50 transition-colors flex items-center gap-1.5">
+<span class="material-symbols-outlined text-[16px]">expand_more</span>
+                                    View sections
+                                </button>
+</div>
+</div>
+</div>
+</div>
+<!-- Right Rail -->
+<div class="col-span-1 lg:col-span-4 flex flex-col gap-6">
+<!-- Quick Actions Card (Bento Style) -->
+<div class="bg-surface-container border border-outline-variant rounded-lg p-5 flex flex-col gap-4 shadow-sm relative overflow-hidden group">
+<div class="absolute -right-10 -top-10 w-32 h-32 bg-primary/5 rounded-full blur-2xl group-hover:bg-primary/10 transition-colors"></div>
+<h3 class="font-eyebrow-mono text-eyebrow-mono text-on-surface-variant border-b border-outline-variant/50 pb-2">QUICK ACTIONS</h3>
+<button class="w-full bg-surface-container-high hover:bg-surface-variant border border-outline-variant hover:border-primary text-on-surface font-headline-sm text-headline-sm py-4 rounded-lg transition-all flex flex-col items-center justify-center gap-2 h-32 group/btn relative overflow-hidden">
+<span class="material-symbols-outlined text-[32px] text-primary group-hover/btn:scale-110 transition-transform">post_add</span>
+<span>New from template</span>
+<div class="absolute inset-x-0 bottom-0 h-1 bg-gradient-to-r from-transparent via-primary/50 to-transparent opacity-0 group-hover/btn:opacity-100 transition-opacity"></div>
+</button>
+</div>
+<!-- Coverage Summary Card -->
+<div class="bg-surface-container border border-outline-variant rounded-lg p-5 flex flex-col gap-4 shadow-sm">
+<h3 class="font-eyebrow-mono text-eyebrow-mono text-on-surface-variant border-b border-outline-variant/50 pb-2">COVERAGE SUMMARY</h3>
+<div class="flex flex-col gap-4">
+<div class="flex items-baseline justify-between border-b border-outline-variant/30 pb-2">
+<span class="font-body-sm text-body-sm text-on-surface-variant">Total Docs</span>
+<span class="font-code text-code text-on-surface">4</span>
+</div>
+<div class="flex items-baseline justify-between border-b border-outline-variant/30 pb-2">
+<span class="font-body-sm text-body-sm text-on-surface-variant">Total Sections</span>
+<span class="font-code text-code text-on-surface">42</span>
+</div>
+<div class="flex items-baseline justify-between border-b border-outline-variant/30 pb-2">
+<span class="font-body-sm text-body-sm text-on-surface-variant">Completed Sections</span>
+<span class="font-code text-code text-on-surface">34</span>
+</div>
+</div>
+<div class="mt-2 bg-surface border border-outline-variant rounded p-4 flex flex-col items-center justify-center gap-2">
+<span class="font-eyebrow-mono text-eyebrow-mono text-on-surface-variant">OVERALL READINESS</span>
+<div class="font-headline-lg text-headline-lg text-secondary relative inline-block">
+                                81%
+                                <span class="absolute -top-1 -right-4 w-2 h-2 rounded-full bg-secondary animate-pulse"></span>
+</div>
+<div class="w-full h-1 bg-surface-container-high rounded-full overflow-hidden mt-1">
+<div class="h-full bg-secondary w-[81%]"></div>
+</div>
+</div>
+</div>
+<!-- Atmospheric Animation Block (Empty state/illustration placeholder) -->
+<div class="bg-surface-container border border-outline-variant rounded-lg flex flex-col overflow-hidden shadow-sm relative h-48 group border-dashed">
+<div class="absolute inset-0 bg-surface-container flex flex-col items-center justify-center p-4 text-center z-10 group-hover:bg-surface-container/80 transition-colors">
+<span class="material-symbols-outlined text-outline-variant text-[48px] mb-2" style="font-variation-settings: 'wght' 200;">architecture</span>
+<span class="font-body-sm text-body-sm text-on-surface-variant max-w-[200px]">Generate architectural diagrams automatically from documentation.</span>
+<button class="mt-3 font-eyebrow-mono text-eyebrow-mono text-primary hover:text-secondary transition-colors underline underline-offset-4">EXPLORE DIAGRAMS</button>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>

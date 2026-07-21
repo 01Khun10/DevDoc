@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>DevDoc - Test Case Registry</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&amp;family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "primary": "#3B82F6", // Adjusting primary slightly for the blueprint style
+                        "primary-fixed": "#d8e2ff",
+                        "on-primary": "#ffffff",
+                        "secondary": "#5de6ff",
+                        "surface": "#0B1526",
+                        "surface-container": "#16273F",
+                        "surface-container-high": "#1E3452",
+                        "outline": "#33517E",
+                        "outline-variant": "#223B5E",
+                        "on-surface": "#e1e2ec",
+                        "on-surface-variant": "#90a7cb",
+                        "error": "#F43F5E",
+                        "success": "#10B981",
+                        "draft": "#64748B"
+                    },
+                    fontFamily: {
+                        "headline-lg": ["Space Grotesk", "sans-serif"],
+                        "headline-md": ["Space Grotesk", "sans-serif"],
+                        "headline-sm": ["Space Grotesk", "sans-serif"],
+                        "body-lg": ["Inter", "sans-serif"],
+                        "body-md": ["Inter", "sans-serif"],
+                        "body-sm": ["Inter", "sans-serif"],
+                        "eyebrow-mono": ["JetBrains Mono", "monospace"],
+                        "code": ["JetBrains Mono", "monospace"]
+                    },
+                    backgroundImage: {
+                        'blueprint-grid': "linear-gradient(to right, #33517E22 1px, transparent 1px), linear-gradient(to bottom, #33517E22 1px, transparent 1px)"
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        body {
+            background-color: theme('colors.surface');
+            background-image: theme('backgroundImage.blueprint-grid');
+            background-size: 24px 24px;
+        }
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="text-on-surface font-body-md antialiased min-h-screen flex flex-col overflow-x-hidden">
+<!-- TopNavBar (Shared Component - Included because it's a browsing/registry view) -->
+<div class="relative flex h-auto w-full flex-col group/design-root z-10">
+<div class="layout-container flex h-full grow flex-col border-b border-outline-variant bg-surface/80 backdrop-blur-sm sticky top-0">
+<header class="flex items-center justify-between whitespace-nowrap px-6 py-4 max-w-[1440px] mx-auto w-full">
+<div class="flex items-center gap-8">
+<div class="flex items-center gap-3 text-on-surface">
+<div class="size-6 text-primary">
+<svg fill="none" viewbox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+<path d="M42.1739 20.1739L27.8261 5.82609C29.1366 7.13663 28.3989 10.1876 26.2002 13.7654C24.8538 15.9564 22.9595 18.3449 20.6522 20.6522C18.3449 22.9595 15.9564 24.8538 13.7654 26.2002C10.1876 28.3989 7.13663 29.1366 5.82609 27.8261L20.1739 42.1739C21.4845 43.4845 24.5355 42.7467 28.1133 40.548C30.3042 39.2016 32.6927 37.3073 35 35C37.3073 32.6927 39.2016 30.3042 40.548 28.1133C42.7467 24.5355 43.4845 21.4845 42.1739 20.1739Z" fill="currentColor"></path>
+<path clip-rule="evenodd" d="M7.24189 26.4066C7.31369 26.4411 7.64204 26.5637 8.52504 26.3738C9.59462 26.1438 11.0343 25.5311 12.7183 24.4963C14.7583 23.2426 17.0256 21.4503 19.238 19.238C21.4503 17.0256 23.2426 14.7583 24.4963 12.7183C25.5311 11.0343 26.1438 9.59463 26.3738 8.52504C26.5637 7.64204 26.4411 7.31369 26.4066 7.24189C26.345 7.21246 26.143 7.14535 25.6664 7.1918C24.9745 7.25925 23.9954 7.5498 22.7699 8.14278C20.3369 9.32007 17.3369 11.4915 14.4142 14.4142C11.4915 17.3369 9.32007 20.3369 8.14278 22.7699C7.5498 23.9954 7.25925 24.9745 7.1918 25.6664C7.14534 26.143 7.21246 26.345 7.24189 26.4066ZM29.9001 10.7285C29.4519 12.0322 28.7617 13.4172 27.9042 14.8126C26.465 17.1544 24.4686 19.6641 22.0664 22.0664C19.6641 24.4686 17.1544 26.465 14.8126 27.9042C13.4172 28.7617 12.0322 29.4519 10.7285 29.9001L21.5754 40.747C21.6001 40.7606 21.8995 40.931 22.8729 40.7217C23.9424 40.4916 25.3821 39.879 27.0661 38.8441C29.1062 37.5904 31.3734 35.7982 33.5858 33.5858C35.7982 31.3734 37.5904 29.1062 38.8441 27.0661C39.879 25.3821 40.4916 23.9425 40.7216 22.8729C40.931 21.8995 40.7606 21.6001 40.747 21.5754L29.9001 10.7285ZM29.2403 4.41187L43.5881 18.7597C44.9757 20.1473 44.9743 22.1235 44.6322 23.7139C44.2714 25.3919 43.4158 27.2666 42.252 29.1604C40.8128 31.5022 38.8165 34.012 36.4142 36.4142C34.012 38.8165 31.5022 40.8128 29.1604 42.252C27.2666 43.4158 25.3919 44.2714 23.7139 44.6322C22.1235 44.9743 20.1473 44.9757 18.7597 43.5881L4.41187 29.2403C3.29027 28.1187 3.08209 26.5973 3.21067 25.2783C3.34099 23.9415 3.8369 22.4852 4.54214 21.0277C5.96129 18.0948 8.43335 14.7382 11.5858 11.5858C14.7382 8.43335 18.0948 5.9613 21.0277 4.54214C22.4852 3.8369 23.9415 3.34099 25.2783 3.21067C26.5973 3.08209 28.1187 3.29028 29.2403 4.41187Z" fill="currentColor" fill-rule="evenodd"></path>
+</svg>
+</div>
+<h2 class="font-headline-md text-[20px] font-bold tracking-tight">DevDoc</h2>
+</div>
+<nav class="flex items-center gap-6 hidden md:flex">
+<a class="text-on-surface-variant hover:text-on-surface text-sm font-medium transition-colors" href="#">Requirements</a>
+<a class="text-on-surface text-sm font-medium transition-colors" href="#">Test Cases</a>
+<a class="text-on-surface-variant hover:text-on-surface text-sm font-medium transition-colors" href="#">Reports</a>
+</nav>
+</div>
+<div class="flex flex-1 justify-end gap-4 items-center">
+<label class="flex flex-col max-w-64 w-full h-9 hidden sm:block">
+<div class="flex w-full items-stretch rounded h-full bg-surface-container border border-outline-variant focus-within:border-primary transition-colors overflow-hidden">
+<div class="text-on-surface-variant flex items-center justify-center pl-3">
+<span class="material-symbols-outlined text-[18px]">search</span>
+</div>
+<input class="w-full bg-transparent border-none text-sm text-on-surface placeholder:text-on-surface-variant focus:ring-0 px-2" placeholder="Search registry..."/>
+</div>
+</label>
+<div class="size-8 rounded-full bg-primary/20 flex items-center justify-center text-primary font-bold text-xs border border-primary/30">
+                        JD
+                    </div>
+</div>
+</header>
+</div>
+</div>
+<!-- Main Content Area -->
+<main class="flex-1 flex w-full max-w-[1440px] mx-auto overflow-hidden relative">
+<!-- Left Registry Section -->
+<div class="flex-1 flex flex-col min-w-0 p-6 lg:p-10 overflow-y-auto custom-scrollbar">
+<!-- Page Header -->
+<div class="flex flex-wrap items-end justify-between gap-4 mb-8">
+<div>
+<div class="font-eyebrow-mono text-[11px] text-primary tracking-widest uppercase mb-2">TESTING &amp; VALIDATION</div>
+<h1 class="font-headline-lg text-4xl font-bold mb-2">Test Cases</h1>
+<p class="text-on-surface-variant text-sm">14 test cases · 12 verified · 2 unmapped</p>
+</div>
+<div class="flex gap-3">
+<button class="h-9 px-4 rounded bg-surface border border-outline text-on-surface text-sm font-medium hover:bg-surface-container-high transition-colors flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">tune</span>
+                        Filter/Sort
+                    </button>
+<button class="h-9 px-4 rounded bg-primary text-on-primary text-sm font-medium hover:bg-primary/90 transition-colors flex items-center gap-2 shadow-[0_0_15px_rgba(59,130,246,0.3)]">
+<span class="material-symbols-outlined text-[18px]">add</span>
+                        Add test case
+                    </button>
+</div>
+</div>
+<!-- Registry Table Card -->
+<div class="bg-surface-container border border-outline rounded-xl shadow-lg overflow-hidden relative group/card">
+<!-- Blueprint accent lines -->
+<div class="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-primary/50 to-transparent"></div>
+<div class="absolute top-0 left-0 w-[2px] h-full bg-gradient-to-b from-primary/50 to-transparent"></div>
+<div class="overflow-x-auto">
+<table class="w-full text-left border-collapse min-w-[800px]">
+<thead>
+<tr class="border-b border-outline bg-surface-container-high/50">
+<th class="py-3 px-4 w-12 text-center">
+<input class="rounded border-outline bg-surface text-primary focus:ring-primary h-4 w-4" type="checkbox"/>
+</th>
+<th class="py-3 px-4 font-headline-sm text-sm text-on-surface-variant font-medium w-28">ID</th>
+<th class="py-3 px-4 font-headline-sm text-sm text-on-surface-variant font-medium">Title &amp; Description</th>
+<th class="py-3 px-4 font-headline-sm text-sm text-on-surface-variant font-medium w-32">Status</th>
+<th class="py-3 px-4 font-headline-sm text-sm text-on-surface-variant font-medium w-32">Verifies</th>
+<th class="py-3 px-4 font-headline-sm text-sm text-on-surface-variant font-medium w-24 text-right">Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-outline-variant">
+<!-- Row 1 (Passed) -->
+<tr class="hover:bg-surface-container-high/30 transition-colors group/row">
+<td class="py-3 px-4 text-center">
+<input class="rounded border-outline bg-surface text-primary focus:ring-primary h-4 w-4" type="checkbox"/>
+</td>
+<td class="py-3 px-4">
+<span class="font-code text-xs bg-error/10 text-error border border-error/20 px-2 py-1 rounded">TC-001</span>
+</td>
+<td class="py-3 px-4">
+<div class="font-medium text-sm text-on-surface mb-0.5">User Login Verification</div>
+<div class="text-xs text-on-surface-variant truncate max-w-md">Verify basic login flows with valid and invalid credentials, including lockout mechanism.</div>
+</td>
+<td class="py-3 px-4">
+<span class="inline-flex items-center gap-1.5 px-2 py-1 rounded bg-success/10 text-success border border-success/20 text-xs font-medium">
+<span class="size-1.5 rounded-full bg-success"></span> Passed
+                                    </span>
+</td>
+<td class="py-3 px-4">
+<span class="inline-flex items-center gap-1 px-2 py-1 rounded bg-surface border border-outline text-on-surface-variant text-xs">
+<span class="material-symbols-outlined text-[14px]">link</span> 2 links
+                                    </span>
+</td>
+<td class="py-3 px-4 text-right">
+<div class="flex items-center justify-end gap-2 opacity-0 group-hover/row:opacity-100 transition-opacity">
+<button class="text-on-surface-variant hover:text-primary transition-colors"><span class="material-symbols-outlined text-[18px]">edit</span></button>
+<button class="text-on-surface-variant hover:text-error transition-colors"><span class="material-symbols-outlined text-[18px]">delete</span></button>
+</div>
+</td>
+</tr>
+<!-- Row 2 (Draft) -->
+<tr class="hover:bg-surface-container-high/30 transition-colors group/row">
+<td class="py-3 px-4 text-center">
+<input class="rounded border-outline bg-surface text-primary focus:ring-primary h-4 w-4" type="checkbox"/>
+</td>
+<td class="py-3 px-4">
+<span class="font-code text-xs bg-error/10 text-error border border-error/20 px-2 py-1 rounded">TC-015</span>
+</td>
+<td class="py-3 px-4">
+<div class="font-medium text-sm text-on-surface mb-0.5">Password Reset Flow</div>
+<div class="text-xs text-on-surface-variant truncate max-w-md">Test password reset email delivery, token expiration, and successful reset.</div>
+</td>
+<td class="py-3 px-4">
+<span class="inline-flex items-center gap-1.5 px-2 py-1 rounded bg-draft/10 text-draft border border-draft/20 text-xs font-medium">
+<span class="size-1.5 rounded-full bg-draft"></span> Draft
+                                    </span>
+</td>
+<td class="py-3 px-4">
+<span class="inline-flex items-center gap-1 px-2 py-1 rounded bg-surface border border-outline text-on-surface-variant text-xs">
+<span class="material-symbols-outlined text-[14px]">link</span> 1 link
+                                    </span>
+</td>
+<td class="py-3 px-4 text-right">
+<div class="flex items-center justify-end gap-2 opacity-0 group-hover/row:opacity-100 transition-opacity">
+<button class="text-on-surface-variant hover:text-primary transition-colors"><span class="material-symbols-outlined text-[18px]">edit</span></button>
+<button class="text-on-surface-variant hover:text-error transition-colors"><span class="material-symbols-outlined text-[18px]">delete</span></button>
+</div>
+</td>
+</tr>
+<!-- Row 3 (Failed) -->
+<tr class="hover:bg-surface-container-high/30 transition-colors group/row bg-error/5">
+<td class="py-3 px-4 text-center">
+<input class="rounded border-outline bg-surface text-primary focus:ring-primary h-4 w-4" type="checkbox"/>
+</td>
+<td class="py-3 px-4">
+<span class="font-code text-xs bg-error/10 text-error border border-error/20 px-2 py-1 rounded">TC-042</span>
+</td>
+<td class="py-3 px-4">
+<div class="font-medium text-sm text-on-surface mb-0.5">Session Timeout</div>
+<div class="text-xs text-on-surface-variant truncate max-w-md">Check session expiry after 15 mins of inactivity and auto-logout behavior.</div>
+</td>
+<td class="py-3 px-4">
+<span class="inline-flex items-center gap-1.5 px-2 py-1 rounded bg-error/10 text-error border border-error/20 text-xs font-medium">
+<span class="size-1.5 rounded-full bg-error"></span> Failed
+                                    </span>
+</td>
+<td class="py-3 px-4">
+<span class="inline-flex items-center gap-1 px-2 py-1 rounded bg-surface border border-outline text-on-surface-variant text-xs">
+<span class="material-symbols-outlined text-[14px]">link</span> 3 links
+                                    </span>
+</td>
+<td class="py-3 px-4 text-right">
+<div class="flex items-center justify-end gap-2 opacity-0 group-hover/row:opacity-100 transition-opacity">
+<button class="text-on-surface-variant hover:text-primary transition-colors"><span class="material-symbols-outlined text-[18px]">edit</span></button>
+<button class="text-on-surface-variant hover:text-error transition-colors"><span class="material-symbols-outlined text-[18px]">delete</span></button>
+</div>
+</td>
+</tr>
+<!-- Row 4 (Ready) -->
+<tr class="hover:bg-surface-container-high/30 transition-colors group/row">
+<td class="py-3 px-4 text-center">
+<input class="rounded border-outline bg-surface text-primary focus:ring-primary h-4 w-4" type="checkbox"/>
+</td>
+<td class="py-3 px-4">
+<span class="font-code text-xs bg-error/10 text-error border border-error/20 px-2 py-1 rounded">TC-055</span>
+</td>
+<td class="py-3 px-4">
+<div class="font-medium text-sm text-on-surface mb-0.5">Data Export (CSV)</div>
+<div class="text-xs text-on-surface-variant truncate max-w-md">Verify payload formatting and encoding when exporting reports to CSV.</div>
+</td>
+<td class="py-3 px-4">
+<span class="inline-flex items-center gap-1.5 px-2 py-1 rounded bg-primary/10 text-primary border border-primary/20 text-xs font-medium">
+<span class="size-1.5 rounded-full bg-primary"></span> Ready
+                                    </span>
+</td>
+<td class="py-3 px-4">
+<span class="inline-flex items-center gap-1 px-2 py-1 rounded bg-surface border border-outline text-on-surface-variant text-xs opacity-50">
+<span class="material-symbols-outlined text-[14px]">link_off</span> Unmapped
+                                    </span>
+</td>
+<td class="py-3 px-4 text-right">
+<div class="flex items-center justify-end gap-2 opacity-0 group-hover/row:opacity-100 transition-opacity">
+<button class="text-on-surface-variant hover:text-primary transition-colors"><span class="material-symbols-outlined text-[18px]">edit</span></button>
+<button class="text-on-surface-variant hover:text-error transition-colors"><span class="material-symbols-outlined text-[18px]">delete</span></button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<!-- Bottom microcopy -->
+<div class="mt-auto pt-8 pb-4 text-center">
+<p class="font-code text-[10px] text-outline-variant tracking-widest uppercase">
+                    Structured docs • Validation • Traceability • Export
+                </p>
+</div>
+</div>
+<!-- Right Side Drawer (Edit Mode) -->
+<aside class="w-[400px] xl:w-[480px] bg-surface-container border-l border-outline hidden lg:flex flex-col relative z-20 shadow-2xl">
+<!-- Header -->
+<div class="p-6 border-b border-outline flex justify-between items-center bg-surface-container-high/30">
+<div>
+<h2 class="font-headline-md text-xl font-bold">Edit Test Case</h2>
+<div class="font-code text-xs text-error mt-1">TC-015</div>
+</div>
+<button class="size-8 flex items-center justify-center rounded-full hover:bg-surface-container-high text-on-surface-variant transition-colors">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<!-- Form Body -->
+<div class="flex-1 overflow-y-auto p-6 space-y-6 custom-scrollbar">
+<!-- Status Dropdown -->
+<div class="space-y-2">
+<label class="block text-xs font-medium text-on-surface-variant uppercase tracking-wider font-headline-sm">Status</label>
+<select class="w-full bg-surface border border-outline rounded-lg text-sm text-on-surface p-2.5 focus:ring-1 focus:ring-primary focus:border-primary appearance-none custom-select">
+<option>Draft</option>
+<option>Ready</option>
+<option>Passed</option>
+<option>Failed</option>
+</select>
+</div>
+<div class="space-y-2">
+<label class="block text-xs font-medium text-on-surface-variant uppercase tracking-wider font-headline-sm">Title</label>
+<input class="w-full bg-surface border border-outline rounded-lg text-sm text-on-surface p-2.5 focus:ring-1 focus:ring-primary focus:border-primary placeholder:text-on-surface-variant/50" type="text" value="Password Reset Flow"/>
+</div>
+<div class="space-y-2">
+<label class="block text-xs font-medium text-on-surface-variant uppercase tracking-wider font-headline-sm">Description</label>
+<textarea class="w-full bg-surface border border-outline rounded-lg text-sm text-on-surface p-2.5 focus:ring-1 focus:ring-primary focus:border-primary placeholder:text-on-surface-variant/50 min-h-[80px] resize-y" rows="3">Test password reset email delivery, token expiration, and successful reset.</textarea>
+</div>
+<div class="space-y-2">
+<label class="block text-xs font-medium text-on-surface-variant uppercase tracking-wider font-headline-sm">Preconditions</label>
+<textarea class="w-full bg-surface border border-outline rounded-lg text-sm text-on-surface p-2.5 focus:ring-1 focus:ring-primary focus:border-primary placeholder:text-on-surface-variant/50 min-h-[60px] resize-y" rows="2">User must have an active registered account with a verified email address.</textarea>
+</div>
+<div class="space-y-2">
+<label class="block text-xs font-medium text-on-surface-variant uppercase tracking-wider font-headline-sm flex justify-between">
+                        Test Steps
+                        <span class="text-[10px] text-primary cursor-pointer hover:underline normal-case">Add Step</span>
+</label>
+<div class="space-y-2 bg-surface p-1 rounded-lg border border-outline">
+<div class="flex gap-2 items-start p-2 hover:bg-surface-container-high rounded transition-colors group">
+<span class="font-code text-xs text-on-surface-variant mt-0.5">1.</span>
+<textarea class="flex-1 bg-transparent border-none p-0 text-sm focus:ring-0 resize-none h-5 overflow-hidden" rows="1">Navigate to login page</textarea>
+<button class="opacity-0 group-hover:opacity-100 text-on-surface-variant hover:text-error"><span class="material-symbols-outlined text-[16px]">close</span></button>
+</div>
+<div class="flex gap-2 items-start p-2 hover:bg-surface-container-high rounded transition-colors group">
+<span class="font-code text-xs text-on-surface-variant mt-0.5">2.</span>
+<textarea class="flex-1 bg-transparent border-none p-0 text-sm focus:ring-0 resize-none h-5 overflow-hidden" rows="1">Click "Forgot Password"</textarea>
+<button class="opacity-0 group-hover:opacity-100 text-on-surface-variant hover:text-error"><span class="material-symbols-outlined text-[16px]">close</span></button>
+</div>
+<div class="flex gap-2 items-start p-2 hover:bg-surface-container-high rounded transition-colors group">
+<span class="font-code text-xs text-on-surface-variant mt-0.5">3.</span>
+<textarea class="flex-1 bg-transparent border-none p-0 text-sm focus:ring-0 resize-none h-10 overflow-hidden" rows="2">Enter registered email and submit form</textarea>
+<button class="opacity-0 group-hover:opacity-100 text-on-surface-variant hover:text-error"><span class="material-symbols-outlined text-[16px]">close</span></button>
+</div>
+</div>
+</div>
+<div class="space-y-2">
+<label class="block text-xs font-medium text-on-surface-variant uppercase tracking-wider font-headline-sm">Expected Result</label>
+<textarea class="w-full bg-surface border border-outline rounded-lg text-sm text-on-surface p-2.5 focus:ring-1 focus:ring-primary focus:border-primary placeholder:text-on-surface-variant/50 min-h-[60px] resize-y" rows="2">System sends an email with a secure, time-limited reset link. UI shows success message.</textarea>
+</div>
+<!-- Verifies Section -->
+<div class="pt-4 border-t border-outline">
+<div class="flex justify-between items-center mb-3">
+<h3 class="text-xs font-medium text-on-surface-variant uppercase tracking-wider font-headline-sm">Verifies (Linked Requirements)</h3>
+<button class="text-xs text-primary font-medium hover:underline flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">link</span> Link
+                        </button>
+</div>
+<div class="flex flex-wrap gap-2">
+<span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface border border-outline text-xs text-on-surface">
+<span class="font-code text-primary">SEC-2.1</span> Auth Mechanisms
+                            <button class="ml-1 text-on-surface-variant hover:text-error"><span class="material-symbols-outlined text-[14px]">close</span></button>
+</span>
+</div>
+</div>
+</div>
+<!-- Footer -->
+<div class="p-6 border-t border-outline bg-surface-container-high/30 flex justify-end gap-3">
+<button class="h-10 px-5 rounded bg-surface border border-outline text-on-surface text-sm font-medium hover:bg-surface-container transition-colors">
+                    Cancel
+                </button>
+<button class="h-10 px-5 rounded bg-primary text-on-primary text-sm font-medium hover:bg-primary/90 transition-colors shadow-[0_0_15px_rgba(59,130,246,0.3)]">
+                    Save Test Case
+                </button>
+</div>
+</aside>
+</main>
+<!-- Corner Stamp -->
+<div class="fixed bottom-6 right-6 pointer-events-none opacity-40 mix-blend-screen hidden md:block">
+<div class="border-2 border-primary/50 p-3 rounded font-code text-[10px] text-primary tracking-widest text-right leading-tight bg-surface/80 backdrop-blur">
+<div class="font-bold border-b border-primary/30 pb-1 mb-1">DEV-DOC REGISTRY</div>
+<div>REV 3.1</div>
+<div>STATUS: DRAFTING</div>
+</div>
+</div>
+<style>
+        /* Custom scrollbar for blueprint aesthetic */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background-color: theme('colors.outline');
+            border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background-color: theme('colors.primary');
+        }
+
+        /* Custom Select Arrow */
+        .custom-select {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%2390a7cb' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 0.5rem center;
+            background-repeat: no-repeat;
+            background-size: 1.5em 1.5em;
+        }
+    </style>
+</body></html>

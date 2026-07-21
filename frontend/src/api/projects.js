@@ -69,7 +69,7 @@ export function useDeleteProject(options = {}) {
 
 export function useCreateShareLink(projectId, options = {}) {
   return useMutation({
-    mutationFn: () => createShareLink(projectId),
+    mutationFn: (expiresAt) => createShareLink(projectId, expiresAt),
     ...options
   });
 }

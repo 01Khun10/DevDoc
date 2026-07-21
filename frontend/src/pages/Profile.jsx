@@ -55,16 +55,6 @@ export default function Profile() {
           </div>
         </Card>
 
-        <Card title="Security">
-          <div className="flex items-start gap-2">
-            <p className="flex-1 text-sm text-[var(--devdoc-muted)]">Change your password to keep your account secure.</p>
-            <span className="rounded px-1.5 py-0.5 text-[10px] font-medium" style={{ color: "var(--devdoc-warning)", backgroundColor: "var(--devdoc-warning-soft)" }}>planned</span>
-          </div>
-          <button disabled className="mt-3 cursor-not-allowed rounded-md border px-4 py-2 text-sm opacity-60" style={{ borderColor: "var(--devdoc-border)", color: "var(--devdoc-muted)" }}>
-            Change password
-          </button>
-          <p className="mt-2 font-mono text-[11px] text-[var(--devdoc-subtle)]">Needs a change-password endpoint on the auth service before wiring the form.</p>
-        </Card>
       </div>
     </main>
   );

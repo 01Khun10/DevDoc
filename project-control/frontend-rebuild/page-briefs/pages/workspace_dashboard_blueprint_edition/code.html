@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+
+<html class="dark" lang="en"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>DevDoc - Projects</title>
+<!-- Fonts & Icons -->
+<link href="https://fonts.googleapis.com" rel="preconnect"/>
+<link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=JetBrains+Mono:wght@400;500;700&amp;family=Space+Grotesk:wght@500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<!-- Tailwind CSS -->
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<!-- Tailwind Config injected from prompt -->
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "surface-dim": "#10131a",
+                      "on-primary": "#002e6a",
+                      "outline-variant": "#424754",
+                      "surface-container": "#1d2027",
+                      "tertiary": "#ffb786",
+                      "outline": "#8c909f",
+                      "on-tertiary-fixed": "#311400",
+                      "on-primary-fixed": "#001a42",
+                      "on-secondary": "#00363e",
+                      "surface-tint": "#adc6ff",
+                      "surface": "#10131a",
+                      "on-background": "#e1e2ec",
+                      "on-error": "#690005",
+                      "error-container": "#93000a",
+                      "secondary-fixed-dim": "#2fd9f4",
+                      "on-tertiary-container": "#461f00",
+                      "inverse-surface": "#e1e2ec",
+                      "on-secondary-fixed": "#001f25",
+                      "on-primary-fixed-variant": "#004395",
+                      "primary-fixed-dim": "#adc6ff",
+                      "primary-container": "#4d8eff",
+                      "background": "#10131a",
+                      "tertiary-fixed-dim": "#ffb786",
+                      "secondary-fixed": "#a2eeff",
+                      "surface-variant": "#32353c",
+                      "surface-container-low": "#191b23",
+                      "on-tertiary-fixed-variant": "#723600",
+                      "surface-container-highest": "#32353c",
+                      "tertiary-container": "#df7412",
+                      "inverse-on-surface": "#2e3038",
+                      "on-surface-variant": "#c2c6d6",
+                      "secondary-container": "#00cbe6",
+                      "surface-container-lowest": "#0b0e15",
+                      "tertiary-fixed": "#ffdcc6",
+                      "secondary": "#5de6ff",
+                      "on-primary-container": "#00285d",
+                      "primary-fixed": "#d8e2ff",
+                      "surface-container-high": "#272a31",
+                      "on-error-container": "#ffdad6",
+                      "on-secondary-fixed-variant": "#004e5a",
+                      "on-tertiary": "#502400",
+                      "on-secondary-container": "#00515d",
+                      "on-surface": "#e1e2ec",
+                      "primary": "#adc6ff",
+                      "surface-bright": "#363941",
+                      "error": "#ffb4ab",
+                      "inverse-primary": "#005ac2"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "margin-mobile": "16px",
+                      "base": "4px",
+                      "margin-desktop": "32px",
+                      "grid-pattern": "24px",
+                      "gutter": "16px"
+              },
+              "fontFamily": {
+                      "eyebrow-mono": ["JetBrains Mono"],
+                      "headline-md": ["Space Grotesk"],
+                      "headline-sm": ["Space Grotesk"],
+                      "code": ["JetBrains Mono"],
+                      "body-lg": ["Inter"],
+                      "headline-lg": ["Space Grotesk"],
+                      "body-md": ["Inter"],
+                      "body-sm": ["Inter"]
+              },
+              "fontSize": {
+                      "eyebrow-mono": ["11px", {"lineHeight": "16px", "letterSpacing": "0.15em", "fontWeight": "500"}],
+                      "headline-md": ["24px", {"lineHeight": "1.3", "fontWeight": "600"}],
+                      "headline-sm": ["18px", {"lineHeight": "1.4", "fontWeight": "500"}],
+                      "code": ["13px", {"lineHeight": "20px", "fontWeight": "400"}],
+                      "body-lg": ["16px", {"lineHeight": "1.6", "fontWeight": "400"}],
+                      "headline-lg": ["32px", {"lineHeight": "1.2", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                      "body-md": ["14px", {"lineHeight": "1.5", "fontWeight": "400"}],
+                      "body-sm": ["13px", {"lineHeight": "1.5", "fontWeight": "400"}]
+              }
+            }
+          }
+        }
+    </script>
+<style>
+        /* Blueprint Texture using CSS linear gradients */
+        .bg-blueprint {
+            background-color: theme('colors.surface-container-lowest');
+            background-image: 
+                linear-gradient(theme('colors.outline-variant') 1px, transparent 1px),
+                linear-gradient(90deg, theme('colors.outline-variant') 1px, transparent 1px);
+            background-size: 24px 24px;
+            /* Very subtle opacity for the grid lines */
+            background-blend-mode: color-dodge;
+        }
+        
+        .bg-blueprint::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: theme('colors.surface-container-lowest');
+            opacity: 0.85; /* Dims the grid lines to make them hairline and subtle */
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .bg-blueprint-card {
+            background-image: 
+                linear-gradient(theme('colors.outline-variant') 1px, transparent 1px),
+                linear-gradient(90deg, theme('colors.outline-variant') 1px, transparent 1px);
+            background-size: 12px 12px;
+        }
+        .bg-blueprint-card::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: theme('colors.surface-container');
+            opacity: 0.95;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Faux 3D lift effect */
+        .card-lift-hover:hover {
+            transform: translate(-2px, -2px);
+            box-shadow: 4px 4px 0px 0px theme('colors.inverse-primary');
+        }
+        
+        .artifact-chip {
+            padding: 2px 6px;
+            border-radius: 2px;
+            display: inline-flex;
+            align-items: center;
+            border: 1px solid currentColor;
+            opacity: 0.9;
+        }
+    </style>
+</head>
+<body class="bg-blueprint min-h-screen text-on-surface font-body-md relative overflow-x-hidden z-0">
+<!-- TopAppBar (From JSON) -->
+<header class="fixed top-0 left-0 w-full z-50 bg-surface-container border-b border-outline-variant flex justify-between items-center px-margin-desktop h-16 shadow-none">
+<div class="flex items-center gap-8">
+<span class="font-headline-sm text-headline-sm font-bold text-on-surface tracking-tight">DevDoc</span>
+<!-- Inset Search -->
+<div class="hidden md:flex relative group">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline text-[18px]">search</span>
+<input class="bg-surface-dim border border-outline-variant rounded py-1.5 pl-9 pr-4 w-64 font-body-sm text-body-sm text-on-surface focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary transition-all placeholder:text-outline/70" placeholder="Search blueprints..." type="text"/>
+<div class="absolute right-2 top-1/2 -translate-y-1/2 border border-outline-variant rounded px-1 text-outline font-eyebrow-mono text-[9px] tracking-tighter">⌘K</div>
+</div>
+</div>
+<div class="flex items-center gap-2">
+<button class="hover:bg-surface-variant transition-colors p-2 rounded text-on-surface-variant flex items-center justify-center">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">dark_mode</span>
+</button>
+<button class="hover:bg-surface-variant transition-colors p-2 rounded text-on-surface-variant flex items-center justify-center">
+<span class="material-symbols-outlined">help</span>
+</button>
+<div class="ml-4 pl-4 border-l border-outline-variant">
+<img alt="User Profile Avatar" class="w-8 h-8 rounded border border-outline-variant object-cover cursor-pointer hover:border-secondary transition-colors" data-alt="A small circular avatar showing a generic professional user portrait against a neutral gray background." src="https://lh3.googleusercontent.com/aida-public/AB6AXuBETpV1neoza1dyT9CaMwTPCbxd6Sw6aQ2XFTDzcKcW_4JZbcIorMm238WWIY1nxQ7iBsqTAfhlcfd8--ZydivB7h8gKPO7RLW4rBXloKV7-dybQb_hNN9UpkovgX-eqQ-A6fNMZTOqdf-jGt2vA5SBCzDErJu9fZ_AuCd_34G0l3NZo1YzOse0ziHHlaGaNRwZsXjLYKhJwswYE2qRuxx5rJMmuE7crqN1lyC_JTLrb-4hxJJf9z9b_z2AoSCq1HcpR5SeDwnggvY"/>
+</div>
+</div>
+</header>
+<!-- Main Workspace Canvas -->
+<main class="pt-28 pb-margin-desktop px-margin-mobile md:px-margin-desktop max-w-[1440px] mx-auto relative z-10">
+<!-- Header Section -->
+<header class="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8 border-b border-outline-variant pb-6">
+<div>
+<div class="font-eyebrow-mono text-eyebrow-mono text-secondary mb-2 flex items-center gap-2">
+<span class="w-2 h-2 rounded bg-secondary animate-pulse"></span>
+                    YOUR WORKSPACE
+                </div>
+<h1 class="font-headline-lg text-headline-lg text-on-surface mb-1">Projects</h1>
+<p class="font-body-md text-body-md text-on-surface-variant flex items-center gap-2">
+<span class="material-symbols-outlined text-[16px]">folder_open</span>
+                    6 projects active
+                </p>
+</div>
+<div class="flex gap-4">
+<button class="bg-inverse-primary hover:bg-primary-fixed-variant text-white font-body-sm text-body-sm font-medium py-2 px-4 rounded transition-colors flex items-center gap-2 shadow-[2px_2px_0px_0px_theme(colors.on-primary-container)] active:shadow-none active:translate-x-[2px] active:translate-y-[2px]" onclick="toggleModal('new-project-modal')">
+<span class="material-symbols-outlined text-[18px]">add</span>
+                    New project
+                </button>
+</div>
+</header>
+<!-- Controls Row -->
+<div class="flex flex-wrap items-center justify-between gap-4 mb-8">
+<div class="flex items-center gap-3">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-2.5 top-1/2 -translate-y-1/2 text-outline text-[16px]">filter_list</span>
+<select class="bg-surface border border-outline-variant rounded py-1.5 pl-8 pr-8 font-body-sm text-body-sm text-on-surface focus:border-secondary focus:ring-1 focus:ring-secondary appearance-none cursor-pointer">
+<option>Sort by: Recent</option>
+<option>Sort by: Name (A-Z)</option>
+<option>Sort by: Readiness</option>
+</select>
+<span class="material-symbols-outlined absolute right-2 top-1/2 -translate-y-1/2 text-outline text-[16px] pointer-events-none">expand_more</span>
+</div>
+<div class="h-6 w-[1px] bg-outline-variant"></div>
+<div class="flex items-center bg-surface border border-outline-variant rounded p-0.5">
+<button class="p-1 rounded bg-surface-variant text-secondary flex items-center justify-center"><span class="material-symbols-outlined text-[18px]">grid_view</span></button>
+<button class="p-1 rounded text-outline hover:text-on-surface flex items-center justify-center transition-colors"><span class="material-symbols-outlined text-[18px]">view_list</span></button>
+</div>
+</div>
+</div>
+<!-- Project Grid -->
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+<!-- Card 1 -->
+<article class="bg-blueprint-card relative border border-outline-variant rounded-lg p-6 flex flex-col h-[220px] cursor-pointer card-lift-hover transition-all duration-200 group">
+<div class="relative z-10 flex flex-col h-full">
+<div class="flex justify-between items-start mb-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary">architecture</span>
+</div>
+<div class="font-eyebrow-mono text-eyebrow-mono text-outline border border-outline-variant px-1.5 py-0.5 rounded bg-surface/80">REV_3.0</div>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-1 group-hover:text-primary transition-colors">Core API Gateway</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-1 mb-auto">Authentication and routing layer overhaul.</p>
+<div class="mt-4 flex flex-col gap-3">
+<div class="flex gap-2">
+<span class="artifact-chip text-tertiary border-tertiary/30 bg-tertiary/10 font-eyebrow-mono text-[10px]">UC</span>
+<span class="artifact-chip text-secondary border-secondary/30 bg-secondary/10 font-eyebrow-mono text-[10px]">FR</span>
+<span class="artifact-chip text-primary border-primary/30 bg-primary/10 font-eyebrow-mono text-[10px]">DE</span>
+</div>
+<div class="flex items-center justify-between border-t border-outline-variant pt-3 mt-1">
+<span class="font-code text-[11px] text-outline flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">schedule</span> updated 2h ago
+                            </span>
+<div class="flex items-center gap-1.5">
+<span class="font-eyebrow-mono text-eyebrow-mono text-on-surface">74%</span>
+<div class="w-4 h-4 rounded-full border-[2px] border-outline-variant border-t-secondary border-r-secondary transform rotate-45"></div>
+</div>
+</div>
+</div>
+</div>
+</article>
+<!-- Card 2 -->
+<article class="bg-blueprint-card relative border border-outline-variant rounded-lg p-6 flex flex-col h-[220px] cursor-pointer card-lift-hover transition-all duration-200 group">
+<div class="relative z-10 flex flex-col h-full">
+<div class="flex justify-between items-start mb-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary">database</span>
+</div>
+<div class="font-eyebrow-mono text-eyebrow-mono text-outline border border-outline-variant px-1.5 py-0.5 rounded bg-surface/80">REV_1.2</div>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-1 group-hover:text-primary transition-colors">User Auth Microservice</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-1 mb-auto">OAuth2 implementation and session management.</p>
+<div class="mt-4 flex flex-col gap-3">
+<div class="flex gap-2">
+<span class="artifact-chip text-secondary border-secondary/30 bg-secondary/10 font-eyebrow-mono text-[10px]">FR</span>
+<span class="artifact-chip text-error border-error/30 bg-error/10 font-eyebrow-mono text-[10px]">TC</span>
+</div>
+<div class="flex items-center justify-between border-t border-outline-variant pt-3 mt-1">
+<span class="font-code text-[11px] text-outline flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">schedule</span> updated 1d ago
+                            </span>
+<div class="flex items-center gap-1.5">
+<span class="font-eyebrow-mono text-eyebrow-mono text-on-surface">100%</span>
+<div class="w-4 h-4 rounded-full border-[2px] border-secondary"></div>
+</div>
+</div>
+</div>
+</div>
+</article>
+<!-- Card 3 -->
+<article class="bg-blueprint-card relative border border-outline-variant rounded-lg p-6 flex flex-col h-[220px] cursor-pointer card-lift-hover transition-all duration-200 group">
+<div class="relative z-10 flex flex-col h-full">
+<div class="flex justify-between items-start mb-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary">web</span>
+</div>
+<div class="font-eyebrow-mono text-eyebrow-mono text-outline border border-outline-variant px-1.5 py-0.5 rounded bg-surface/80">REV_4.5</div>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-1 group-hover:text-primary transition-colors">Web UI Design System</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-1 mb-auto">Component library specification for V3.</p>
+<div class="mt-4 flex flex-col gap-3">
+<div class="flex gap-2">
+<span class="artifact-chip text-primary border-primary/30 bg-primary/10 font-eyebrow-mono text-[10px]">DE</span>
+</div>
+<div class="flex items-center justify-between border-t border-outline-variant pt-3 mt-1">
+<span class="font-code text-[11px] text-outline flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">schedule</span> updated 3h ago
+                            </span>
+<div class="flex items-center gap-1.5">
+<span class="font-eyebrow-mono text-eyebrow-mono text-on-surface">45%</span>
+<div class="w-4 h-4 rounded-full border-[2px] border-outline-variant border-t-secondary transform rotate-[120deg]"></div>
+</div>
+</div>
+</div>
+</div>
+</article>
+<!-- Card 4 -->
+<article class="bg-blueprint-card relative border border-outline-variant rounded-lg p-6 flex flex-col h-[220px] cursor-pointer card-lift-hover transition-all duration-200 group">
+<div class="relative z-10 flex flex-col h-full">
+<div class="flex justify-between items-start mb-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary">smartphone</span>
+</div>
+<div class="font-eyebrow-mono text-eyebrow-mono text-outline border border-outline-variant px-1.5 py-0.5 rounded bg-surface/80">REV_0.9</div>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-1 group-hover:text-primary transition-colors">Mobile App Core</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-1 mb-auto">Initial requirements for iOS/Android shell.</p>
+<div class="mt-4 flex flex-col gap-3">
+<div class="flex gap-2">
+<span class="artifact-chip text-tertiary border-tertiary/30 bg-tertiary/10 font-eyebrow-mono text-[10px]">UC</span>
+<span class="artifact-chip text-secondary border-secondary/30 bg-secondary/10 font-eyebrow-mono text-[10px]">FR</span>
+</div>
+<div class="flex items-center justify-between border-t border-outline-variant pt-3 mt-1">
+<span class="font-code text-[11px] text-outline flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">schedule</span> updated 5d ago
+                            </span>
+<div class="flex items-center gap-1.5">
+<span class="font-eyebrow-mono text-eyebrow-mono text-on-surface">15%</span>
+<div class="w-4 h-4 rounded-full border-[2px] border-outline-variant border-t-error transform rotate-[45deg]"></div>
+</div>
+</div>
+</div>
+</div>
+</article>
+<!-- Card 5 -->
+<article class="bg-blueprint-card relative border border-outline-variant rounded-lg p-6 flex flex-col h-[220px] cursor-pointer card-lift-hover transition-all duration-200 group">
+<div class="relative z-10 flex flex-col h-full">
+<div class="flex justify-between items-start mb-4">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary">analytics</span>
+</div>
+<div class="font-eyebrow-mono text-eyebrow-mono text-outline border border-outline-variant px-1.5 py-0.5 rounded bg-surface/80">REV_3.2</div>
+</div>
+<h3 class="font-headline-sm text-headline-sm text-on-surface mb-1 group-hover:text-primary transition-colors">Data Pipeline Analytics</h3>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-1 mb-auto">Event ingestion tracking and reporting logic.</p>
+<div class="mt-4 flex flex-col gap-3">
+<div class="flex gap-2">
+<span class="artifact-chip text-secondary border-secondary/30 bg-secondary/10 font-eyebrow-mono text-[10px]">FR</span>
+<span class="artifact-chip text-error border-error/30 bg-error/10 font-eyebrow-mono text-[10px]">TC</span>
+<span class="artifact-chip text-primary border-primary/30 bg-primary/10 font-eyebrow-mono text-[10px]">DE</span>
+</div>
+<div class="flex items-center justify-between border-t border-outline-variant pt-3 mt-1">
+<span class="font-code text-[11px] text-outline flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">schedule</span> updated 1w ago
+                            </span>
+<div class="flex items-center gap-1.5">
+<span class="font-eyebrow-mono text-eyebrow-mono text-on-surface">90%</span>
+<div class="w-4 h-4 rounded-full border-[2px] border-secondary border-l-outline-variant transform rotate-[-45deg]"></div>
+</div>
+</div>
+</div>
+</div>
+</article>
+<!-- New Project Tile -->
+<article class="border border-dashed border-outline hover:border-secondary rounded-lg h-[220px] flex flex-col items-center justify-center cursor-pointer bg-surface/30 hover:bg-surface-variant/50 transition-colors group" onclick="toggleModal('new-project-modal')">
+<div class="w-12 h-12 rounded-full border border-outline group-hover:border-secondary flex items-center justify-center mb-3 bg-surface group-hover:bg-secondary/10 transition-colors">
+<span class="material-symbols-outlined text-outline group-hover:text-secondary transition-colors text-[24px]">add</span>
+</div>
+<span class="font-headline-sm text-headline-sm text-outline group-hover:text-secondary transition-colors">New project</span>
+</article>
+</div>
+</main>
+<!-- New Project Modal Overlay -->
+<div class="fixed inset-0 bg-surface-container-lowest/80 backdrop-blur-sm z-[100] hidden flex items-center justify-center p-4" id="new-project-modal">
+<div class="bg-surface-container border border-outline-variant rounded-lg w-full max-w-2xl shadow-2xl overflow-hidden transform transition-all">
+<!-- Modal Header -->
+<div class="px-6 py-4 border-b border-outline-variant flex justify-between items-center bg-surface">
+<h2 class="font-headline-sm text-headline-sm text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary text-[20px]">architecture</span>
+                    Initialize New Blueprint
+                </h2>
+<button class="text-outline hover:text-on-surface transition-colors p-1 rounded hover:bg-surface-variant" onclick="toggleModal('new-project-modal')">
+<span class="material-symbols-outlined text-[20px]">close</span>
+</button>
+</div>
+<!-- Modal Body -->
+<div class="p-6">
+<form class="flex flex-col gap-6">
+<div>
+<label class="block font-eyebrow-mono text-eyebrow-mono text-on-surface-variant mb-2">PROJECT NAME</label>
+<input class="w-full bg-surface border border-outline-variant rounded px-3 py-2 text-on-surface font-body-md focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary focus:shadow-[0_0_0_1px_theme(colors.secondary)] transition-all" placeholder="e.g. Payment Gateway Refactor" type="text"/>
+</div>
+<div>
+<label class="block font-eyebrow-mono text-eyebrow-mono text-on-surface-variant mb-2">DESCRIPTION</label>
+<textarea class="w-full bg-surface border border-outline-variant rounded px-3 py-2 text-on-surface font-body-md focus:outline-none focus:border-secondary focus:ring-1 focus:ring-secondary transition-all resize-none" placeholder="Brief objective of this documentation set..." rows="3"></textarea>
+</div>
+<div>
+<label class="block font-eyebrow-mono text-eyebrow-mono text-on-surface-variant mb-3">SCHEMA PROFILE</label>
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+<!-- Option 1 -->
+<label class="cursor-pointer">
+<input checked="" class="peer sr-only" name="profile" type="radio"/>
+<div class="border border-outline-variant rounded p-4 text-center peer-checked:border-secondary peer-checked:bg-secondary/10 hover:border-outline transition-colors h-full flex flex-col items-center justify-center gap-2">
+<span class="material-symbols-outlined text-outline peer-checked:text-secondary">corporate_fare</span>
+<span class="font-body-sm text-body-sm text-on-surface block font-medium">Standard</span>
+<span class="font-code text-[10px] text-outline block">Agile / Scrum</span>
+</div>
+</label>
+<!-- Option 2 -->
+<label class="cursor-pointer">
+<input class="peer sr-only" name="profile" type="radio"/>
+<div class="border border-outline-variant rounded p-4 text-center peer-checked:border-secondary peer-checked:bg-secondary/10 hover:border-outline transition-colors h-full flex flex-col items-center justify-center gap-2">
+<span class="material-symbols-outlined text-outline peer-checked:text-secondary">school</span>
+<span class="font-body-sm text-body-sm text-on-surface block font-medium">Academic</span>
+<span class="font-code text-[10px] text-outline block">IEEE Standard</span>
+</div>
+</label>
+<!-- Option 3 -->
+<label class="cursor-pointer">
+<input class="peer sr-only" name="profile" type="radio"/>
+<div class="border border-outline-variant rounded p-4 text-center peer-checked:border-secondary peer-checked:bg-secondary/10 hover:border-outline transition-colors h-full flex flex-col items-center justify-center gap-2">
+<span class="material-symbols-outlined text-outline peer-checked:text-secondary">settings_applications</span>
+<span class="font-body-sm text-body-sm text-on-surface block font-medium">Custom</span>
+<span class="font-code text-[10px] text-outline block">Blank Canvas</span>
+</div>
+</label>
+</div>
+</div>
+</form>
+</div>
+<!-- Modal Footer -->
+<div class="px-6 py-4 border-t border-outline-variant bg-surface flex justify-end gap-3">
+<button class="px-4 py-2 rounded border border-outline-variant text-on-surface hover:bg-surface-variant font-body-sm text-body-sm transition-colors" onclick="toggleModal('new-project-modal')">Cancel</button>
+<button class="bg-inverse-primary hover:bg-primary-fixed-variant text-white px-6 py-2 rounded font-body-sm text-body-sm font-medium transition-colors shadow-[2px_2px_0px_0px_theme(colors.on-primary-container)] active:shadow-none active:translate-x-[2px] active:translate-y-[2px]">Create project</button>
+</div>
+</div>
+</div>
+<script>
+        function toggleModal(modalID) {
+            const modal = document.getElementById(modalID);
+            if (modal.classList.contains('hidden')) {
+                modal.classList.remove('hidden');
+                // Small delay to allow display:block to apply before animating opacity if we were doing transitions
+            } else {
+                modal.classList.add('hidden');
+            }
+        }
+    </script>
+</body></html>

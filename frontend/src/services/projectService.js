@@ -43,9 +43,10 @@ async function deleteProject(id) {
   return response;
 }
 
-async function createShareLink(id) {
+async function createShareLink(id, expiresAt) {
   const response = await apiRequest(`/api/projects/${id}/share`, {
-    method: "POST"
+    method: "POST",
+    body: expiresAt ? { expiresAt } : {}
   });
   return response;
 }
